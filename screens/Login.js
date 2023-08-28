@@ -20,7 +20,7 @@ const Login = ({ navigation }) => {
                         marginVertical: 12,
                         color: COLORS.black
                     }}>
-                        Hi Welcome Back .! 👋
+                        Hi Welcome Back ! 👋
                     </Text>
 
                     <Text style={{
