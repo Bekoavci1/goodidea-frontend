@@ -1,4 +1,4 @@
-import { View, Text, Image , Pressable, TextInput, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, Image , Pressable, TextInput, TouchableOpacity, ScrollView,Alert } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context";
 import COLORS from '../constants/colors';
@@ -22,13 +22,15 @@ const Login = ({ navigation }) => {
 
             if (response.status === 200) {
                 // succses
+                console.log('response.data')
                 navigation.navigate("BottomTabNavigation");
             } else {
                 // error
                 alert(response.data);
             }
         } catch (error) {
-            alert("Hata oluştu!");
+            console.error("Giriş hatası:", error);
+            Alert.alert("The Username or Password is wrong!");
         }
     };
 
@@ -61,7 +63,7 @@ const Login = ({ navigation }) => {
     //     } 
     //     catch (error) {
     //         console.error("Giriş hatası:", error);
-    //         alert("Hata oluştu!");
+    //         Alert.alert("Hata oluştu!");
     //     }
         
     // };
