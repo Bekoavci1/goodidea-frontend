@@ -15,7 +15,7 @@ const Login = ({ navigation }) => {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('https://goodidea.azurewebsites.net/api/login/login-user', {
+            const response = await axios.post('https://goodidea.azurewebsites.net/api/Login/login-user', {
                 Username: username, 
                 Password: password  
             });
