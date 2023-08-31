@@ -11,7 +11,7 @@ const Welcome = ({ navigation }) => {
             style={{
                 flex: 1
             }}
-            colors={[COLORS.secondary, COLORS.primary]}
+            colors={[COLORS.grey, COLORS.silver,COLORS.black]}
         >
             <View style={{ flex: 1 }}>
                 <View>
@@ -50,22 +50,21 @@ const Welcome = ({ navigation }) => {
 
                     
 
-                    <Image
-                        source={require("../assets/deneme.jpg")}
-                        style={{
-                            height: 200,
-                            width: 200,
-                            borderRadius: 200,
-                            position: "absolute",
-                            top: 100,
-                            left: 60,
-                            transform: [
-                                { translateX: 50 },
-                                { translateY: 50 },
-                                { rotate: "0deg" }
-                            ]
-                        }}
-                    />
+<Image
+    source={require("../assets/logo2-removebg-preview.png")}
+    style={{
+        height: 300, // Yeni yükseklik değeri
+        width: 300, // Yeni genişlik değeri
+
+        position: "absolute",
+        
+        
+        transform: [
+            { translateX: 50 },
+            { translateY: 50 },
+        ]
+    }}
+/>
                 </View>
 
                 {/* content  */}
@@ -73,35 +72,36 @@ const Welcome = ({ navigation }) => {
                 <View style={{
                     paddingHorizontal: 22,
                     position: "absolute",
-                    top: 400,
+                    top: 350,
                     width: "100%"
                 }}>
                     <Text style={{
                         fontSize: 50,
                         fontWeight: 800,
-                        color: COLORS.white
+                        color: COLORS.black,
+                        textAlign:"center"
                     }}>Let's Get</Text>
                     <Text style={{
                         fontSize: 46,
                         fontWeight: 800,
-                        color: COLORS.white
+                        color: COLORS.black,
+                        textAlign:"center"
                     }}>Started</Text>
 
-                    <View style={{ marginVertical: 22 }}>
-                        <Text style={{
-                            fontSize: 16,
-                            color: COLORS.white,
-                            marginVertical: 4
-                        }}>Welcome to Good Idea</Text>
-                        {/* <Text style={{
-                            fontSize: 16,
-                            color: COLORS.white,
-                        }}>İçinden geçerim ulan buranın</Text> */}
-                    </View>
+                    
 
                     <Button
-                        title="Join Now"
+                        title="Join As User"
                         onPress={() => navigation.navigate("Signup")}
+                        style={{
+                            marginTop: 50,
+                            width: "100%",
+                            
+                        }}
+                    />
+                    <Button
+                        title="Join As Business Owner"
+                        onPress={() => navigation.navigate("SignupBusiness")}
                         style={{
                             marginTop: 22,
                             width: "100%"
@@ -109,9 +109,11 @@ const Welcome = ({ navigation }) => {
                     />
 
                     <View style={{
+                        
                         flexDirection: "row",
                         marginTop: 12,
-                        justifyContent: "center"
+                        justifyContent: "center",
+                       
                     }}>
                         <Text style={{
                             fontSize: 16,
@@ -122,7 +124,7 @@ const Welcome = ({ navigation }) => {
                         >
                             <Text style={{
                                 fontSize: 16,
-                                color: COLORS.white,
+                                color: COLORS.black,
                                 fontWeight: "bold",
                                 marginLeft: 4
                             }}>Login</Text>

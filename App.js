@@ -5,8 +5,8 @@ import { useCallback } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
-import { Login, Signup, Welcome } from "./screens";
 import BottomTabNavigation from './navigation/BottomTabNavigation'
+import { Login, Signup, Welcome, SignupBusiness } from "./screens";
 
 const Stack = createNativeStackNavigator();
 
@@ -61,13 +61,22 @@ if (!fontsLoaded) {
           }}
         />
         <Stack.Screen
+        
+        Updated upstream
           name="BottomTabNavigation"
           component={BottomTabNavigation}
           options={{
           headerShown: false,
           }}
         />
-        
+
+        <Stack.Screen
+          name="SignupBusiness"
+          component={SignupBusiness}
+          options={{
+            headerShown: false
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
     </SafeAreaProvider>
