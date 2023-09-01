@@ -6,8 +6,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import BottomTabNavigation from './navigation/BottomTabNavigation'
-import { Login, Signup, Welcome, SignupBusiness } from "./screens";
-import { getToken, removeToken } from './auth/Auth';
+import { Login, Signup, Welcome, SignupBusiness,LoginBusiness } from "./screens";
+import { getToken } from './auth/Auth';
 import React, { useState, useEffect } from 'react';
 
 const Stack = createNativeStackNavigator();
@@ -103,6 +103,13 @@ if (!fontsLoaded) {
         <Stack.Screen
           name="SignupBusiness"
           component={SignupBusiness}
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="LoginBusiness"
+          component={LoginBusiness}
           options={{
             headerShown: false
           }}

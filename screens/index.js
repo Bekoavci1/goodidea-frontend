@@ -7,6 +7,7 @@ import Profile from './Profile'
 import Notifications from './Notifications'
 import Chat from './Chat'
 import SignupBusiness from "./SignupBusiness";
+import LoginBusiness from "./LoginBusiness";
 
 export {
     Login,
@@ -17,5 +18,6 @@ export {
     Profile,
     Notifications,
     Chat,
-    SignupBusiness
+    SignupBusiness,
+    LoginBusiness
 }

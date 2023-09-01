@@ -13,26 +13,22 @@ import {
   Button as RNButton,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { DatePickerIOS } from "react-native";
+
 import COLORS from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
 import axios from "axios";
 
-
-
-
 const SignupBusiness = ({ navigation }) => {
-  const [isPasswordShown, setIsPasswordShown] = useState(false);
+  const [isPasswordShown, setIsPasswordShown] = useState(true);
+  const [isPasswordConfirmShown, setIsPasswordConfirmShown] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [formData, setFormData] = useState({
-    
-    email: '',
+    email: "",
     password: "",
     passwordConfirmation: "",
     name: "",
@@ -41,82 +37,69 @@ const SignupBusiness = ({ navigation }) => {
     phoneNumber: "",
     gender: "male",
     bio: "",
-    role: 'string',
-    vatNumber:'string',
-    logo:'string',
+    role: "string",
+    vatNumber: "string",
+    logo: "string",
     createdTime: "2023-08-29T23:57:58.856Z",
     updatedTime: "2023-08-29T23:57:58.856Z",
     deletedTime: "2023-08-29T23:57:58.856Z",
     addressId: "3",
     address: {
-        country: "",
-        city: "",
-        // district: "",
-        // postCode: null,
-        // streetName: "",
-        // streetNumber: "",
-        // buildingNumber: ""
-    }
-
-});
-
-const handleSignup = () => {
-  // if (formData.password !== formData.passwordConfirmation) {
-  //     console.log("pas",formData.password)
-  //     Alert.alert('Error', 'Passwords do not match!');
-  //     return;
-
-  // }
-  console.log(formData);
-  const apiUrl = 'https://goodidea.azurewebsites.net/api/register-business';
-
-  axios.post(apiUrl, formData)
-  .then((response) => {
-      navigation.navigate("BottomTabNavigation"); // bunu sonra login olarak değiştir
-      console.log("Signup successful", response.data);
-  })
-  .catch((error) => {
-      console.error("Error during signup", error);
-      Alert.alert('Error', 'An error occurred while signing up.');7
+      country: "",
+      city: "",
+      // district: "",
+      // postCode: null,
+      // streetName: "",
+      // streetNumber: "",
+      // buildingNumber: ""
+    },
   });
 
-  // axios.post(apiUrl, {
-  //     Username: "", 
-  //     Email: "",
-  //     password: "",
-  //     ConfirmPassword: "",
-  //     Name: "",
-  //     surname: "",
-  //     phoneNumber: "",
-  //     birthday: "",
-  //     gender: "",
-  //     bio: "",
+  const handleSignup = () => {
+    // if (formData.password !== formData.passwordConfirmation) {
+    //     console.log("pas",formData.password)
+    //     Alert.alert('Error', 'Passwords do not match!');
+    //     return;
 
-  // })
-  // .then((response) => {
-  //     navigation.navigate("BottomTabNavigation");
-  // })
-  // .catch((error) => {
-  //     Alert.alert('Error', 'An error occurred while signing up.');
-  // });
-};
+    // }
+    console.log(formData);
+    const apiUrl = "https://goodidea.azurewebsites.net/api/register-business";
+
+    axios
+      .post(apiUrl, formData)
+      .then((response) => {
+        navigation.navigate("BottomTabNavigation"); // bunu sonra login olarak değiştir
+        console.log("Signup successful", response.data);
+      })
+      .catch((error) => {
+        console.error("Error during signup", error);
+        Alert.alert("Error", "An error occurred while signing up.");
+        7;
+      });
+
+    // axios.post(apiUrl, {
+    //     Username: "",
+    //     Email: "",
+    //     password: "",
+    //     ConfirmPassword: "",
+    //     Name: "",
+    //     surname: "",
+    //     phoneNumber: "",
+    //     birthday: "",
+    //     gender: "",
+    //     bio: "",
+
+    // })
+    // .then((response) => {
+    //     navigation.navigate("BottomTabNavigation");
+    // })
+    // .catch((error) => {
+    //     Alert.alert('Error', 'An error occurred while signing up.');
+    // });
+  };
+
  
-
-  const openDatePicker = () => {
-    setShowDatePicker(true);
-  };
-
-  const handleDoneButton = () => {
-    setShowDatePicker(false);
-    
-  };
-
-  const onChangeDate = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setDate(currentDate);
-  };
   return (
-    
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
         <View style={{ flex: 1, marginHorizontal: 22 }}>
@@ -127,13 +110,13 @@ const handleSignup = () => {
                 fontWeight: "bold",
                 marginVertical: 12,
                 color: COLORS.black,
+                textAlign:"center"
               }}
             >
-              Create Account
+              Create Account 
             </Text>
           </View>
-              
-          
+
           <View style={{ marginBottom: 12 }}>
             <Text
               style={{
@@ -164,139 +147,158 @@ const handleSignup = () => {
                 style={{
                   width: "100%",
                 }}
-                onChangeText={(text) => setFormData(prevState => ({ ...prevState, name: text }))}
+                onChangeText={(text) =>
+                  setFormData((prevState) => ({ ...prevState, name: text }))
+                }
               />
             </View>
 
-            
-          
-
-          <View style={{ marginBottom: 12 }}>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: 400,
-                marginVertical: 8,
-              }}
-            >
-              Email address
-            </Text>
-
-            <View
-              style={{
-                width: "100%",
-                height: 48,
-                borderColor: COLORS.black,
-                borderWidth: 1,
-                borderRadius: 8,
-                alignItems: "center",
-                justifyContent: "center",
-                paddingLeft: 22,
-              }}
-            >
-              <TextInput
-                placeholder="Enter your email address"
-                placeholderTextColor={COLORS.black}
-                keyboardType="email-address"
+            <View style={{ marginBottom: 12 }}>
+              <Text
                 style={{
-                  width: "100%",
-                }}
-                onChangeText={(text) => setFormData(prevState => ({ ...prevState, email: text }))}
-
-              />
-            </View>
-          </View>
-
-          <View style={{ marginBottom: 12 }}>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: 400,
-                marginVertical: 8,
-              }}
-            >
-              Password
-            </Text>
-
-            <View
-              style={{
-                width: "100%",
-                height: 48,
-                borderColor: COLORS.black,
-                borderWidth: 1,
-                borderRadius: 8,
-                alignItems: "center",
-                justifyContent: "center",
-                paddingLeft: 22,
-              }}
-            >
-              <TextInput
-                placeholder="Enter your password"
-                placeholderTextColor={COLORS.black}
-                secureTextEntry={isPasswordShown}
-                style={{
-                  width: "100%",
-                }}
-                onChangeText={(text) => setFormData(prevState => ({ ...prevState, password: text }))}
-
-              />
-
-              <TouchableOpacity
-                onPress={() => setIsPasswordShown(!isPasswordShown)}
-                style={{
-                  position: "absolute",
-                  right: 12,
+                  fontSize: 16,
+                  fontWeight: 400,
+                  marginVertical: 8,
                 }}
               >
-                {isPasswordShown == true ? (
-                  <Ionicons name="eye-off" size={24} color={COLORS.black} />
-                ) : (
-                  <Ionicons name="eye" size={24} color={COLORS.black} />
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
+                Email address
+              </Text>
 
-          <View style={{ marginBottom: 12 }}>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: 400,
-                marginVertical: 8,
-              }}
-            >
-              Password Confirmation
-            </Text>
-
-            <View
-              style={{
-                width: "100%",
-                height: 48,
-                borderColor: COLORS.black,
-                borderWidth: 1,
-                borderRadius: 8,
-                alignItems: "center",
-                justifyContent: "center",
-                paddingLeft: 22,
-              }}
-            >
-              <TextInput
-                placeholder="Confirm Password"
-                placeholderTextColor={COLORS.black}
-                keyboardType="email-address"
-                secureTextEntry={isPasswordShown}
-                
+              <View
                 style={{
                   width: "100%",
+                  height: 48,
+                  borderColor: COLORS.black,
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingLeft: 22,
                 }}
-                onChangeText={(text) => setFormData(prevState => ({ ...prevState, passwordConfirmation: text }))}
-
-              />
-              
+              >
+                <TextInput
+                  placeholder="Enter your email address"
+                  placeholderTextColor={COLORS.black}
+                  keyboardType="email-address"
+                  style={{
+                    width: "100%",
+                  }}
+                  onChangeText={(text) =>
+                    setFormData((prevState) => ({ ...prevState, email: text }))
+                  }
+                />
+              </View>
             </View>
-          </View>
 
-        
+            <View style={{ marginBottom: 12 }}>
+        <Text
+          style={{
+            fontSize: 16,
+            fontWeight: 400,
+            marginVertical: 8,
+          }}
+        >
+          Password
+        </Text>
+
+        <View
+          style={{
+            width: "100%",
+            height: 48,
+            borderColor: COLORS.black,
+            borderWidth: 1,
+            borderRadius: 8,
+            alignItems: "center",
+            justifyContent: "center",
+            paddingLeft: 22,
+          }}
+        >
+          <TextInput
+            placeholder="Enter your password"
+            placeholderTextColor={COLORS.black}
+            secureTextEntry={isPasswordShown}
+            style={{
+              width: "100%",
+            }}
+            onChangeText={(text) =>
+              setFormData((prevState) => ({
+                ...prevState,
+                password: text,
+              }))
+            }
+          />
+
+          <TouchableOpacity
+            onPress={() => setIsPasswordShown(!isPasswordShown)}
+            style={{
+              position: "absolute",
+              right: 12,
+            }}
+          >
+            {isPasswordShown ? (
+              <Ionicons name="eye" size={24} color={COLORS.black} />
+            ) : (
+              <Ionicons name="eye-off" size={24} color={COLORS.black} />
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={{ marginBottom: 12 }}>
+        <Text
+          style={{
+            fontSize: 16,
+            fontWeight: 400,
+            marginVertical: 8,
+          }}
+        >
+          Password Confirmation
+        </Text>
+
+        <View
+          style={{
+            width: "100%",
+            height: 48,
+            borderColor: COLORS.black,
+            borderWidth: 1,
+            borderRadius: 8,
+            alignItems: "center",
+            justifyContent: "center",
+            paddingLeft: 22,
+          }}
+        >
+          <TextInput
+            placeholder="Confirm Password"
+            placeholderTextColor={COLORS.black}
+            keyboardType="email-address"
+            secureTextEntry={isPasswordConfirmShown}
+            style={{
+              width: "100%",
+            }}
+            onChangeText={(text) =>
+              setFormData((prevState) => ({
+                ...prevState,
+                passwordConfirmation: text,
+              }))
+            }
+          />
+          <TouchableOpacity
+            onPress={() => setIsPasswordConfirmShown(!isPasswordConfirmShown)}
+            style={{
+              position: "absolute",
+              right: 12,
+            }}
+          >
+            {isPasswordConfirmShown ? (
+              <Ionicons name="eye" size={24} color={COLORS.black} />
+            ) : (
+              <Ionicons name="eye-off" size={24} color={COLORS.black} />
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+            
+
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
@@ -331,13 +333,15 @@ const handleSignup = () => {
                       width: "100%",
                     }}
                     value={formData.address.country}
-                                    onChangeText={(text) => setFormData(prevState => ({
-                                        ...prevState,
-                                        address: {
-                                            ...prevState.address,
-                                            country: text
-                                        }
-                                    }))}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          country: text,
+                        },
+                      }))
+                    }
                   />
                 </View>
               </View>
@@ -372,13 +376,15 @@ const handleSignup = () => {
                       width: "100%",
                     }}
                     value={formData.address.city}
-                                    onChangeText={(text) => setFormData(prevState => ({
-                                        ...prevState,
-                                        address: {
-                                            ...prevState.address,
-                                            city: text
-                                        }
-                                    }))}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          city: text,
+                        },
+                      }))
+                    }
                   />
                 </View>
               </View>
@@ -545,6 +551,7 @@ const handleSignup = () => {
                 flexDirection: "row",
                 justifyContent: "space-between",
                 paddingLeft: 22,
+                
               }}
             >
               <TextInput
@@ -566,82 +573,25 @@ const handleSignup = () => {
                 style={{
                   width: "80%",
                 }}
-                onChangeText={(text) => setFormData(prevState => ({ ...prevState, phoneNumber: text }))}
+                onChangeText={(text) =>
+                  setFormData((prevState) => ({
+                    ...prevState,
+                    phoneNumber: text,
+                  }))
+                }
               />
             </View>
           </View>
 
-          <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-            <ScrollView
-              style={{ flex: 1 }}
-              contentContainerStyle={{ flexGrow: 1 }}
-            >
-              <View style={{ flex: 1, marginHorizontal: 22 }}>
-                <View style={{ marginBottom: 12 }}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 400,
-                      marginVertical: 2,
-                      textAlign: "center",
-                    }}
-                  >
-                    Choose Date
-                  </Text>
+          
 
-                  <View
-                    style={{
-                      width: "100%",
-                      height: 48,
-                      borderColor: COLORS.black,
-                      borderWidth: 1,
-                      borderRadius: 8,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <TouchableOpacity
-                     
-                      
-                      onPress={openDatePicker}
-                      style={{
-                        width: "100%",
-                      }}
-                    >
-                      <Text style={{ fontSize: 18, textAlign: "center" }}>
-                        {date.toLocaleDateString()}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
 
-                  {showDatePicker && (
-                    <DateTimePicker
-                      value={date}
-                      mode="date"
-                      display="spinner"
-                      onChange={onChangeDate}
-                      onTouchCancel={() => setShowDatePicker(false)} 
-                    />
-                    
-                  )}
-                  <TouchableHighlight
-  underlayColor="#DDDDDD" // Bu renk, butona dokunduğunuzda arka plan renginin değiştiğini gösterir
-  onPress={handleDoneButton}
-  style={{
-    marginTop: 8,
-    paddingVertical: 10,
-    backgroundColor: 'white',
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: 'black',
-  }}
->
-  <Text style={{ textAlign: 'center', color: 'black' }}>Done</Text>
-</TouchableHighlight>
-                </View>
-              </View>
-            </ScrollView>
-          </SafeAreaView>
+          
+
+
+
+
+
 
           <View
             style={{
