@@ -8,16 +8,9 @@ import Checkbox from "expo-checkbox";
 import Button from '../components/Button';
 import axios from 'axios';
 import { SelectList } from 'react-native-dropdown-select-list'
+import { HTTP_REQUESTS } from '../api/httpRequestService/httpRequestService';
 
-   // const [Username, setUsername] = useState('');
-    // const [password, setPassword] = useState('');
-    // const [ConfirmPassword, setConfirmPassword] = useState('');
-    // const [Email, setEmail] = useState('');
-    // const [Name, setName] = useState('');
-    // const [surname, setSurname] = useState('');
-    // const [phoneNumber, setPhoneNumber] = useState('');
-    // const [gender, setGender] = useState('');
-    // const [bio, setBio] = useState('');
+
 const Signup = ({ navigation }) => {
     const [isPasswordShown, setIsPasswordShown] = useState(true);
     const [isPasswordConfirmShown, setIsPasswordConfirmShown] = useState(true);
@@ -25,7 +18,6 @@ const Signup = ({ navigation }) => {
     const [date, setDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
 
- 
 
     const [formData, setFormData] = useState({
         username: "",
@@ -55,69 +47,24 @@ const Signup = ({ navigation }) => {
         
     });
 
-    // const handleChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setFormData(prevState => ({ ...prevState, [name]: value }));
-    // };
-
-    // const handleChange = (e) => {
-    //     const { name, value } = e.target;
-    
-    //     // Check if the name includes 'address.' prefix
-    //     if (name.startsWith('address.')) {
-    //         const addressKey = name.split('.')[1];
-    //         setFormData(prevState => ({
-    //             ...prevState,
-    //             address: {
-    //                 ...prevState.address,
-    //                 [addressKey]: value
-    //             }
-    //         }));
-    //     } else {
-    //         setFormData(prevState => ({ ...prevState, [name]: value }));
-    //     }
-    // };
     
 
     const handleSignup = () => {
         if (formData.password !== formData.passwordConfirmation) {
             console.log("pas",formData.password)
             Alert.alert('Error', 'Passwords do not match!');
-            return;
-            
+            return; 
         }
-        console.log(formData);
-        const apiUrl = 'https://goodidea.azurewebsites.net/api/register-user';
 
-        axios.post(apiUrl, formData)
-        .then((response) => {
-            navigation.navigate("BottomTabNavigation"); // bunu sonra login olarak değiştir
-            console.log("Signup successful", response.data);
-        })
-        .catch((error) => {
-            console.error("Error during signup", error);
-            Alert.alert('Error', 'An error occurred while signing up.');
-        });
-
-        // axios.post(apiUrl, {
-        //     Username: "", 
-        //     Email: "",  
-        //     password: "",
-        //     ConfirmPassword: "",
-        //     Name: "",
-        //     surname: "",
-        //     phoneNumber: "",
-        //     birthday: "",
-        //     gender: "",
-        //     bio: "",
-            
-        // })
-        // .then((response) => {
-        //     navigation.navigate("BottomTabNavigation");
-        // })
-        // .catch((error) => {
-        //     Alert.alert('Error', 'An error occurred while signing up.');
-        // });
+        HTTP_REQUESTS.USER_SERVICE.REGISTER(
+            formData,
+            (response)=>{
+                navigation.navigate("Login"); // bunu sonra login olarak değiştir
+                console.log("Signup successful", response);
+            },(error)=>{
+                console.error("Error during signup", error);
+                Alert.alert('Error', 'An error occurred while signing up.');
+            })
     };
 
 

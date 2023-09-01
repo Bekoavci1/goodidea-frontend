@@ -6,6 +6,8 @@ import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox"
 import Button from '../components/Button';
 import axios from 'axios';
+import { storeToken } from '../auth/Auth';
+import { HTTP_REQUESTS } from '../api/httpRequestService/httpRequestService';
 
 const Login = ({ navigation }) => {
     const [isPasswordShown, setIsPasswordShown] = useState(true);
@@ -14,61 +16,18 @@ const Login = ({ navigation }) => {
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
-        try {
-            const response = await axios.post('https://goodidea.azurewebsites.net/api/Login/login-user', {
-                Username: username, 
-                Password: password  
-            });
-
-            if (response.status === 200) {
-                // succses
-                console.log('response.data')
+        HTTP_REQUESTS.USER_SERVICE.LOGIN(
+            {Username: username, Password: password},
+            async(response)=>{
+                await storeToken(response);
                 navigation.navigate("BottomTabNavigation");
-            } else {
-                // error
-                alert(response.data);
-            }
-        } catch (error) {
-            console.error("Giriş hatası:", error);
-            Alert.alert("The Username or Password is wrong!");
-        }
+            },(error)=>{
+                console.error("Giriş hatası:", error);
+                Alert.alert("The Username or Password is wrong!");
+            })
     };
+     
 
-    //deneme için dummy data
-    // const handleLogin = async () => {
-    //     try {
-    //         let mockResponse;
-    
-    //         if (username === "Admin" && password === "123456") {
-    //             // Sahte bir başarılı cevap oluşturuyoruz.
-    //             mockResponse = {
-    //                 status: 200,
-    //                 data: "Başarılı giriş!"
-    //             };
-    //         } else {
-    //             // Sahte bir hata mesajı oluşturuyoruz.
-    //             mockResponse = {
-    //                 status: 401,  // Yetkisiz erişim kodu
-    //                 data: "Kullanıcı adı veya şifre yanlış!"
-    //             };
-    //         }
-    
-    //         if (mockResponse.status === 200) {
-    //             // success
-    //             navigation.navigate("BottomTabNavigation");
-    //         } else {
-    //             // error
-    //             alert(mockResponse.data);
-    //         }
-    //     } 
-    //     catch (error) {
-    //         console.error("Giriş hatası:", error);
-    //         Alert.alert("Hata oluştu!");
-    //     }
-        
-    // };
-    
-    
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
             <ScrollView>

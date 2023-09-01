@@ -7,11 +7,40 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import BottomTabNavigation from './navigation/BottomTabNavigation'
 import { Login, Signup, Welcome, SignupBusiness } from "./screens";
+import { getToken, removeToken } from './auth/Auth';
+import React, { useState, useEffect } from 'react';
 
 const Stack = createNativeStackNavigator();
 
 SplashScreen.preventAutoHideAsync()
 export default function App() {
+
+  // const [initialRoute, setInitialRoute] = useState('');
+  const [initialRoute, setInitialRoute] = useState('Welcome');
+
+  // useEffect(() => {
+  //   const checkToken = async () => {
+  //     const token = await getToken();  // Token'ı alın
+  //     if (token) {
+  //       setInitialRoute('BottomTabNavigation');  // Eğer token varsa ana sayfaya yönlendir
+  //     }
+  //     console.log(getToken);
+  //   };
+  //   checkToken();
+  // }, []);
+
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await getToken();
+      if (token) {
+        setInitialRoute('BottomTabNavigation');  // Eğer token varsa ana sayfaya yönlendir
+      } else {
+        setInitialRoute('Welcome'); // Yoksa Welcome ekranına yönlendir
+      }
+    };
+    checkToken();
+  }, []);
 
   const [fontsLoaded] = useFonts({
     black: require('./assets/fonts/Poppins-Black.ttf'),
@@ -37,7 +66,7 @@ if (!fontsLoaded) {
     <SafeAreaProvider onLayout={onLayoutRootView}>
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName='Welcome'
+        initialRouteName={initialRoute}
       >
         <Stack.Screen
           name="Welcome"
@@ -61,6 +90,7 @@ if (!fontsLoaded) {
           }}
         />
         <Stack.Screen
+        // initialRouteName={initialRoute}
         
         Updated upstream
           name="BottomTabNavigation"
@@ -82,25 +112,3 @@ if (!fontsLoaded) {
     </SafeAreaProvider>
   );
 }
-
-// import React from 'react';
-// import { NavigationContainer } from '@react-navigation/native';
-// import { createStackNavigator } from '@react-navigation/stack';
-// import Login from './Login'; 
-// import Register from './Register';
-
-
-// const Stack = createStackNavigator();
-
-// const App = () => {
-//   return (
-//     <NavigationContainer>
-//       <Stack.Navigator initialRouteName="Login">
-//         <Stack.Screen name="Login" component={Login} options={{ title: 'Giriş Yap' }} />
-//         <Stack.Screen name="Register" component={Register} options={{ title: 'Kayıt Ol' }} />
-//       </Stack.Navigator>
-//     </NavigationContainer>
-//   );
-// }
-
-// export default App;
