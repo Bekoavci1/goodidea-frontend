@@ -31,10 +31,19 @@ const COLORS = {
     chocolate: "#D2691E",
     plum: "#DDA0DD",
     darkGreen: "#006400",
-    steelBlue: "#4682B4"
-    // İstediğiniz diğer renkleri buraya ekleyebilirsiniz.
+    steelBlue: "#4682B4",
+    // Add more colors here
+    gold: "#FFD700",
+    cyan: "#00FFFF",
+    orchid: "#DA70D6",
+    slateGray: "#708090",
+    tomato: "#FF6347",
+    midnightBlue: "#191970",
+    sandyBrown: "#F4A460",
+    paleGreen: "#98FB98",
+    darkSlateGray: "#2F4F4F",
+    hotPink: "#FF69B4"
 };
-
 
 
 

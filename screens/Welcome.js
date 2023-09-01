@@ -53,7 +53,7 @@ const Welcome = ({ navigation }) => {
 <Image
     source={require("../assets/logo2-removebg-preview.png")}
     style={{
-        height: 300, // Yeni yükseklik değeri
+        height: 350, // Yeni yükseklik değeri
         width: 300, // Yeni genişlik değeri
 
         position: "absolute",
@@ -74,19 +74,9 @@ const Welcome = ({ navigation }) => {
                     position: "absolute",
                     top: 350,
                     width: "100%"
+                    
                 }}>
-                    <Text style={{
-                        fontSize: 50,
-                        fontWeight: 800,
-                        color: COLORS.black,
-                        textAlign:"center"
-                    }}>Let's Get</Text>
-                    <Text style={{
-                        fontSize: 46,
-                        fontWeight: 800,
-                        color: COLORS.black,
-                        textAlign:"center"
-                    }}>Started</Text>
+               
 
                     
 
@@ -96,6 +86,8 @@ const Welcome = ({ navigation }) => {
                         style={{
                             marginTop: 50,
                             width: "100%",
+                            borderColor: 'grey',
+                            backgroundColor: 'silver',
                             
                         }}
                     />
@@ -104,9 +96,22 @@ const Welcome = ({ navigation }) => {
                         onPress={() => navigation.navigate("SignupBusiness")}
                         style={{
                             marginTop: 22,
-                            width: "100%"
+                            width: "100%",
+                            borderColor: 'grey',
+                            backgroundColor: 'silver',
                         }}
+                        
                     />
+
+                    <View>
+                        <Text style={{
+                            fontSize: 20,
+                            color: COLORS.grey,
+                            textAlign:"center",
+                            flexDirection: "row",
+                            marginTop: 12,
+                            justifyContent: "center",
+                        }}>Already have an account ?</Text></View>
 
                     <View style={{
                         
@@ -115,19 +120,48 @@ const Welcome = ({ navigation }) => {
                         justifyContent: "center",
                        
                     }}>
-                        <Text style={{
-                            fontSize: 16,
-                            color: COLORS.white
-                        }}>Already have an account ?</Text>
+                        
                         <Pressable
                             onPress={() => navigation.navigate("Login")}
                         >
                             <Text style={{
-                                fontSize: 16,
+                                fontSize: 20,
+                                color: COLORS.black,
+                                fontWeight: "bold",
+                                marginLeft: 4,
+                                marginTop: 6
+                                
+                            }}>Login as User</Text>
+                        </Pressable>
+
+                    </View>
+
+                    <Text style={{
+                         fontSize: 20,
+                         color: COLORS.grey,
+                         textAlign:"center",
+                         flexDirection: "row",
+                         marginTop: 6,
+                         justifyContent: "center",
+                    }}>or</Text>
+
+                    <View style={{
+                        
+                        flexDirection: "row",
+                        marginTop: 6,
+                        justifyContent: "center",
+                       
+                    }}>
+                   
+                        <Pressable
+                            onPress={() => navigation.navigate("LoginBusiness")}
+                        >
+                            <Text style={{
+                                fontSize: 20,
                                 color: COLORS.black,
                                 fontWeight: "bold",
                                 marginLeft: 4
-                            }}>Login</Text>
+                            }}>Login as Business</Text>
                         </Pressable>
 
                     </View>
