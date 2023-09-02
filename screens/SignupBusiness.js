@@ -68,7 +68,7 @@ const SignupBusiness = ({ navigation }) => {
     axios
       .post(apiUrl, formData)
       .then((response) => {
-        navigation.navigate("BottomTabNavigation"); // bunu sonra login olarak değiştir
+        navigation.navigate("LoginBusiness"); // bunu sonra login olarak değiştir
         console.log("Signup successful", response.data);
       })
       .catch((error) => {

@@ -64,9 +64,9 @@ export default class HTTPClient {
     addParameters = (params) => {
         this._params = { ...this._params, ...params };
     };
-
-    static setAuthToken = (token) => {
-        //axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    setAuthToken = (token) => {
+        console.log("set" + token)
+        asd =token;
     };
 
     setAuthTokenAccess = async () => {

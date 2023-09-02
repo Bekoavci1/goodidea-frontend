@@ -1,11 +1,13 @@
 import * as SecureStore from 'expo-secure-store'
 
-export const storeToken = async (token) => {
+var asd = "asd";
+export const storeToken =  async (token) => {
     if (!token) {
         console.error("Geçersiz token değeri:", token);
         throw 'No token';
     }
     try{
+        asd = token;
         await SecureStore.setItemAsync('accessToken', token)
     }catch(err){
         console.log("error storeToken: ",err)

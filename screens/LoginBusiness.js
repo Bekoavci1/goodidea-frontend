@@ -1,38 +1,36 @@
-import { View, Text, Image , Pressable, TextInput, TouchableOpacity, ScrollView,Alert } from 'react-native'
-import React, { useState } from 'react'
-import { SafeAreaView } from "react-native-safe-area-context";
-import COLORS from '../constants/colors';
-import { Ionicons } from "@expo/vector-icons";
-import Checkbox from "expo-checkbox"
+import React, { useState } from 'react';
+import { View, Text, TextInput, Image,Pressable, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import Checkbox from 'expo-checkbox';
 import Button from '../components/Button';
-import axios from 'axios';
+import { storeToken } from '../auth/Auth';
+import { HTTP_REQUESTS } from '../api/httpRequestService/httpRequestService';
+import COLORS from '../constants/colors';
+import HTTPClient from '../api/httpClient/httpClient';
+
+
 
 const Login = ({ navigation }) => {
-    const [isPasswordShown, setIsPasswordShown] = useState(true);
-    const [isChecked, setIsChecked] = useState(false);
-    const [email, setemail] = useState('');
-    const [password, setPassword] = useState('');
+  const [isPasswordShown, setIsPasswordShown] = useState(true);
+  const [isChecked, setIsChecked] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [getToken,setToken] = useState('');
 
-    const handleLogin = async () => {
-        try {
-            const response = await axios.post('https://goodidea.azurewebsites.net/api/Login/login-business', {
-                Email: email, 
-                Password: password  
-            });
-
-            if (response.status === 200) {
-                // succses
-                console.log('response.data')
-                navigation.navigate("BottomTabNavigation");
-            } else {
-                // error
-                alert(response.data);
-            }
-        } catch (error) {
+  const handleLogin = async () => {
+    HTTP_REQUESTS.USER_SERVICE.LOGIN_BUSINESS(
+        {Email: email, Password: password},
+        async(response)=>{
+            await storeToken(response);
+            console.log('token',response)
+            //HTTPClient.setAuthToken(response)
+            navigation.navigate("BottomTabNavigation");
+        },(error)=>{
             console.error("Giriş hatası:", error);
-            Alert.alert("The email or Password is wrong!");
-        }
-    };
+            Alert.alert("The Username or Password is wrong!");
+        })
+};
 
     //deneme için dummy data
     // const handleLogin = async () => {
@@ -106,7 +104,7 @@ const Login = ({ navigation }) => {
                             <TextInput
                                 placeholder='Enter your Email'
                                 placeholderTextColor={COLORS.black}
-                                onChangeText={text => setemail(text)}
+                                onChangeText={text => setEmail(text)}
                                 style={{
                                     width: "100%"
                                 }}
