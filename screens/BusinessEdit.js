@@ -1,104 +1,109 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  Image,
-  Pressable,
   TextInput,
-  TouchableHighlight,
   TouchableOpacity,
   ScrollView,
   Alert,
-  Modal,
-  Button as RNButton,
+  Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import COLORS from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
-import Checkbox from "expo-checkbox";
-import Button from "../components/Button";
-import axios from "axios";
-
-const SignupBusiness = ({ navigation }) => {
-  const [isPasswordShown, setIsPasswordShown] = useState(true);
-  const [isPasswordConfirmShown, setIsPasswordConfirmShown] = useState(true);
-  const [isChecked, setIsChecked] = useState(false);
-  const [date, setDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-
+import COLORS from "../constants/colors";
+import { removeToken } from "../auth/Auth";
+import { HTTP_REQUESTS } from "../api/httpRequestService/httpRequestService";
+const BusinessEdit = ({ navigation }) => {
+  // const [isPasswordShown, setIsPasswordShown] = useState(true);
+  // const [isPasswordConfirmShown, setIsPasswordConfirmShown] = useState(true);
   const [formData, setFormData] = useState({
+    id: "",
+    name: "",
     email: "",
     password: "",
     passwordConfirmation: "",
-    name: "",
-    surname: "",
-    birthday: "2023-08-29", // buna bak entegre edemedim
     phoneNumber: "",
-    gender: "male",
+    role: "",
+    photoId: "",
+    vatNumber: "",
     bio: "",
-    role: "string",
-    vatNumber: "string",
-    logo: "string",
-    createdTime: "2023-08-29T23:57:58.856Z",
-    updatedTime: "2023-08-29T23:57:58.856Z",
-    deletedTime: "2023-08-29T23:57:58.856Z",
-    addressId: "3",
+    addressId: "",
     address: {
+      id:"",
       country: "",
       city: "",
+      buildingNumber: "",
       district: "",
-      postCode: null,
+      postCode: 0,
       streetName: "",
       streetNumber: "",
-      buildingNumber: ""
     },
+    createdTime: "",
+    updatedTime: "",
+    deletedTime: "",
   });
 
-  const handleSignup = () => {
-    // if (formData.password !== formData.passwordConfirmation) {
-    //     console.log("pas",formData.password)
-    //     Alert.alert('Error', 'Passwords do not match!');
-    //     return;
+  useEffect(() => {
+    // console.log("selamun aleyküm");
+    HTTP_REQUESTS.USER_SERVICE.BUSINESS_EDIT_PROFILE_GET(
+      (response) => {
+        // console.log("datalar:", response);
+        if (response) {
+          setFormData({
+            ...formData,
+            id:response.id,
+            name: response.name,
+            email: response.email,
+            password: response.password,
+            passwordConfirmation: response.password,
+            phoneNumber: response.phoneNumber,
+            role: response.role,
+            vatNumber: response.vatNumber,
+            bio: response.bio,
+            photoId : response.photoId,
+            addressId: response.addressId ? String(response.addressId) : "", // Assuming it needs to be a string; if not, remove String()
+            address: {
+              id:response.address.id || "",
+              country: response.address.country || "",
+              city: response.address.city || "",
+              buildingNumber: response.address.buildingNumber || "",
+              district: response.address.district || "",
+              postCode: response.address.postCode || "",
+              streetName: response.address.streetName || "",
+              streetNumber: response.address.streetNumber || "",
+            },
+            createdTime : response.createdTime,
+            updatedTime : new Date().toISOString(),
+            deletedTime : new Date().toISOString(),
+          });
+        }
+      },
+      (error) => {
+        // console.error("bilgileri çekemedik:", error);
+      }
+    );
+  }, []);
 
-    // }
-    console.log(formData);
-    const apiUrl = "https://goodidea.azurewebsites.net/api/register-business";
-
-    axios
-      .post(apiUrl, formData)
-      .then((response) => {
-        navigation.navigate("LoginBusiness"); // bunu sonra login olarak değiştir
-        console.log("Signup successful", response.data);
-      })
-      .catch((error) => {
-        console.error("Error during signup", error);
-        Alert.alert("Error", "An error occurred while signing up.");
-        7;
-      });
-
-    // axios.post(apiUrl, {
-    //     Username: "",
-    //     Email: "",
-    //     password: "",
-    //     ConfirmPassword: "",
-    //     Name: "",
-    //     surname: "",
-    //     phoneNumber: "",
-    //     birthday: "",
-    //     gender: "",
-    //     bio: "",
-
-    // })
-    // .then((response) => {
-    //     navigation.navigate("BottomTabNavigation");
-    // })
-    // .catch((error) => {
-    //     Alert.alert('Error', 'An error occurred while signing up.');
-    // });
+  const handleUpdate = () => {
+    HTTP_REQUESTS.USER_SERVICE.BUSINESS_EDIT_PROFILE_PUT(
+      formData,
+      (response) => {
+        Alert.alert("Sucsess", "Sucsess Profile.");
+        navigation.navigate("Profile");
+        console.log("Güncelleme başarılı", response);
+      },
+      (error) => {
+        console.log(error)
+        Alert.alert("Error", "write your current password.");
+      }
+    );
   };
 
- 
+  const logOut = (response) => {
+    removeToken(response);
+    navigation.navigate("Welcome");
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
@@ -110,10 +115,10 @@ const SignupBusiness = ({ navigation }) => {
                 fontWeight: "bold",
                 marginVertical: 12,
                 color: COLORS.black,
-                textAlign:"center"
+                textAlign: "center",
               }}
             >
-              Create Account 
+              Edit Account
             </Text>
           </View>
 
@@ -141,163 +146,60 @@ const SignupBusiness = ({ navigation }) => {
               }}
             >
               <TextInput
-                placeholder="Enter name of the Business "
+                placeholder="Enter name of the Business"
                 placeholderTextColor={COLORS.black}
                 keyboardType="email-address"
                 style={{
                   width: "100%",
                 }}
+                value={formData.name}
                 onChangeText={(text) =>
                   setFormData((prevState) => ({ ...prevState, name: text }))
                 }
               />
             </View>
+          </View>
 
-            <View style={{ marginBottom: 12 }}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: 400,
-                  marginVertical: 8,
-                }}
-              >
-                Email address
-              </Text>
+          <View style={{ marginBottom: 12 }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 400,
+                marginVertical: 8,
+              }}
+            >
+              Email address
+            </Text>
 
-              <View
+            <View
+              style={{
+                width: "100%",
+                height: 48,
+                borderColor: COLORS.black,
+                borderWidth: 1,
+                borderRadius: 8,
+                alignItems: "center",
+                justifyContent: "center",
+                paddingLeft: 22,
+              }}
+            >
+              <TextInput
+                placeholder="Enter your email address"
+                placeholderTextColor={COLORS.black}
+                keyboardType="email-address"
                 style={{
                   width: "100%",
-                  height: 48,
-                  borderColor: COLORS.black,
-                  borderWidth: 1,
-                  borderRadius: 8,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingLeft: 22,
                 }}
-              >
-                <TextInput
-                  placeholder="Enter your email address"
-                  placeholderTextColor={COLORS.black}
-                  keyboardType="email-address"
-                  style={{
-                    width: "100%",
-                  }}
-                  onChangeText={(text) =>
-                    setFormData((prevState) => ({ ...prevState, email: text }))
-                  }
-                />
-              </View>
+                value={formData.email}
+                onChangeText={(text) =>
+                  setFormData((prevState) => ({ ...prevState, email: text }))
+                }
+              />
             </View>
-
-            <View style={{ marginBottom: 12 }}>
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: 400,
-            marginVertical: 8,
-          }}
-        >
-          Password
-        </Text>
-
-        <View
-          style={{
-            width: "100%",
-            height: 48,
-            borderColor: COLORS.black,
-            borderWidth: 1,
-            borderRadius: 8,
-            alignItems: "center",
-            justifyContent: "center",
-            paddingLeft: 22,
-          }}
-        >
-          <TextInput
-            placeholder="Enter your password"
-            placeholderTextColor={COLORS.black}
-            secureTextEntry={isPasswordShown}
-            style={{
-              width: "100%",
-            }}
-            onChangeText={(text) =>
-              setFormData((prevState) => ({
-                ...prevState,
-                password: text,
-              }))
-            }
-          />
-
-          <TouchableOpacity
-            onPress={() => setIsPasswordShown(!isPasswordShown)}
-            style={{
-              position: "absolute",
-              right: 12,
-            }}
-          >
-            {isPasswordShown ? (
-              <Ionicons name="eye" size={24} color={COLORS.black} />
-            ) : (
-              <Ionicons name="eye-off" size={24} color={COLORS.black} />
-            )}
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <View style={{ marginBottom: 12 }}>
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: 400,
-            marginVertical: 8,
-          }}
-        >
-          Password Confirmation
-        </Text>
-
-        <View
-          style={{
-            width: "100%",
-            height: 48,
-            borderColor: COLORS.black,
-            borderWidth: 1,
-            borderRadius: 8,
-            alignItems: "center",
-            justifyContent: "center",
-            paddingLeft: 22,
-          }}
-        >
-          <TextInput
-            placeholder="Confirm Password"
-            placeholderTextColor={COLORS.black}
-            keyboardType="email-address"
-            secureTextEntry={isPasswordConfirmShown}
-            style={{
-              width: "100%",
-            }}
-            onChangeText={(text) =>
-              setFormData((prevState) => ({
-                ...prevState,
-                passwordConfirmation: text,
-              }))
-            }
-          />
-          <TouchableOpacity
-            onPress={() => setIsPasswordConfirmShown(!isPasswordConfirmShown)}
-            style={{
-              position: "absolute",
-              right: 12,
-            }}
-          >
-            {isPasswordConfirmShown ? (
-              <Ionicons name="eye" size={24} color={COLORS.black} />
-            ) : (
-              <Ionicons name="eye-off" size={24} color={COLORS.black} />
-            )}
-          </TouchableOpacity>
-        </View>
-      </View>
+          </View>
+          <View>
             
+
 
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
@@ -310,7 +212,7 @@ const SignupBusiness = ({ navigation }) => {
                     marginVertical: 8,
                   }}
                 >
-                  Country
+                  District
                 </Text>
 
                 <View
@@ -326,19 +228,201 @@ const SignupBusiness = ({ navigation }) => {
                   }}
                 >
                   <TextInput
-                    placeholder="Enter Country"
+                    placeholder="Edit District"
                     placeholderTextColor={COLORS.black}
-                    keyboardType="email-address"
+                    keyboardType="text"
                     style={{
                       width: "100%",
                     }}
-                    value={formData.address.country}
+                    value={formData.address.district}
                     onChangeText={(text) =>
                       setFormData((prevState) => ({
                         ...prevState,
                         address: {
                           ...prevState.address,
-                          country: text,
+                          district: text,
+                        },
+                      }))
+                    }
+                  />
+                </View>
+              </View>
+
+              <View style={{ flex: 0.48, marginBottom: 12 }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 400,
+                    marginVertical: 8,
+                  }}
+                >
+                  Door Number
+                </Text>
+
+                <View
+                  style={{
+                    width: "100%",
+                    height: 48,
+                    borderColor: COLORS.black,
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingLeft: 22,
+                  }}
+                >
+                  <TextInput
+                    placeholder="Edit Door Number"
+                    placeholderTextColor={COLORS.black}
+                    keyboardType="numeric"
+                    style={{
+                      width: "100%",
+                    }}
+                    value={formData.address.buildingNumber}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          buildingNumber: text,
+                        },
+                      }))
+                    }
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <View style={{ flex: 0.48, marginBottom: 12 }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 400,
+                    marginVertical: 8,
+                  }}
+                >
+                  Street Number
+                </Text>
+
+                <View
+                  style={{
+                    width: "100%",
+                    height: 48,
+                    borderColor: COLORS.black,
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingLeft: 22,
+                  }}
+                >
+                  <TextInput
+                    placeholder="Edit District"
+                    placeholderTextColor={COLORS.black}
+                    keyboardType="text"
+                    style={{
+                      width: "100%",
+                    }}
+                    value={formData.address.streetNumber}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          streetNumber: text,
+                        },
+                      }))
+                    }
+                  />
+                </View>
+              </View>
+              <View style={{ flex: 0.48, marginBottom: 12 }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 400,
+                    marginVertical: 8,
+                  }}
+                >
+                  Street
+                </Text>
+
+                <View
+                  style={{
+                    width: "100%",
+                    height: 48,
+                    borderColor: COLORS.black,
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingLeft: 22,
+                  }}
+                >
+                  <TextInput
+                    placeholder="Edit Street"
+                    placeholderTextColor={COLORS.black}
+                    keyboardType="email-address"
+                    style={{
+                      width: "100%",
+                    }}
+                    value={formData.address.streetName}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          streetName: text,
+                        },
+                      }))
+                    }
+                  />
+                </View>
+              </View>
+            </View>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <View style={{ flex: 0.48, marginBottom: 12 }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 400,
+                    marginVertical: 8,
+                  }}
+                >
+                  PostCode
+                </Text>
+
+                <View
+                  style={{
+                    width: "100%",
+                    height: 48,
+                    borderColor: COLORS.black,
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingLeft: 22,
+                  }}
+                >
+                  <TextInput
+                    placeholder="Edit District"
+                    placeholderTextColor={COLORS.black}
+                    keyboardType="numeric"
+                    style={{
+                      width: "100%",
+                    }}
+                    value={String(formData.address.postCode)}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          postCode: parseInt(text),
                         },
                       }))
                     }
@@ -369,7 +453,7 @@ const SignupBusiness = ({ navigation }) => {
                   }}
                 >
                   <TextInput
-                    placeholder="Enter City"
+                    placeholder="Edit Street"
                     placeholderTextColor={COLORS.black}
                     keyboardType="email-address"
                     style={{
@@ -389,110 +473,6 @@ const SignupBusiness = ({ navigation }) => {
                 </View>
               </View>
             </View>
-
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <View style={{ flex: 0.48, marginBottom: 12 }}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 400,
-                    marginVertical: 8,
-                  }}
-                >
-                  District
-                </Text>
-
-                <View
-                  style={{
-                    width: "100%",
-                    height: 48,
-                    borderColor: COLORS.black,
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    paddingLeft: 22,
-                  }}
-                >
-                  <TextInput
-                    placeholder="Enter District"
-                    placeholderTextColor={COLORS.black}
-                    keyboardType="email-address"
-                    style={{
-                      width: "100%",
-                    }}
-                  />
-                </View>
-              </View>
-              <View style={{ flex: 0.48, marginBottom: 12 }}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 400,
-                    marginVertical: 8,
-                  }}
-                >
-                  Street
-                </Text>
-
-                <View
-                  style={{
-                    width: "100%",
-                    height: 48,
-                    borderColor: COLORS.black,
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    paddingLeft: 22,
-                  }}
-                >
-                  <TextInput
-                    placeholder="Enter Street"
-                    placeholderTextColor={COLORS.black}
-                    keyboardType="email-address"
-                    style={{
-                      width: "100%",
-                    }}
-                  />
-                </View>
-              </View>
-              <View style={{ flex: 0.48, marginBottom: 12 }}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 400,
-                    marginVertical: 8,
-                  }}
-                >
-                  Door Number
-                </Text>
-
-                <View
-                  style={{
-                    width: "100%",
-                    height: 48,
-                    borderColor: COLORS.black,
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    paddingLeft: 22,
-                  }}
-                >
-                  <TextInput
-                    placeholder="Enter Door Number"
-                    placeholderTextColor={COLORS.black}
-                    keyboardType="numeric"
-                    style={{
-                      width: "100%",
-                    }}
-                  />
-                </View>
-              </View>
-            </View>
           </View>
 
           <View style={{ flex: 0.48, marginBottom: 12 }}>
@@ -503,7 +483,7 @@ const SignupBusiness = ({ navigation }) => {
                 marginVertical: 8,
               }}
             >
-              Address
+              Country
             </Text>
 
             <View
@@ -519,12 +499,22 @@ const SignupBusiness = ({ navigation }) => {
               }}
             >
               <TextInput
-                placeholder="Enter Open Address"
+                placeholder="Edit Open Address"
                 placeholderTextColor={COLORS.black}
                 keyboardType="email-address"
                 style={{
                   width: "100%",
                 }}
+                value={formData.address.country}
+                onChangeText={(text) =>
+                  setFormData((prevState) => ({
+                    ...prevState,
+                    address: {
+                      ...prevState.address,
+                      country: text,
+                    },
+                  }))
+                }
               />
             </View>
           </View>
@@ -551,13 +541,12 @@ const SignupBusiness = ({ navigation }) => {
                 flexDirection: "row",
                 justifyContent: "space-between",
                 paddingLeft: 22,
-                
               }}
             >
               <TextInput
-                placeholder="+91"
+                placeholder="+41"
                 placeholderTextColor={COLORS.black}
-                keyboardType="numeric"
+                keyboardType="text"
                 style={{
                   width: "12%",
                   borderRightWidth: 1,
@@ -567,12 +556,13 @@ const SignupBusiness = ({ navigation }) => {
               />
 
               <TextInput
-                placeholder="Enter your phone number"
+                placeholder="Edit phone number"
                 placeholderTextColor={COLORS.black}
-                keyboardType="numeric"
+                keyboardType="text"
                 style={{
                   width: "80%",
                 }}
+                value={formData.phoneNumber}
                 onChangeText={(text) =>
                   setFormData((prevState) => ({
                     ...prevState,
@@ -583,128 +573,21 @@ const SignupBusiness = ({ navigation }) => {
             </View>
           </View>
 
-          
+          {/* Add other fields for editing here */}
 
-
-          
-
-
-
-
-
-
-          <View
+          <TouchableOpacity
+            onPress={handleUpdate}
             style={{
-              flexDirection: "row",
-              marginVertical: 6,
-            }}
-          >
-            <Checkbox
-              style={{ marginRight: 8 }}
-              value={isChecked}
-              onValueChange={setIsChecked}
-              color={isChecked ? COLORS.primary : undefined}
-            />
-
-            <Text>I aggree to the terms and conditions</Text>
-          </View>
-
-          <Button
-            title="Sign Up"
-            filled
-            style={{
-              marginTop: 18,
-              marginBottom: 4,
-            }}
-            onPress={handleSignup}
-          />
-
-          <View
-            style={{
-              flexDirection: "row",
+              backgroundColor: COLORS.primary,
+              borderRadius: 8,
+              height: 48,
               alignItems: "center",
-              marginVertical: 20,
-            }}
-          >
-            <View
-              style={{
-                flex: 1,
-                height: 1,
-                backgroundColor: COLORS.grey,
-                marginHorizontal: 10,
-              }}
-            />
-            <Text style={{ fontSize: 14 }}>Or Sign up with</Text>
-            <View
-              style={{
-                flex: 1,
-                height: 1,
-                backgroundColor: COLORS.grey,
-                marginHorizontal: 10,
-              }}
-            />
-          </View>
-
-          <View
-            style={{
-              flexDirection: "row",
               justifyContent: "center",
+              marginTop: 16,
             }}
           >
-            <TouchableOpacity
-              onPress={() => console.log("Pressed")}
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                flexDirection: "row",
-                height: 52,
-                borderWidth: 1,
-                borderColor: COLORS.grey,
-                marginRight: 4,
-                borderRadius: 10,
-              }}
-            >
-              <Image
-                source={require("../assets/ınstagram.jpg")}
-                style={{
-                  height: 36,
-                  width: 36,
-                  marginRight: 8,
-                }}
-                resizeMode="contain"
-              />
-
-              <Text>Instagram</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => console.log("Pressed")}
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                flexDirection: "row",
-                height: 52,
-                borderWidth: 1,
-                borderColor: COLORS.grey,
-                marginRight: 4,
-                borderRadius: 10,
-              }}
-            >
-              <Image
-                source={require("../assets/google.png")}
-                style={{
-                  height: 36,
-                  width: 36,
-                  marginRight: 8,
-                }}
-                resizeMode="contain"
-              />
-
-              <Text>Google</Text>
-            </TouchableOpacity>
-          </View>
+            <Text style={{ color: COLORS.white, fontSize: 18 }}>Update</Text>
+          </TouchableOpacity>
 
           <View
             style={{
@@ -714,9 +597,9 @@ const SignupBusiness = ({ navigation }) => {
             }}
           >
             <Text style={{ fontSize: 16, color: COLORS.black }}>
-              Already have an account
+              Cancel Editing
             </Text>
-            <Pressable onPress={() => navigation.navigate("Login")}>
+            <Pressable onPress={() => navigation.goBack()}>
               <Text
                 style={{
                   fontSize: 16,
@@ -725,14 +608,27 @@ const SignupBusiness = ({ navigation }) => {
                   marginLeft: 6,
                 }}
               >
-                Login
+                Go Back
               </Text>
             </Pressable>
           </View>
+          <TouchableOpacity
+            onPress={logOut}
+            style={{
+              backgroundColor: COLORS.primary,
+              borderRadius: 8,
+              height: 48,
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: 16,
+            }}
+          >
+            <Text style={{ color: COLORS.red, fontSize: 18 }}>log out</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default SignupBusiness;
+export default BusinessEdit;

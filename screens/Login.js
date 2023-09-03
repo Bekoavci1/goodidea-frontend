@@ -5,7 +5,6 @@ import COLORS from '../constants/colors';
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox"
 import Button from '../components/Button';
-import axios from 'axios';
 import { storeToken } from '../auth/Auth';
 import { HTTP_REQUESTS } from '../api/httpRequestService/httpRequestService';
 
@@ -15,11 +14,11 @@ const Login = ({ navigation }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = async () => {
+    const handleLogin = () => {
         HTTP_REQUESTS.USER_SERVICE.LOGIN(
             {Username: username, Password: password},
             async(response)=>{
-                await storeToken(response);
+                storeToken(response);
                 navigation.navigate("BottomTabNavigation");
             },(error)=>{
                 console.error("Giriş hatası:", error);

@@ -1,6 +1,6 @@
 import HTTPClient from "../httpClient/httpClient";
 const mainPath = 'https://goodidea.azurewebsites.net/api'
-                 'https://goodidea.azurewebsites.net/api/register-user'
+                //  'https://goodidea.azurewebsites.net/api/register-user'
 export const HTTP_REQUESTS =
 {
     USER_SERVICE:
@@ -11,7 +11,17 @@ export const HTTP_REQUESTS =
             client.requestType      = HTTPClient.REQUEST_TYPE.POST;
             client.successCallback  = successCallback;
             client.failCallback     = errorCallback;
-            client.timeout          = 10000; // 5 seconds
+            client.timeout          = 20000; // 5 seconds
+            client.addParameters(loginCredentials);
+            client.send();
+        },
+        LOGIN_BUSINESS: (loginCredentials,successCallback,errorCallback)=>{
+            let client              = new HTTPClient();
+            client.requestPath      = mainPath+'/Login/login-business'
+            client.requestType      = HTTPClient.REQUEST_TYPE.POST;
+            client.successCallback  = successCallback;
+            client.failCallback     = errorCallback;
+            client.timeout          = 20000; // 5 seconds
             client.addParameters(loginCredentials);
             client.send();
         },
@@ -21,8 +31,37 @@ export const HTTP_REQUESTS =
             client.requestType      = HTTPClient.REQUEST_TYPE.POST;
             client.successCallback  = successCallback;
             client.failCallback     = errorCallback;
-            client.timeout          = 10000; // 5 seconds
+            client.timeout          = 20000; // 5 seconds
             client.addParameters(registerCredentials);
+            client.send();
+        },
+        BUSINESS_EDIT_PROFILE_GET: (successCallback,errorCallback)=>{
+            let client              = new HTTPClient();
+            client.requestPath      = mainPath+'/Users/businessprofile'
+            client.requestType      = HTTPClient.REQUEST_TYPE.GET;
+            client.successCallback  = successCallback;
+            client.failCallback     = errorCallback;
+            client.timeout          = 20000; // 5 seconds
+            client.send();
+        },
+        BUSINESS_EDIT_PROFILE_PUT: (registerCredentials,successCallback,errorCallback)=>{
+            let client              = new HTTPClient();
+            client.requestPath      = mainPath+'/Businesses/1'
+            client.requestType      = HTTPClient.REQUEST_TYPE.PUT;
+            client.successCallback  = successCallback;
+            client.failCallback     = errorCallback;
+            client.timeout          = 20000; // 5 seconds
+            client.addParameters(registerCredentials);
+            client.send();
+        },
+        USERS: (loginCredentials,successCallback,errorCallback)=>{
+            let client              = new HTTPClient();
+            client.requestPath      = mainPath+'/Users'
+            client.requestType      = HTTPClient.REQUEST_TYPE.GET;
+            client.successCallback  = successCallback;
+            client.failCallback     = errorCallback;
+            client.timeout          = 20000; // 5 seconds
+            client.addParameters(loginCredentials);
             client.send();
         },
         GET_ALL: (calendarId,search, successCallback, errorCallback) => {

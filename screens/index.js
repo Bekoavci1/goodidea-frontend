@@ -8,6 +8,7 @@ import Notifications from './Notifications'
 import Chat from './Chat'
 import SignupBusiness from "./SignupBusiness";
 import LoginBusiness from "./LoginBusiness";
+import BusinessEdit from "./BusinessEdit";
 
 export {
     Login,
@@ -19,5 +20,6 @@ export {
     Notifications,
     Chat,
     SignupBusiness,
-    LoginBusiness
+    LoginBusiness,
+    BusinessEdit
 }

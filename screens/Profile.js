@@ -6,6 +6,7 @@ import { Feather, AntDesign, Ionicons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
 import { posts } from '../constants/data'
+import { useNavigation } from '@react-navigation/native';
 
 const PostsRoute = () => (
     <View
@@ -32,6 +33,7 @@ const PostsRoute = () => (
                             height: '100%',
                             borderRadius: 12,
                         }}
+                        
                     />
 
                     <View
@@ -96,6 +98,8 @@ const renderScene = SceneMap({
 })
 const Profile = () => {
     function renderProfileCard() {
+ 
+            const navigation = useNavigation();
         return (
             <View
                 style={{
@@ -172,6 +176,8 @@ const Profile = () => {
                                 name="edit"
                                 size={24}
                                 color={COLORS.black}
+                                onPress={() => navigation.navigate('BusinessEdit')}
+
                             />
                         </View>
 
