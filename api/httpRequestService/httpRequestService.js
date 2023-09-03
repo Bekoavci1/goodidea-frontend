@@ -35,20 +35,18 @@ export const HTTP_REQUESTS =
             client.addParameters(registerCredentials);
             client.send();
         },
-        BUSINESS_EDIT_PROFILE_GET: (registerCredentials,successCallback,errorCallback)=>{
+        BUSINESS_EDIT_PROFILE_GET: (successCallback,errorCallback)=>{
             let client              = new HTTPClient();
             client.requestPath      = mainPath+'/Users/businessprofile'
             client.requestType      = HTTPClient.REQUEST_TYPE.GET;
             client.successCallback  = successCallback;
             client.failCallback     = errorCallback;
             client.timeout          = 20000; // 5 seconds
-            client.setAuthTokenAccess(); 
-            client.addParameters(registerCredentials);
             client.send();
         },
         BUSINESS_EDIT_PROFILE_PUT: (registerCredentials,successCallback,errorCallback)=>{
             let client              = new HTTPClient();
-            client.requestPath      = mainPath+'/Users/businessprofile'
+            client.requestPath      = mainPath+'/Businesses/1'
             client.requestType      = HTTPClient.REQUEST_TYPE.PUT;
             client.successCallback  = successCallback;
             client.failCallback     = errorCallback;

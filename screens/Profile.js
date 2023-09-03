@@ -33,6 +33,7 @@ const PostsRoute = () => (
                             height: '100%',
                             borderRadius: 12,
                         }}
+                        
                     />
 
                     <View

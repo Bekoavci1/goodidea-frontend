@@ -7,7 +7,6 @@ import Button from '../components/Button';
 import { storeToken } from '../auth/Auth';
 import { HTTP_REQUESTS } from '../api/httpRequestService/httpRequestService';
 import COLORS from '../constants/colors';
-import HTTPClient from '../api/httpClient/httpClient';
 
 
 
@@ -16,15 +15,12 @@ const Login = ({ navigation }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [getToken,setToken] = useState('');
 
-  const handleLogin = async () => {
+  const handleLogin = () => {
     HTTP_REQUESTS.USER_SERVICE.LOGIN_BUSINESS(
         {Email: email, Password: password},
-        async(response)=>{
-            await storeToken(response);
-            console.log('token',response)
-            //HTTPClient.setAuthToken(response)
+        (response)=>{
+            storeToken(response);
             navigation.navigate("BottomTabNavigation");
         },(error)=>{
             console.error("Giriş hatası:", error);

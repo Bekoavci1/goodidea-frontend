@@ -13,79 +13,93 @@ import { Ionicons } from "@expo/vector-icons";
 import COLORS from "../constants/colors";
 import { removeToken } from "../auth/Auth";
 import { HTTP_REQUESTS } from "../api/httpRequestService/httpRequestService";
-import axios from "axios";
-import { storeToken } from '../auth/Auth';
 const BusinessEdit = ({ navigation }) => {
-  const [isPasswordShown, setIsPasswordShown] = useState(true);
-  const [isPasswordConfirmShown, setIsPasswordConfirmShown] = useState(true);
+  // const [isPasswordShown, setIsPasswordShown] = useState(true);
+  // const [isPasswordConfirmShown, setIsPasswordConfirmShown] = useState(true);
   const [formData, setFormData] = useState({
+    id: "",
     name: "",
     email: "",
     password: "",
     passwordConfirmation: "",
     phoneNumber: "",
     role: "",
+    photoId: "",
     vatNumber: "",
     bio: "",
     addressId: "",
-    address: "",
-    createdTime: "2023-08-29T23:57:58.856",
-    updatedTime: "2023-08-29T23:57:58.856",
-    deletedTime: "2023-08-29T23:57:58.856",
-
-    //     "isVerified": false,
-    //     "photoId": null,
-    //     "address": null,
+    address: {
+      id:"",
+      country: "",
+      city: "",
+      buildingNumber: "",
+      district: "",
+      postCode: 0,
+      streetName: "",
+      streetNumber: "",
+    },
+    createdTime: "",
+    updatedTime: "",
+    deletedTime: "",
   });
 
-//   const headers = {
-//     Authorization: `Bearer ${token}`, // Retrieve token from AsyncStorage or Redux
-//   };
-  
-//   // Make an authenticated request
-//   axios.get('your_api_endpoint/protected_resource', { headers: headers })
-//     .then(response => {
-//       // Handle the response
-//     })
-//     .catch(error => {
-//       console.error('Request failed', error);
-//     });
-
   useEffect(() => {
-
-    
-    console.log("selamun aleyküm")
-
+    // console.log("selamun aleyküm");
     HTTP_REQUESTS.USER_SERVICE.BUSINESS_EDIT_PROFILE_GET(
-      formData,
-      async (response) => {
-        console.log("datalar:", response);
+      (response) => {
+        // console.log("datalar:", response);
+        if (response) {
+          setFormData({
+            ...formData,
+            id:response.id,
+            name: response.name,
+            email: response.email,
+            password: response.password,
+            passwordConfirmation: response.password,
+            phoneNumber: response.phoneNumber,
+            role: response.role,
+            vatNumber: response.vatNumber,
+            bio: response.bio,
+            photoId : response.photoId,
+            addressId: response.addressId ? String(response.addressId) : "", // Assuming it needs to be a string; if not, remove String()
+            address: {
+              id:response.address.id || "",
+              country: response.address.country || "",
+              city: response.address.city || "",
+              buildingNumber: response.address.buildingNumber || "",
+              district: response.address.district || "",
+              postCode: response.address.postCode || "",
+              streetName: response.address.streetName || "",
+              streetNumber: response.address.streetNumber || "",
+            },
+            createdTime : response.createdTime,
+            updatedTime : new Date().toISOString(),
+            deletedTime : new Date().toISOString(),
+          });
+        }
       },
       (error) => {
-        console.error("bilgileri çekemedik:", error);
+        // console.error("bilgileri çekemedik:", error);
       }
     );
   }, []);
 
-  
-
   const handleUpdate = () => {
-    console.log("Hayırdır biz geldik")
     HTTP_REQUESTS.USER_SERVICE.BUSINESS_EDIT_PROFILE_PUT(
       formData,
-      async (response) => {
+      (response) => {
+        Alert.alert("Sucsess", "Sucsess Profile.");
         navigation.navigate("Profile");
-       
-        console.log("Güncelleme başarılı", response.data);
+        console.log("Güncelleme başarılı", response);
       },
       (error) => {
-        console.error("Güncelleme sırasında hata oluştu", error);
-        Alert.alert("Hata", "Güncelleme sırasında bir hata oluştu.");
+        console.log(error)
+        Alert.alert("Error", "write your current password.");
       }
     );
   };
 
-  const handleSubmit = (response) => {
+  const logOut = (response) => {
     removeToken(response);
     navigation.navigate("Welcome");
   };
@@ -184,115 +198,8 @@ const BusinessEdit = ({ navigation }) => {
             </View>
           </View>
           <View>
-            <View style={{ marginBottom: 12 }}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: 400,
-                  marginVertical: 8,
-                }}
-              >
-                New Password
-              </Text>
+            
 
-              <View
-                style={{
-                  width: "100%",
-                  height: 48,
-                  borderColor: COLORS.black,
-                  borderWidth: 1,
-                  borderRadius: 8,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingLeft: 22,
-                }}
-              >
-                <TextInput
-                  placeholder="Enter New Password"
-                  placeholderTextColor={COLORS.black}
-                  secureTextEntry={isPasswordShown}
-                  style={{
-                    width: "100%",
-                  }}
-                  onChangeText={(text) =>
-                    setFormData((prevState) => ({
-                      ...prevState,
-                      password: text,
-                    }))
-                  }
-                />
-
-                <TouchableOpacity
-                  onPress={() => setIsPasswordShown(!isPasswordShown)}
-                  style={{
-                    position: "absolute",
-                    right: 12,
-                  }}
-                >
-                  {isPasswordShown ? (
-                    <Ionicons name="eye" size={24} color={COLORS.black} />
-                  ) : (
-                    <Ionicons name="eye-off" size={24} color={COLORS.black} />
-                  )}
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <View style={{ marginBottom: 12 }}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: 400,
-                  marginVertical: 8,
-                }}
-              >
-                Password Confirmation
-              </Text>
-
-              <View
-                style={{
-                  width: "100%",
-                  height: 48,
-                  borderColor: COLORS.black,
-                  borderWidth: 1,
-                  borderRadius: 8,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingLeft: 22,
-                }}
-              >
-                <TextInput
-                  placeholder="Confirm Password"
-                  placeholderTextColor={COLORS.black}
-                  keyboardType="email-address"
-                  secureTextEntry={isPasswordConfirmShown}
-                  style={{
-                    width: "100%",
-                  }}
-                  onChangeText={(text) =>
-                    setFormData((prevState) => ({
-                      ...prevState,
-                      passwordConfirmation: text,
-                    }))
-                  }
-                />
-                <TouchableOpacity
-                  onPress={() =>
-                    setIsPasswordConfirmShown(!isPasswordConfirmShown)
-                  }
-                  style={{
-                    position: "absolute",
-                    right: 12,
-                  }}
-                >
-                  {isPasswordConfirmShown ? (
-                    <Ionicons name="eye" size={24} color={COLORS.black} />
-                  ) : (
-                    <Ionicons name="eye-off" size={24} color={COLORS.black} />
-                  )}
-                </TouchableOpacity>
-              </View>
-            </View>
 
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
@@ -323,10 +230,112 @@ const BusinessEdit = ({ navigation }) => {
                   <TextInput
                     placeholder="Edit District"
                     placeholderTextColor={COLORS.black}
-                    keyboardType="email-address"
+                    keyboardType="text"
                     style={{
                       width: "100%",
                     }}
+                    value={formData.address.district}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          district: text,
+                        },
+                      }))
+                    }
+                  />
+                </View>
+              </View>
+
+              <View style={{ flex: 0.48, marginBottom: 12 }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 400,
+                    marginVertical: 8,
+                  }}
+                >
+                  Door Number
+                </Text>
+
+                <View
+                  style={{
+                    width: "100%",
+                    height: 48,
+                    borderColor: COLORS.black,
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingLeft: 22,
+                  }}
+                >
+                  <TextInput
+                    placeholder="Edit Door Number"
+                    placeholderTextColor={COLORS.black}
+                    keyboardType="numeric"
+                    style={{
+                      width: "100%",
+                    }}
+                    value={formData.address.buildingNumber}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          buildingNumber: text,
+                        },
+                      }))
+                    }
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <View style={{ flex: 0.48, marginBottom: 12 }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 400,
+                    marginVertical: 8,
+                  }}
+                >
+                  Street Number
+                </Text>
+
+                <View
+                  style={{
+                    width: "100%",
+                    height: 48,
+                    borderColor: COLORS.black,
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingLeft: 22,
+                  }}
+                >
+                  <TextInput
+                    placeholder="Edit District"
+                    placeholderTextColor={COLORS.black}
+                    keyboardType="text"
+                    style={{
+                      width: "100%",
+                    }}
+                    value={formData.address.streetNumber}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          streetNumber: text,
+                        },
+                      }))
+                    }
                   />
                 </View>
               </View>
@@ -360,9 +369,23 @@ const BusinessEdit = ({ navigation }) => {
                     style={{
                       width: "100%",
                     }}
+                    value={formData.address.streetName}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          streetName: text,
+                        },
+                      }))
+                    }
                   />
                 </View>
               </View>
+            </View>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
               <View style={{ flex: 0.48, marginBottom: 12 }}>
                 <Text
                   style={{
@@ -371,7 +394,7 @@ const BusinessEdit = ({ navigation }) => {
                     marginVertical: 8,
                   }}
                 >
-                  Door Number
+                  PostCode
                 </Text>
 
                 <View
@@ -387,12 +410,65 @@ const BusinessEdit = ({ navigation }) => {
                   }}
                 >
                   <TextInput
-                    placeholder="Edit Door Number"
+                    placeholder="Edit District"
                     placeholderTextColor={COLORS.black}
                     keyboardType="numeric"
                     style={{
                       width: "100%",
                     }}
+                    value={String(formData.address.postCode)}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          postCode: parseInt(text),
+                        },
+                      }))
+                    }
+                  />
+                </View>
+              </View>
+              <View style={{ flex: 0.48, marginBottom: 12 }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 400,
+                    marginVertical: 8,
+                  }}
+                >
+                  City
+                </Text>
+
+                <View
+                  style={{
+                    width: "100%",
+                    height: 48,
+                    borderColor: COLORS.black,
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingLeft: 22,
+                  }}
+                >
+                  <TextInput
+                    placeholder="Edit Street"
+                    placeholderTextColor={COLORS.black}
+                    keyboardType="email-address"
+                    style={{
+                      width: "100%",
+                    }}
+                    value={formData.address.city}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          city: text,
+                        },
+                      }))
+                    }
                   />
                 </View>
               </View>
@@ -407,7 +483,7 @@ const BusinessEdit = ({ navigation }) => {
                 marginVertical: 8,
               }}
             >
-              Address
+              Country
             </Text>
 
             <View
@@ -429,6 +505,16 @@ const BusinessEdit = ({ navigation }) => {
                 style={{
                   width: "100%",
                 }}
+                value={formData.address.country}
+                onChangeText={(text) =>
+                  setFormData((prevState) => ({
+                    ...prevState,
+                    address: {
+                      ...prevState.address,
+                      country: text,
+                    },
+                  }))
+                }
               />
             </View>
           </View>
@@ -458,9 +544,9 @@ const BusinessEdit = ({ navigation }) => {
               }}
             >
               <TextInput
-                placeholder="+91"
+                placeholder="+41"
                 placeholderTextColor={COLORS.black}
-                keyboardType="numeric"
+                keyboardType="text"
                 style={{
                   width: "12%",
                   borderRightWidth: 1,
@@ -472,10 +558,11 @@ const BusinessEdit = ({ navigation }) => {
               <TextInput
                 placeholder="Edit phone number"
                 placeholderTextColor={COLORS.black}
-                keyboardType="numeric"
+                keyboardType="text"
                 style={{
                   width: "80%",
                 }}
+                value={formData.phoneNumber}
                 onChangeText={(text) =>
                   setFormData((prevState) => ({
                     ...prevState,
@@ -526,7 +613,7 @@ const BusinessEdit = ({ navigation }) => {
             </Pressable>
           </View>
           <TouchableOpacity
-            onPress={handleSubmit}
+            onPress={logOut}
             style={{
               backgroundColor: COLORS.primary,
               borderRadius: 8,
@@ -545,50 +632,3 @@ const BusinessEdit = ({ navigation }) => {
 };
 
 export default BusinessEdit;
-
-// const BusinessEdit = ({ navigation }) => {
-//   const [isPasswordShown, setIsPasswordShown] = useState(true);
-//   const [isPasswordConfirmShown, setIsPasswordConfirmShown] = useState(true);
-//   const [isChecked, setIsChecked] = useState(false);
-//   const [date, setDate] = useState(new Date());
-//   const [showDatePicker, setShowDatePicker] = useState(false);
-
-//   const [formData, setFormData] = useState({
-//     name: "",
-//     email: "",
-//     // Add other fields you want to edit here
-//   });
-
-//   useEffect(() => {
-//     // Fetch the data for editing and populate the formData state
-//     const fetchDataForEditing = async () => {
-//       try {
-//         const response = await axios.get(
-//           "https://your-api-endpoint-for-editing"
-//         );
-//         const data = response.data; // Replace this with your API response structure
-
-//         setFormData(data);
-//       } catch (error) {
-//         console.error("Error fetching data for editing", error);
-//       }
-//     };
-
-//     fetchDataForEditing();
-//   }, []);
-
-//   const handleUpdate = () => {
-//     // Add logic to send the updated data to your API for editing
-//     const apiUrl = "https://your-api-endpoint-for-updating";
-
-//     axios
-//       .put(apiUrl, formData)
-//       .then((response) => {
-//         navigation.navigate("Profile"); // Replace "Profile" with the appropriate screen name
-//         console.log("Update successful", response.data);
-//       })
-//       .catch((error) => {
-//         console.error("Error during update", error);
-//         Alert.alert("Error", "An error occurred while updating.");
-//       });
-//   };

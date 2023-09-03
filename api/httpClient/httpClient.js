@@ -64,16 +64,13 @@ export default class HTTPClient {
     addParameters = (params) => {
         this._params = { ...this._params, ...params };
     };
-    setAuthToken = (token) => {
-        console.log("set" + token)
-        asd =token;
-    };
 
-    setAuthTokenAccess = async () => {
-        const token = await getToken()
-        if (token){
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        }
+    setAuthTokenAccess = () => {
+        return getToken().then(token =>{
+            if (token){
+                return axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            }
+        })
     };
 
     setHeaderCustomParameters = ()  => {
@@ -84,9 +81,9 @@ export default class HTTPClient {
         //axios.defaults.headers.common['Authorization'] = null;
     };
 
-    callLogout = async() =>{
+    callLogout = () =>{
         try {
-            await removeToken()
+            removeToken()
             //refresh koy
         } catch (error) {
             console.log("error logout : ",error)
@@ -119,36 +116,39 @@ export default class HTTPClient {
     };
 
     send = () => {
-        this._build();
-        this._promise.then((res) => {
-            this._successCB(res.data);
-        }).catch((err) => {
-            if (err.response) {
-                // Request made and server responded
-                if(err.response.status === 401){
-                    this.callLogout()
-                    // if(err.response.data.err && err.response.data.err === "Invalid Token"){
-                    //     HTTP_REQUESTS.FIREBASE_SERVICE.REFRESH_TOKEN((idToken) => {
-                    //         if (!idToken) this.callLogout();
-                    //         localStorage.setItem('accessToken', idToken.toString());
-                    //         window.location.reload();
-                    //     },(err) => {
-                    //         console.log("error", err)
-                    //         this.callLogout()
-                    //     })
-                    // }else{
-                    //     this.callLogout()
-                    // }
-                }else{
-                    this._failCB(err.response);
-                }
-              } else if (err.request) {
-                // The request was made but no response was received
-                this._failCB(err);
-              } else {
-                // Something happened in setting up the request that triggered an Error
-                this._failCB(err);
-              }
+        this.setAuthTokenAccess().then(()=>{
+            this._build();
+            this._promise.then((res) => {
+                this._successCB(res.data);
+            }).catch((err) => {
+                if (err.response) {
+                    // Request made and server responded
+                    if(err.response.status === 401){
+                        console.log("UNAUTHORIZE ERROR : Token Headera set edilmedi veya token geçersiz !")
+                        this.callLogout()
+                        // if(err.response.data.err && err.response.data.err === "Invalid Token"){
+                        //     HTTP_REQUESTS.FIREBASE_SERVICE.REFRESH_TOKEN((idToken) => {
+                        //         if (!idToken) this.callLogout();
+                        //         localStorage.setItem('accessToken', idToken.toString());
+                        //         window.location.reload();
+                        //     },(err) => {
+                        //         console.log("error", err)
+                        //         this.callLogout()
+                        //     })
+                        // }else{
+                        //     this.callLogout()
+                        // }
+                    }else{
+                        this._failCB(err.response);
+                    }
+                  } else if (err.request) {
+                    // The request was made but no response was received
+                    this._failCB(err);
+                  } else {
+                    // Something happened in setting up the request that triggered an Error
+                    this._failCB(err);
+                  }
+            })
         })
     };
 

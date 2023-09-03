@@ -47,11 +47,11 @@ const SignupBusiness = ({ navigation }) => {
     address: {
       country: "",
       city: "",
-      // district: "",
-      // postCode: null,
-      // streetName: "",
-      // streetNumber: "",
-      // buildingNumber: ""
+      district: "",
+      postCode: null,
+      streetName: "",
+      streetNumber: "",
+      buildingNumber: ""
     },
   });
 
