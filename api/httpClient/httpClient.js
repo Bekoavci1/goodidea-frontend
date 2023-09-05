@@ -73,6 +73,14 @@ export default class HTTPClient {
         })
     };
 
+    setAuthTokenAccess2 = () => {
+        return getToken().then(token =>{
+            if (token){
+                return `Bearer ${token}`;
+            }
+        })
+    };
+
     setHeaderCustomParameters = ()  => {
         axios.defaults.headers.common = { "version":packageJson.version,"customer":'test'} //TODO fix this
     }

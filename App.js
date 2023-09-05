@@ -121,6 +121,8 @@ if (!fontsLoaded) {
             headerShown: false
           }}
         />
+        {/* <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="PhotoDetail" component={PhotoDetail} /> */}
       </Stack.Navigator>
     </NavigationContainer>
     </SafeAreaProvider>
