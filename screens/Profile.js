@@ -1,5 +1,5 @@
 import { View, Text, Image, useWindowDimensions, FlatList } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, FONTS, SIZES, images } from '../constants'
 import { Feather, AntDesign, Ionicons } from '@expo/vector-icons'
@@ -7,6 +7,9 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
 import { posts } from '../constants/data'
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios'
+import { HTTP_REQUESTS } from "../api/httpRequestService/httpRequestService";
+import { getToken } from '../auth/Auth'
 
 const PostsRoute = () => (
     <View
@@ -94,12 +97,101 @@ const TaggedRoute = () => (
 const renderScene = SceneMap({
     first: PostsRoute,
     second: HighLightsRoute,
-    third: TaggedRoute,
 })
 const Profile = () => {
+    const [photoList, setPhotoList] = useState([]);
+
+    const [formData, setFormData] = useState({
+        id: 0,
+        photoId: 0,
+        contentDescription: "",
+        date: new Date().toISOString().split("T")[0], 
+        location: "",
+        likeCount: 0,
+        commentCount: 0,
+        businessId: 0,
+        photo: {
+          id: 0,
+          photoUrl: "",
+          userId: 0,
+          businessId: 0,
+          imageFile: "" 
+        }
+      });
+
+      useEffect(()=>{
+        
+      })
+
+      useEffect(() => {
+        console.log("selamun aleyküm");
+        HTTP_REQUESTS.USER_SERVICE.PROFILE_PHOTO_GET(
+          (response) => {
+            console.log("datalar:", response);
+            if (response && Array.isArray(response)) {
+                setPhotoList(response);
+                setFormData({
+                    id: response.id,
+                    photoId: response.photoId,
+                    contentDescription: response.contentDescription,
+                    date: response.date,
+                    location: response.location,
+                    likeCount: response.likeCount,
+                    commentCount: response.commentCount,
+                    businessId: response.businessId,
+                    photo: {
+                      id: response.photo.id,
+                      photoUrl: response.photo.photoUrl,
+                      userId: response.photo.userId,
+                      businessId: response.photo.businessId,
+                      imageFile: response.photo.imageFile
+                    }
+                  });
+            }
+          },
+          (error) => {
+            console.error("bilgileri çekemedik:", error);
+          }
+        );
+      }, []);
+
+      const renderPhotos = () => {
+        return photoList.map((photoData, index) => {
+          return (
+            <View key={index}>
+              <Image 
+                source={{ uri: photoData.photo.photoUrl }}
+                style={{ width: 100, height: 100 }} 
+              />
+            </View>
+          );
+        });
+      };
+      
+      
+
     function renderProfileCard() {
- 
-            const navigation = useNavigation();
+
+        const [userData, setUserData] = useState(null);
+        const navigation = useNavigation();
+
+        useEffect(() => {
+            const fetchData = async () => {
+                try {
+                    const response = await axios.get('https://goodidea.azurewebsites.net/api/Businesses/1'); // {id} kısmını gerçek bir ID ile değiştirmeniz gerekiyor.
+                    setUserData(response.data);
+                    console.log(response.data);
+                } catch (error) {
+                    console.error("Veri çekerken bir hata oluştu", error);
+                }
+            };
+            fetchData();
+        }, []);
+
+        if (!userData) {
+            return <Text>Loading...</Text>;
+        }
+
         return (
             <View
                 style={{
@@ -159,16 +251,16 @@ const Profile = () => {
                             }}
                         >
                             <View style={{ flexDirection: 'column' }}>
-                                <Text
+                                {/* <Text
                                     style={{
                                         ...FONTS.body3,
                                         fontWeight: 'bold',
                                     }}
                                 >
-                                    Anas Khan
-                                </Text>
-                                <Text style={{ ...FONTS.body3 }}>
-                                    Graphic Designer
+                                    {userData.name}
+                                </Text> */}
+                                <Text style={{ ...FONTS.body2, fontWeight: 'bold', }}>
+                                {userData.name}
                                 </Text>
                             </View>
 
@@ -200,7 +292,13 @@ const Profile = () => {
                                 <Text style={{ ...FONTS.body4 }}>7</Text>
                                 <Text style={{ ...FONTS.body4 }}>Posts</Text>
                             </View>
-
+                            <View
+                                style={{
+                                    flexDirection: 'column',
+                                    marginVertical: 12,
+                                }}
+                            >
+                            </View>
                             <View
                                 style={{
                                     backgroundColor: '#FFF9E8',
@@ -235,26 +333,22 @@ const Profile = () => {
                         </View>
                     </View>
                 </View>
-
                 <View
                     style={{
                         flexDirection: 'column',
                         marginVertical: 12,
                     }}
                 >
-                    <Text style={{ ...FONTS.body4 }}>Jack of all</Text>
-                    <View style={{ flexDirection: 'row' }}>
-                        <Text style={{ ...FONTS.body4 }}>Product Designer</Text>
-                        <Text style={{ ...FONTS.body4, color: COLORS.blue }}>
-                            @junio
-                        </Text>
-                    </View>
-
-                    <View style={{ flexDirection: 'row' }}>
-                        <Text style={{ ...FONTS.body4 }}>Creator of</Text>
-                        <Text style={{ ...FONTS.body4, color: COLORS.blue }}>
-                            @damnpixels
-                        </Text>
+                    <View
+                        style={{
+                            flexDirection: 'column',
+                            marginVertical: 12,
+                        }}
+                    >
+                        { userData.email && <Text style={{ ...FONTS.body4 }}>{userData.email}</Text> }
+                        { userData.phoneNumber && <Text style={{ ...FONTS.body4 }}>Phone Number={userData.phoneNumber}</Text> }
+                        { userData.address && userData.address.country && <Text style={{ ...FONTS.body4 }}>{userData.address.country}</Text> }
+                        { userData.address && <Text style={{ ...FONTS.body4 }}>{userData.address.city}</Text> }
                     </View>
                 </View>
             </View>
@@ -266,7 +360,6 @@ const Profile = () => {
     const [routes] = useState([
         { key: 'first', title: 'Posts', icon: 'square-outline' },
         { key: 'second', title: 'Highlights', icon: 'heart-outline' },
-        { key: 'third', title: 'Tagged', icon: 'person-outline' },
     ])
 
     const renderTabBar = (props) => (
@@ -360,7 +453,7 @@ const Profile = () => {
                 backgroundColor: '#fff',
             }}
         >
-            <View style={{ flex: 1 }}>
+            {/* <View style={{ flex: 1 }}>
                 {renderProfileCard()}
                 {renderButtions()}
                 <View
@@ -377,7 +470,22 @@ const Profile = () => {
                         renderTabBar={renderTabBar}
                     />
                 </View>
+            </View> */}
+            <View style={{ flex: 1 }}>
+                {renderPhotos()}
+                {renderProfileCard()}
+                {renderButtions()}
+
+                <TabView
+                    navigationState={{ index, routes }}
+                    renderScene={renderScene}
+                    renderTabBar={renderTabBar}
+                    onIndexChange={setIndex}
+                    initialLayout={{ width: layout.width }}
+                />
             </View>
+
+
         </SafeAreaView>
     )
 }
