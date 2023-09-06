@@ -1,4 +1,4 @@
-import { View, Text, Image, useWindowDimensions, FlatList } from 'react-native'
+import { View, Text, Image, useWindowDimensions, FlatList,Button } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, FONTS, SIZES, images } from '../constants'
@@ -9,16 +9,34 @@ import { posts } from '../constants/data'
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios'
 import { HTTP_REQUESTS } from "../api/httpRequestService/httpRequestService";
-import { getToken } from '../auth/Auth'
 
-const PostsRoute = () => (
-    <View
+const PostsRoute = () => {
+    const [postProfıle, setpostProfıle] = useState([]);
+    const [photo, setPhoto] = useState("");
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('https://goodidea.azurewebsites.net/api/Posts/business/1'); 
+                setpostProfıle(response.data);
+                if (response.data && response.data.photo) {
+                    setPhoto(postProfıle.photo); 
+                }
+            } catch (error) {
+                console.error("Veri çekerken hata oluştu:", error);
+            }
+        };
+
+        fetchData();
+    }, []); 
+
+    return (
+       <View
         style={{
             flex: 1,
         }}
     >
         <FlatList
-            data={posts}
+            data={postProfıle}
             numColumns={3}
             renderItem={({ item, index }) => (
                 <View
@@ -30,13 +48,12 @@ const PostsRoute = () => (
                 >
                     <Image
                         key={index}
-                        source={item.image}
+                        source={{ uri: item.photo && item.photo.photoUrl ? item.photo.photoUrl : 'defaultImageURL' }}
                         style={{
                             width: '100%',
                             height: '100%',
                             borderRadius: 12,
-                        }}
-                        
+                        }} 
                     />
 
                     <View
@@ -84,7 +101,8 @@ const PostsRoute = () => (
             )}
         />
     </View>
-)
+    );
+}
 
 const HighLightsRoute = () => (
     <View style={{ flex: 1, backfaceColor: 'blue' }}></View>
@@ -99,94 +117,31 @@ const renderScene = SceneMap({
     second: HighLightsRoute,
 })
 const Profile = () => {
-    const [photoList, setPhotoList] = useState([]);
-
-    const [formData, setFormData] = useState({
-        id: 0,
-        photoId: 0,
-        contentDescription: "",
-        date: new Date().toISOString().split("T")[0], 
-        location: "",
-        likeCount: 0,
-        commentCount: 0,
-        businessId: 0,
-        photo: {
-          id: 0,
-          photoUrl: "",
-          userId: 0,
-          businessId: 0,
-          imageFile: "" 
-        }
-      });
-
-      useEffect(()=>{
-        
-      })
-
-      useEffect(() => {
-        console.log("selamun aleyküm");
-        HTTP_REQUESTS.USER_SERVICE.PROFILE_PHOTO_GET(
-          (response) => {
-            console.log("datalar:", response);
-            if (response && Array.isArray(response)) {
-                setPhotoList(response);
-                setFormData({
-                    id: response.id,
-                    photoId: response.photoId,
-                    contentDescription: response.contentDescription,
-                    date: response.date,
-                    location: response.location,
-                    likeCount: response.likeCount,
-                    commentCount: response.commentCount,
-                    businessId: response.businessId,
-                    photo: {
-                      id: response.photo.id,
-                      photoUrl: response.photo.photoUrl,
-                      userId: response.photo.userId,
-                      businessId: response.photo.businessId,
-                      imageFile: response.photo.imageFile
-                    }
-                  });
-            }
-          },
-          (error) => {
-            console.error("bilgileri çekemedik:", error);
-          }
-        );
-      }, []);
-
-      const renderPhotos = () => {
-        return photoList.map((photoData, index) => {
-          return (
-            <View key={index}>
-              <Image 
-                source={{ uri: photoData.photo.photoUrl }}
-                style={{ width: 100, height: 100 }} 
-              />
-            </View>
-          );
-        });
-      };
-      
-      
-
     function renderProfileCard() {
 
         const [userData, setUserData] = useState(null);
+        const [photoDataa, setphotoDataa] = useState(null);
         const navigation = useNavigation();
-
+        
         useEffect(() => {
             const fetchData = async () => {
                 try {
-                    const response = await axios.get('https://goodidea.azurewebsites.net/api/Businesses/1'); // {id} kısmını gerçek bir ID ile değiştirmeniz gerekiyor.
-                    setUserData(response.data);
-                    console.log(response.data);
+                    const responsee = await axios.get('https://goodidea.azurewebsites.net/api/Businesses/1'); // {id} kısmını gerçek bir ID ile değiştirmeniz gerekiyor.
+                    setUserData(responsee.data);
+                    const photoId = responsee.data.photoId;
+                    const response = await axios.get('https://goodidea.azurewebsites.net/api/Photos/photos/'+photoId); // {id} kısmını gerçek bir ID ile değiştirmeniz gerekiyor.
+                    setphotoDataa(response.data);
                 } catch (error) {
                     console.error("Veri çekerken bir hata oluştu", error);
                 }
             };
             fetchData();
-        }, []);
+            const unsubscribe = navigation.addListener('focus', fetchData); 
+
+            return () => {
+                unsubscribe();
+            };
+        }, [navigation]);
 
         if (!userData) {
             return <Text>Loading...</Text>;
@@ -220,10 +175,10 @@ const Profile = () => {
                         justifyContent: 'space-between',
                     }}
                 >
-                    {/* Profile image container */}
                     <View>
-                        <Image
-                            source={images.user2}
+                        
+                            <Image
+                            source={{ uri: photoDataa?.photoUrl }}
                             resizeMode="contain"
                             style={{
                                 height: 150,
@@ -233,6 +188,8 @@ const Profile = () => {
                                 borderColor: '#ffffff',
                             }}
                         />
+                       
+                        
                     </View>
 
                     <View
@@ -251,14 +208,6 @@ const Profile = () => {
                             }}
                         >
                             <View style={{ flexDirection: 'column' }}>
-                                {/* <Text
-                                    style={{
-                                        ...FONTS.body3,
-                                        fontWeight: 'bold',
-                                    }}
-                                >
-                                    {userData.name}
-                                </Text> */}
                                 <Text style={{ ...FONTS.body2, fontWeight: 'bold', }}>
                                 {userData.name}
                                 </Text>
@@ -346,9 +295,9 @@ const Profile = () => {
                         }}
                     >
                         { userData.email && <Text style={{ ...FONTS.body4 }}>{userData.email}</Text> }
-                        { userData.phoneNumber && <Text style={{ ...FONTS.body4 }}>Phone Number={userData.phoneNumber}</Text> }
-                        { userData.address && userData.address.country && <Text style={{ ...FONTS.body4 }}>{userData.address.country}</Text> }
+                        {/* { userData.phoneNumber && <Text style={{ ...FONTS.body4 }}>Phone Number={userData.phoneNumber}</Text> } */}
                         { userData.address && <Text style={{ ...FONTS.body4 }}>{userData.address.city}</Text> }
+                        { userData.address && userData.address.country && <Text style={{ ...FONTS.body4 }}>{userData.address.country}</Text> }
                     </View>
                 </View>
             </View>
@@ -453,26 +402,8 @@ const Profile = () => {
                 backgroundColor: '#fff',
             }}
         >
-            {/* <View style={{ flex: 1 }}>
-                {renderProfileCard()}
-                {renderButtions()}
-                <View
-                    style={{
-                        flex: 1,
-                        marginHorizontal: 22,
-                    }}
-                >
-                    <TabView
-                        navigationState={{ index, routes }}
-                        renderScene={renderScene}
-                        onIndexChange={setIndex}
-                        initialLayout={{ width: layout.width }}
-                        renderTabBar={renderTabBar}
-                    />
-                </View>
-            </View> */}
             <View style={{ flex: 1 }}>
-                {renderPhotos()}
+                {/* {renderPhotos()} */}
                 {renderProfileCard()}
                 {renderButtions()}
 

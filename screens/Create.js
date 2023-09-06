@@ -79,6 +79,7 @@ export default function ImagePickerExample() {
       })
       .then((response) => {
         console.log("Success:", response.data);
+        navigation.navigate("Profile");
       })
       .catch((error) => {
         console.log("Error:", error);
