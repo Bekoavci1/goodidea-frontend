@@ -34,7 +34,7 @@ export default function App() {
     const checkToken = async () => {
       const token = await getToken();
       if (token) {
-        setInitialRoute('BottomTabNavigation');  // Eğer token varsa ana sayfaya yönlendir
+        setInitialRoute('Welcome');  // Eğer token varsa ana sayfaya yönlendir
       } else {
         setInitialRoute('Welcome'); // Yoksa Welcome ekranına yönlendir
       }
@@ -121,6 +121,7 @@ if (!fontsLoaded) {
             headerShown: false
           }}
         />
+        
         {/* <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="PhotoDetail" component={PhotoDetail} /> */}
       </Stack.Navigator>

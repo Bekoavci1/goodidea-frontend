@@ -24,12 +24,33 @@ import  { useState } from 'react';
 import { Modal } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
+import { useEffect } from 'react';
+import { HTTP_REQUESTS } from "../api/httpRequestService/httpRequestService";
+import axios from 'axios';
 
 const users = [images.user1, images.user2, images.user3, images.user4]
 
 const Feed = () => {
+    const [lati,setLatitude]=useState('');
+    const[longi,setLongtitude]=useState('');
+    async function getLocationAsync() {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.error('Konum izni reddedildi');
+          return;
+        }
+        let location = await Location.getCurrentPositionAsync({});
+        setLatitude(location.coords.latitude);
+        setLongtitude(location.coords.longitude);
+      
+        
+        console.log('lati: ', location.coords.latitude);
+        console.log('longti: ', location.coords.longitude);
+    }
     const [isLiked, setIsLiked] = useState(true);
-const [likeCount, setLikeCount] = useState(22);
+    const [likeCount, setLikeCount] = useState(22);
+   
    
     const feedData = [
         {
@@ -64,6 +85,21 @@ const [likeCount, setLikeCount] = useState(22);
         }
     };
     
+
+    useEffect(() => {
+        getLocationAsync();
+        console.log("selamun aleyküm burası post");
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('https://goodidea.azurewebsites.net/api/posts/getposts?lati='+ lati +'&longi='+longi); 
+                console.log("postlar geliyor: ",response.data);
+            } catch (error) {
+                console.error("Postlar gelmiyor", error);
+            }
+        };
+        fetchData();
+      }, []);
+
 
     function renderSuggestionsContainer() {
         return (

@@ -19,6 +19,8 @@ import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
 import axios from "axios";
+import { useEffect } from "react";
+import { Picker } from "@react-native-picker/picker";
 
 const SignupBusiness = ({ navigation }) => {
   const [isPasswordShown, setIsPasswordShown] = useState(true);
@@ -26,6 +28,11 @@ const SignupBusiness = ({ navigation }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [countries, setCountries] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [cities, setCities] = useState([]);
+  const [selectedCity, setSelectedCity] = useState("");
+
 
   const [formData, setFormData] = useState({
     email: "",
@@ -51,7 +58,7 @@ const SignupBusiness = ({ navigation }) => {
       postCode: null,
       streetName: "",
       streetNumber: "",
-      buildingNumber: ""
+      buildingNumber: "",
     },
   });
 
@@ -64,7 +71,8 @@ const SignupBusiness = ({ navigation }) => {
     // }
     console.log(formData);
     const apiUrl = "https://goodidea.azurewebsites.net/api/register-business";
-
+    formData.address.country = selectedCountry;
+    formData.address.city = selectedCity;
     axios
       .post(apiUrl, formData)
       .then((response) => {
@@ -97,8 +105,42 @@ const SignupBusiness = ({ navigation }) => {
     //     Alert.alert('Error', 'An error occurred while signing up.');
     // });
   };
+  useEffect(() => {
+    // Axios ile ülke verilerini çekin
+    axios
+      .get("https://goodidea.azurewebsites.net/api/Businesses/countries") // Ülke verilerinin URL'sini buraya ekleyin
+      .then((response) => {
+        setCountries(response.data); // API'den gelen ülke verilerini ayarlayın
+        console.log("gelen ülkeler", response.data);
+      })
+      .catch((error) => {
+        console.error("Ülke verileri alınamadı", error);
+      });
+  
+      
+  }, []);
+  const alsehir = () =>{
+    axios
+    .get("https://goodidea.azurewebsites.net/api/Businesses/cities/"+selectedCountry) // Ülke verilerinin URL'sini buraya ekleyin
+    .then((response) => {
+      setCities(response.data); // API'den gelen ülke verilerini ayarlayın
+      console.log("gelen iller", response.data);
+    })
+    .catch((error) => {
+      console.error("il verileri alınamadı", error);
+    });
+  }
+  const handleCountryChange = (country) => {
+    setSelectedCountry(country);
+    alsehir();
 
- 
+    console.log("seçilen ülke: ", selectedCountry);
+  };
+  const handleCityChange = (city) => {
+    setSelectedCity(city);
+    console.log("seçilen il: ", selectedCity);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }}>
@@ -110,10 +152,10 @@ const SignupBusiness = ({ navigation }) => {
                 fontWeight: "bold",
                 marginVertical: 12,
                 color: COLORS.black,
-                textAlign:"center"
+                textAlign: "center",
               }}
             >
-              Create Account 
+              Create Account
             </Text>
           </View>
 
@@ -191,202 +233,212 @@ const SignupBusiness = ({ navigation }) => {
             </View>
 
             <View style={{ marginBottom: 12 }}>
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: 400,
-            marginVertical: 8,
-          }}
-        >
-          Password
-        </Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 400,
+                  marginVertical: 8,
+                }}
+              >
+                Password
+              </Text>
 
-        <View
-          style={{
-            width: "100%",
-            height: 48,
-            borderColor: COLORS.black,
-            borderWidth: 1,
-            borderRadius: 8,
-            alignItems: "center",
-            justifyContent: "center",
-            paddingLeft: 22,
-          }}
-        >
-          <TextInput
-            placeholder="Enter your password"
-            placeholderTextColor={COLORS.black}
-            secureTextEntry={isPasswordShown}
-            style={{
-              width: "100%",
-            }}
-            onChangeText={(text) =>
-              setFormData((prevState) => ({
-                ...prevState,
-                password: text,
-              }))
-            }
-          />
-
-          <TouchableOpacity
-            onPress={() => setIsPasswordShown(!isPasswordShown)}
-            style={{
-              position: "absolute",
-              right: 12,
-            }}
-          >
-            {isPasswordShown ? (
-              <Ionicons name="eye" size={24} color={COLORS.black} />
-            ) : (
-              <Ionicons name="eye-off" size={24} color={COLORS.black} />
-            )}
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <View style={{ marginBottom: 12 }}>
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: 400,
-            marginVertical: 8,
-          }}
-        >
-          Password Confirmation
-        </Text>
-
-        <View
-          style={{
-            width: "100%",
-            height: 48,
-            borderColor: COLORS.black,
-            borderWidth: 1,
-            borderRadius: 8,
-            alignItems: "center",
-            justifyContent: "center",
-            paddingLeft: 22,
-          }}
-        >
-          <TextInput
-            placeholder="Confirm Password"
-            placeholderTextColor={COLORS.black}
-            keyboardType="email-address"
-            secureTextEntry={isPasswordConfirmShown}
-            style={{
-              width: "100%",
-            }}
-            onChangeText={(text) =>
-              setFormData((prevState) => ({
-                ...prevState,
-                passwordConfirmation: text,
-              }))
-            }
-          />
-          <TouchableOpacity
-            onPress={() => setIsPasswordConfirmShown(!isPasswordConfirmShown)}
-            style={{
-              position: "absolute",
-              right: 12,
-            }}
-          >
-            {isPasswordConfirmShown ? (
-              <Ionicons name="eye" size={24} color={COLORS.black} />
-            ) : (
-              <Ionicons name="eye-off" size={24} color={COLORS.black} />
-            )}
-          </TouchableOpacity>
-        </View>
-      </View>
-            
-
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <View style={{ flex: 0.48, marginBottom: 12 }}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 400,
-                    marginVertical: 8,
-                  }}
-                >
-                  Country
-                </Text>
-
-                <View
+              <View
+                style={{
+                  width: "100%",
+                  height: 48,
+                  borderColor: COLORS.black,
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingLeft: 22,
+                }}
+              >
+                <TextInput
+                  placeholder="Enter your password"
+                  placeholderTextColor={COLORS.black}
+                  secureTextEntry={isPasswordShown}
                   style={{
                     width: "100%",
-                    height: 48,
-                    borderColor: COLORS.black,
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    paddingLeft: 22,
+                  }}
+                  onChangeText={(text) =>
+                    setFormData((prevState) => ({
+                      ...prevState,
+                      password: text,
+                    }))
+                  }
+                />
+
+                <TouchableOpacity
+                  onPress={() => setIsPasswordShown(!isPasswordShown)}
+                  style={{
+                    position: "absolute",
+                    right: 12,
                   }}
                 >
-                  <TextInput
-                    placeholder="Enter Country"
-                    placeholderTextColor={COLORS.black}
-                    keyboardType="email-address"
-                    style={{
-                      width: "100%",
-                    }}
-                    value={formData.address.country}
-                    onChangeText={(text) =>
-                      setFormData((prevState) => ({
-                        ...prevState,
-                        address: {
-                          ...prevState.address,
-                          country: text,
-                        },
-                      }))
-                    }
-                  />
-                </View>
+                  {isPasswordShown ? (
+                    <Ionicons name="eye" size={24} color={COLORS.black} />
+                  ) : (
+                    <Ionicons name="eye-off" size={24} color={COLORS.black} />
+                  )}
+                </TouchableOpacity>
               </View>
-              <View style={{ flex: 0.48, marginBottom: 12 }}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 400,
-                    marginVertical: 8,
-                  }}
-                >
-                  City
-                </Text>
+            </View>
 
-                <View
+            <View style={{ marginBottom: 12 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 400,
+                  marginVertical: 8,
+                }}
+              >
+                Password Confirmation
+              </Text>
+
+              <View
+                style={{
+                  width: "100%",
+                  height: 48,
+                  borderColor: COLORS.black,
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingLeft: 22,
+                }}
+              >
+                <TextInput
+                  placeholder="Confirm Password"
+                  placeholderTextColor={COLORS.black}
+                  keyboardType="email-address"
+                  secureTextEntry={isPasswordConfirmShown}
                   style={{
                     width: "100%",
-                    height: 48,
-                    borderColor: COLORS.black,
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    paddingLeft: 22,
+                  }}
+                  onChangeText={(text) =>
+                    setFormData((prevState) => ({
+                      ...prevState,
+                      passwordConfirmation: text,
+                    }))
+                  }
+                />
+                <TouchableOpacity
+                  onPress={() =>
+                    setIsPasswordConfirmShown(!isPasswordConfirmShown)
+                  }
+                  style={{
+                    position: "absolute",
+                    right: 12,
                   }}
                 >
-                  <TextInput
-                    placeholder="Enter City"
-                    placeholderTextColor={COLORS.black}
-                    keyboardType="email-address"
-                    style={{
-                      width: "100%",
-                    }}
-                    value={formData.address.city}
-                    onChangeText={(text) =>
-                      setFormData((prevState) => ({
-                        ...prevState,
-                        address: {
-                          ...prevState.address,
-                          city: text,
-                        },
-                      }))
-                    }
-                  />
-                </View>
+                  {isPasswordConfirmShown ? (
+                    <Ionicons name="eye" size={24} color={COLORS.black} />
+                  ) : (
+                    <Ionicons name="eye-off" size={24} color={COLORS.black} />
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={{ flex: 0.48, marginBottom: 12 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 400,
+                  marginVertical: 8,
+                }}
+              >
+                Country
+              </Text>
+              <View
+                style={{
+                  width: "100%",
+                  height: 48,
+                  borderColor: COLORS.black,
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingLeft: 22,
+                }}
+              >
+                <Picker
+                  style={{
+                    height: 48,
+                    width: "100%",
+                    color: "black",
+                    fontSize: 16,
+                    borderColor: "black",
+                    borderWidth: 0,
+                    borderRadius: 8,
+                  }}
+                  selectedValue={selectedCountry} // Seçili ülke değerini belirtin
+                  onValueChange={(itemValue, itemIndex) =>
+                    handleCountryChange(itemValue)
+                    
+                  }
+                >
+                  <Picker.Item label="Ülke Seç" value="" />
+                  {countries.map((country) => (
+                    <Picker.Item
+                      key={country.id}
+                      label={country.baslik}
+                      value={country.id}
+                    />
+                  ))}
+                </Picker>
+
+              </View>
+
+              <View style={{ flex: 0.48, marginBottom: 12 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 400,
+                  marginVertical: 8,
+                }}
+              >
+                City
+              </Text>
+              <View
+                style={{
+                  width: "100%",
+                  height: 48,
+                  borderColor: COLORS.black,
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingLeft: 22,
+                }}
+              >
+                <Picker
+                  style={{
+                    height: 48,
+                    width: "100%",
+                    color: "black",
+                    fontSize: 16,
+                    borderColor: "black",
+                    borderWidth: 0,
+                    borderRadius: 8,
+                  }}
+                  selectedValue={selectedCity} // Seçili ülke değerini belirtin
+                  onValueChange={(itemValue, itemIndex) =>
+                    handleCityChange(itemValue)
+                  }
+                >
+                  <Picker.Item label="il Seç" value="" />
+                  {cities.map((city) => (
+                    <Picker.Item
+                      key={city.id}
+                      label={city.baslik}
+                      value={city.baslik}
+                    />
+                  ))}
+                </Picker>
+              </View>
               </View>
             </View>
 
@@ -551,7 +603,6 @@ const SignupBusiness = ({ navigation }) => {
                 flexDirection: "row",
                 justifyContent: "space-between",
                 paddingLeft: 22,
-                
               }}
             >
               <TextInput
@@ -582,16 +633,6 @@ const SignupBusiness = ({ navigation }) => {
               />
             </View>
           </View>
-
-          
-
-
-          
-
-
-
-
-
 
           <View
             style={{

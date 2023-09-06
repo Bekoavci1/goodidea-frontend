@@ -83,6 +83,15 @@ export const HTTP_REQUESTS =
             client.addParameters(postCredentials);
             client.send();
         },
+        POST: (lati,longi,successCallback,errorCallback)=>{
+            let client              = new HTTPClient();
+            client.requestPath      = mainPath+'/Posts/getposts?lati='+lati+'&longi='+longi;
+            client.requestType      = HTTPClient.REQUEST_TYPE.GET;
+            client.successCallback  = successCallback;
+            client.failCallback     = errorCallback;
+            client.timeout          = 20000; // 5 seconds
+            client.send();
+        },
         GET_ALL: (calendarId,search, successCallback, errorCallback) => {
             let searchParams = new URLSearchParams();
             if(search){

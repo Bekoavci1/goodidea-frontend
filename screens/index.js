@@ -10,6 +10,7 @@ import SignupBusiness from "./SignupBusiness";
 import LoginBusiness from "./LoginBusiness";
 import BusinessEdit from "./BusinessEdit";
 
+
 export {
     Login,
     Welcome,
@@ -21,5 +22,6 @@ export {
     Chat,
     SignupBusiness,
     LoginBusiness,
-    BusinessEdit
+    BusinessEdit,
+
 }
