@@ -44,15 +44,15 @@ export const HTTP_REQUESTS =
             client.timeout          = 20000; // 5 seconds
             client.send();
         },
-        PROFILE_PHOTO_GET: (successCallback,errorCallback)=>{
-            let client              = new HTTPClient();
-            client.requestPath      = mainPath+'/Posts/1'
-            client.requestType      = HTTPClient.REQUEST_TYPE.GET;
-            client.successCallback  = successCallback;
-            client.failCallback     = errorCallback;
-            client.timeout          = 20000; // 5 seconds
-            client.send();
-        },
+        // PROFILE_PHOTO_GET: (successCallback,errorCallback)=>{
+        //     let client              = new HTTPClient();
+        //     client.requestPath      = mainPath+'/Posts/1'
+        //     client.requestType      = HTTPClient.REQUEST_TYPE.GET;
+        //     client.successCallback  = successCallback;
+        //     client.failCallback     = errorCallback;
+        //     client.timeout          = 20000; // 5 seconds
+        //     client.send();
+        // },
         BUSINESS_EDIT_PROFILE_PUT: (registerCredentials,successCallback,errorCallback)=>{
             let client              = new HTTPClient();
             client.requestPath      = mainPath+'/Businesses/1'
