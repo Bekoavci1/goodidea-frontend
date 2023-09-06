@@ -377,6 +377,7 @@ const SignupBusiness = ({ navigation }) => {
                   selectedValue={selectedCountry} // Seçili ülke değerini belirtin
                   onValueChange={(itemValue, itemIndex) =>
                     handleCountryChange(itemValue)
+                    
                   }
                 >
                   <Picker.Item label="Ülke Seç" value="" />
@@ -388,6 +389,7 @@ const SignupBusiness = ({ navigation }) => {
                     />
                   ))}
                 </Picker>
+
               </View>
 
               <View style={{ flex: 0.48, marginBottom: 12 }}>
