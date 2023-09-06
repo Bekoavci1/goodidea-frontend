@@ -9,6 +9,7 @@ import {
 } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { FontAwesome } from '@expo/vector-icons';
 import { COLORS, FONTS, SIZES, images } from '../constants'
 import {
     MaterialIcons,
@@ -19,102 +20,57 @@ import {
 } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { friends } from '../constants/data'
+import  { useState } from 'react';
+import { Modal } from 'react-native';
+import * as Animatable from 'react-native-animatable';
+import MapView, { Marker } from 'react-native-maps';
 
 const users = [images.user1, images.user2, images.user3, images.user4]
+
 const Feed = () => {
-    function renderHeader() {
-        return (
-            <View
-                style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                }}
-            >
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <Text
-                        style={{
-                            ...FONTS.body4,
-                            marginRight: 4,
-                        }}
-                    >
-                        My Networks
-                    </Text>
-                    <MaterialIcons
-                        name="keyboard-arrow-down"
-                        size={24}
-                        color={COLORS.black}
-                    />
-                </View>
+    const [isLiked, setIsLiked] = useState(true);
+const [likeCount, setLikeCount] = useState(22);
+   
+    const feedData = [
+        {
+            id: 1,
+            username: 'Emre Arslan',
+            hashtag: '#goodıdea',
+            text: '#So who am I\nIn this world of virtual connections. It is important to remember the value of real, meaningful relationships',
+            imageSource:  require('../assets/w8pk-hero.jpg')
+        },
+      
+        
+    ];
 
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <TouchableOpacity
-                        style={{
-                            height: 50,
-                            width: 50,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            backgroundColor: '#fff',
-                            shadowColor: '#18274B',
-                            shadowOffset: {
-                                width: 0,
-                                height: 4.5,
-                            },
-                            shadowOpacity: 0.12,
-                            shadowRadius: 6.5,
-                            elevation: 2,
-                            borderRadius: 22,
-                        }}
-                    >
-                        <Ionicons
-                            name="filter"
-                            size={24}
-                            color={COLORS.black}
-                        />
-                    </TouchableOpacity>
+    const [isMapModalVisible, setMapModalVisible] = useState(false);
+    const openMapModal = () => {
+        setMapModalVisible(true);
+      };
+    
+      const closeMapModal = () => {
+        setMapModalVisible(false);
+      };
 
-                    <LinearGradient
-                        colors={['#007260', '#007260']}
-                        style={{
-                            height: 50,
-                            width: 50,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            shadowColor: '#39B68D',
-                            shadowOffset: {
-                                width: 0,
-                                height: 4.5,
-                            },
-                            shadowOpacity: 0.12,
-                            shadowRadius: 6.5,
-                            elevation: 2,
-                            borderRadius: 22,
-                            marginLeft: 12,
-                        }}
-                    >
-                        <Feather name="plus" size={24} color={COLORS.white} />
-                    </LinearGradient>
-                </View>
-            </View>
-        )
-    }
+      const handleLikePress = () => {
+        if (isLiked) {
+            // Eğer beğeni yapılmışsa, beğeni durumunu kaldır ve beğeni sayısını azalt
+            setIsLiked(false);
+            setLikeCount(likeCount - 1);
+        } else {
+            // Eğer beğeni yapılmamışsa, beğeni durumunu aktif et ve beğeni sayısını artır
+            setIsLiked(true);
+            setLikeCount(likeCount + 1);
+        }
+    };
+    
 
     function renderSuggestionsContainer() {
         return (
             <View>
                 <View style={{ marginVertical: 8 }}>
-                    <Text style={{ ...FONTS.h3 }}>Timeline</Text>
-                    <Text style={{ ...FONTS.body3 }}>Friends</Text>
+                    <Text style={{ ...FONTS.h3,textAlign:'center' }}>GOOD IDEA</Text>
+               
                 </View>
 
                 <FlatList
@@ -131,53 +87,7 @@ const Feed = () => {
                                 justifyContent: 'center',
                             }}
                         >
-                            <TouchableOpacity
-                                onPress={() => console.log('Pressed')}
-                                style={{
-                                    paddingVertical: 4,
-                                    marginRight: 10,
-                                }}
-                            >
-                                {item.hasPremium && (
-                                    <LinearGradient
-                                        colors={['#F68464', '#EEA849']}
-                                        style={{
-                                            height: 30,
-                                            width: 30,
-                                            borderRadius: 15,
-                                            position: 'absolute',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            zIndex: 1,
-                                            bottom: 20,
-                                            right: 32,
-                                        }}
-                                    >
-                                        <Foundation
-                                            name="crown"
-                                            size={20}
-                                            color={COLORS.white}
-                                        />
-                                    </LinearGradient>
-                                )}
-
-                                <Image
-                                    source={item.image}
-                                    resizeMode="contain"
-                                    style={{
-                                        width: 96,
-                                        height: 150,
-                                        borderRadius: 80,
-                                        borderWidth: 4,
-                                        borderColor: '#fff',
-                                    }}
-                                />
-                            </TouchableOpacity>
-                            <Text
-                                style={{ ...FONTS.body3, fontWeight: 'bold' }}
-                            >
-                                {item.name}
-                            </Text>
+                           
                         </View>
                     )}
                 />
@@ -187,6 +97,7 @@ const Feed = () => {
 
     function renderFeedPost() {
         return (
+            
             <View
                 style={{
                     backgroundColor: '#fff',
@@ -227,8 +138,9 @@ const Feed = () => {
                             <Text
                                 style={{ ...FONTS.body4, fontWeight: 'bold' }}
                             >
-                                Ankita Shrama
+                               Emre Arslan
                             </Text>
+                            
                             <Text
                                 style={{
                                     ...FONTS.body4,
@@ -236,7 +148,7 @@ const Feed = () => {
                                     fontWeight: 'bold',
                                 }}
                             >
-                                #Lost_soul
+                                #goodıdea
                             </Text>
                         </View>
                     </View>
@@ -251,43 +163,69 @@ const Feed = () => {
                 {/* Post content */}
 
                 <View
-                    style={{
-                        marginHorizontal: 8,
-                        marginVertical: 8,
-                    }}
-                >
-                    <Text style={{ ...FONTS.body4, fontWeight: 'bold' }}>
-                        #So who am I
-                    </Text>
-                    <Text style={{ ...FONTS.body4 }}>
-                        In this world of virtual connections. It is important to
-                        remenber the value of real, meaningfull relationships
-                    </Text>
-                </View>
+            style={{
+                backgroundColor: '#fff',
+                flexDirection: 'column',
+                width: '100%',
+                borderRadius: 26,
+                borderWidth: 1,
+                borderColor: '#fff',
+                marginVertical: 12,
+            }}
+        >
+           
 
-                <View
+            {/* Post content */}
+            <View
+                style={{
+                    marginHorizontal: 8,
+                    marginVertical: 8,
+                }}
+            >
+                {/* Görsel */}
+                <Image
+                    source={feedData[0].imageSource} // İlgili gönderinin resim kaynağına göre güncelleyin
                     style={{
-                        marginHorizontal: 8,
-                        flexDirection: 'row',
-                        alignItems: 'center',
+                        width: '100%',
+                        height: 200, // İstenilen yükseklik
+                        borderRadius: 20,
+                    }}
+                />
+            </View>
+
+            {/* Diğer gönderi içeriği */}
+            <View
+                style={{
+                    marginHorizontal: 8,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                }}
+            >
+                <Text
+                    style={{
+                        fontSize: 12,
+                        fontFamily: 'regular',
+                        color: COLORS.primary,
+                        marginLeft: 4,
                     }}
                 >
-                    <Ionicons
-                        name="location-outline"
-                        size={21}
-                        color={COLORS.primary}
-                    />
-                    <Text
-                        style={{
-                            fontSize: 12,
-                            fontFamily: 'regular',
-                            color: COLORS.primary,
-                            marginLeft: 4,
-                        }}
-                    >
-                        Gold City | 10 mins ago
-                    </Text>
-                </View>
+                    <TouchableOpacity onPress={openMapModal}>
+                        <Text style={{ marginTop: 20, fontSize: 18, color: COLORS.primary }}>
+                            <Ionicons
+                                name="location-outline"
+                                size={21}
+                                color={COLORS.primary}
+                            />
+                            <Text>Open With Maps</Text>
+                        </Text>
+                    </TouchableOpacity>
+                </Text>
+            </View>
+
+        </View>
+
+                
+                
 
                 {/* Posts likes and comments */}
 
@@ -305,22 +243,45 @@ const Feed = () => {
                             flexDirection: 'row',
                         }}
                     >
-                        <View
-                            style={{
-                                flexDirection: 'row',
+                       
+                           <View
+    style={{
+        flexDirection: 'row',
+        marginRight: SIZES.padding2,
+    }}
+>
+<View
+    style={{
+        marginHorizontal: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+    }}
+>
+<TouchableOpacity onPress={() => handleLikePress()}>
+                    <Animatable.View
+                        animation={isLiked ? 'pulse' : undefined}
+                        duration={300}
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        }}
+                    >
+                          <View>
+                          <FontAwesome
+  name={isLiked ? 'heart' : 'heart-o'}
+  size={20}
+  color={isLiked ? 'red' : 'black'}
+  onPress={() => handleLikePress()}
+/>
 
-                                alignItems: 'center',
-                                marginRight: SIZES.padding2,
-                            }}
-                        >
-                            <Feather
-                                name="heart"
-                                size={20}
-                                color={COLORS.black}
-                            />
-                            <Text style={{ ...FONTS.body4, marginLeft: 2 }}>
-                                22
-                            </Text>
+    </View>
+    <Text>{likeCount} Beğeni</Text>
+                    </Animatable.View>
+                </TouchableOpacity>
+
+               
+
+</View>
                         </View>
 
                         <View
@@ -375,7 +336,60 @@ const Feed = () => {
                     </View>
                 </View>
 
-                {/* comment section */}
+                <Modal
+    animationType="slide"
+    transparent={true}
+    visible={isMapModalVisible}
+>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+        <View
+            style={{
+                width: '80%',
+                aspectRatio: 1, // Kare boyut
+                borderRadius: 20,
+                overflow: 'hidden',
+            }}
+        >
+            {/* Harita */}
+            <MapView
+                style={{ flex: 1 }}
+                initialRegion={{
+                    latitude: 37.78825, // İstenilen başlangıç enlem değeri ile değiştirin
+                    longitude: -122.4324, // İstenilen başlangıç boylam değeri ile değiştirin
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                }}
+            >
+                {/* Konum için işaretçi */}
+                <Marker
+                    coordinate={{
+                        latitude: 37.78825, // Gönderi konumunun enlem değeri ile değiştirin
+                        longitude: -122.4324, // Gönderi konumunun boylam değeri ile değiştirin
+                    }}
+                    title="Gönderi Konumu"
+                    description="Bu, gönderinin konumudur."
+                />
+            </MapView>
+
+            {/* Kapatma düğmesi */}
+            <TouchableOpacity
+                onPress={closeMapModal}
+                style={{
+                    position: 'absolute',
+                    top: 16,
+                    right: 16,
+                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                    borderRadius: 20,
+                    padding: 10,
+                }}
+            >
+                <Text style={{ fontSize: 16, color: COLORS.primary }}>
+                    Kapat
+                </Text>
+            </TouchableOpacity>
+        </View>
+    </View>
+</Modal>
 
                 <View
                     style={{
@@ -420,7 +434,7 @@ const Feed = () => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#E7E7E7' }}>
             <View style={{ flex: 1, paddingHorizontal: 22 }}>
-                {renderHeader()}
+               
                 <ScrollView>
                     {renderSuggestionsContainer()}
                     {renderFeedPost()}
