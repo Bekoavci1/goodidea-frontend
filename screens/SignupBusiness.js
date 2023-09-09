@@ -20,29 +20,25 @@ import Checkbox from "expo-checkbox";
 import Button from "../components/Button";
 import axios from "axios";
 import { useEffect } from "react";
-import { Picker } from "@react-native-picker/picker";
-
+import { StyleSheet } from "react-native";
+import ModalDropdown from "react-native-modal-dropdown"; // Import the library
 const SignupBusiness = ({ navigation }) => {
   const [isPasswordShown, setIsPasswordShown] = useState(true);
   const [isPasswordConfirmShown, setIsPasswordConfirmShown] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
-  const [date, setDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState("");
 
-
+  const [cityname,setCityname] = useState("");
+  const [countryname,setCountryname] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     passwordConfirmation: "",
     name: "",
-    surname: "",
-    birthday: "2023-08-29", // buna bak entegre edemedim
     phoneNumber: "",
-    gender: "male",
     bio: "",
     role: "string",
     vatNumber: "string",
@@ -55,10 +51,33 @@ const SignupBusiness = ({ navigation }) => {
       country: "",
       city: "",
       district: "",
-      postCode: null,
+      postCode: 5,
       streetName: "",
       streetNumber: "",
       buildingNumber: "",
+    },
+  });
+
+  const styles = StyleSheet.create({
+    dropdownContainer: {
+      width: "100%",
+      height: 48,
+      borderColor: COLORS.black,
+      borderWidth: 1,
+      borderRadius: 8,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingLeft: 22,
+      marginBottom: 12,
+    },
+    dropdown: {
+      height: 48,
+      width: "100%",
+      color: "black",
+      fontSize: 16,
+      borderColor: "black",
+      borderWidth: 0,
+      borderRadius: 8,
     },
   });
 
@@ -71,8 +90,8 @@ const SignupBusiness = ({ navigation }) => {
     // }
     console.log(formData);
     const apiUrl = "https://goodidea.azurewebsites.net/api/register-business";
-    formData.address.country = selectedCountry;
-    formData.address.city = selectedCity;
+    formData.address.country = countryname;
+    formData.address.city = cityname;
     axios
       .post(apiUrl, formData)
       .then((response) => {
@@ -111,34 +130,36 @@ const SignupBusiness = ({ navigation }) => {
       .get("https://goodidea.azurewebsites.net/api/Businesses/countries") // Ülke verilerinin URL'sini buraya ekleyin
       .then((response) => {
         setCountries(response.data); // API'den gelen ülke verilerini ayarlayın
-        console.log("gelen ülkeler", response.data);
+        // console.log("gelen ülkeler", response.data);
       })
       .catch((error) => {
         console.error("Ülke verileri alınamadı", error);
       });
-  
-      
   }, []);
-  const alsehir = () =>{
-    axios
-    .get("https://goodidea.azurewebsites.net/api/Businesses/cities/"+selectedCountry) // Ülke verilerinin URL'sini buraya ekleyin
-    .then((response) => {
-      setCities(response.data); // API'den gelen ülke verilerini ayarlayın
-      console.log("gelen iller", response.data);
-    })
-    .catch((error) => {
-      console.error("il verileri alınamadı", error);
-    });
-  }
+ 
   const handleCountryChange = (country) => {
-    setSelectedCountry(country);
-    alsehir();
-
+    console.log("seçilen country:", country.baslik);
+    setSelectedCountry(country.id);
+    setCountryname(country.baslik);
+    
+    // Ülke bilgilerini almak için axios isteği
+    axios
+      .get("https://goodidea.azurewebsites.net/api/Businesses/cities/" + country.id)
+      .then((response) => {
+        setCities(response.data); // API'den gelen şehir verilerini ayarlayın
+        console.log("gelen iller", response.data);
+      })
+      .catch((error) => {
+        console.error("il verileri alınamadı", error);
+      });
+  
     console.log("seçilen ülke: ", selectedCountry);
   };
   const handleCityChange = (city) => {
-    setSelectedCity(city);
-    console.log("seçilen il: ", selectedCity);
+    console.log("seçilen şehir: ", city.baslik);
+    setSelectedCity(city.id);
+    setCityname(city.baslik);
+    
   };
 
   return (
@@ -352,47 +373,18 @@ const SignupBusiness = ({ navigation }) => {
               >
                 Country
               </Text>
-              <View
-                style={{
-                  width: "100%",
-                  height: 48,
-                  borderColor: COLORS.black,
-                  borderWidth: 1,
-                  borderRadius: 8,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingLeft: 22,
+              <ModalDropdown
+                options={countries.map((country) => country.baslik)}
+                defaultValue="Select Country"
+                onSelect={(index) => {
+                  const selectedCountryId = countries[index]; // Seçilen ülkenin ID'sini al
+                  handleCountryChange(selectedCountryId);
                 }}
-              >
-                <Picker
-                  style={{
-                    height: 48,
-                    width: "100%",
-                    color: "black",
-                    fontSize: 16,
-                    borderColor: "black",
-                    borderWidth: 0,
-                    borderRadius: 8,
-                  }}
-                  selectedValue={selectedCountry} // Seçili ülke değerini belirtin
-                  onValueChange={(itemValue, itemIndex) =>
-                    handleCountryChange(itemValue)
-                    
-                  }
-                >
-                  <Picker.Item label="Ülke Seç" value="" />
-                  {countries.map((country) => (
-                    <Picker.Item
-                      key={country.id}
-                      label={country.baslik}
-                      value={country.id}
-                    />
-                  ))}
-                </Picker>
+                style={styles.dropdownContainer}
+              />
+            </View>
 
-              </View>
-
-              <View style={{ flex: 0.48, marginBottom: 12 }}>
+            <View style={{ flex: 0.48, marginBottom: 12 }}>
               <Text
                 style={{
                   fontSize: 16,
@@ -402,44 +394,15 @@ const SignupBusiness = ({ navigation }) => {
               >
                 City
               </Text>
-              <View
-                style={{
-                  width: "100%",
-                  height: 48,
-                  borderColor: COLORS.black,
-                  borderWidth: 1,
-                  borderRadius: 8,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingLeft: 22,
+              <ModalDropdown
+                options={cities.map((city) => city.baslik)}
+                defaultValue="Select City"
+                onSelect={(index) => {
+                  const selectedCityId = cities[index]; // Seçilen ülkenin ID'sini al
+                  handleCityChange(selectedCityId);
                 }}
-              >
-                <Picker
-                  style={{
-                    height: 48,
-                    width: "100%",
-                    color: "black",
-                    fontSize: 16,
-                    borderColor: "black",
-                    borderWidth: 0,
-                    borderRadius: 8,
-                  }}
-                  selectedValue={selectedCity} // Seçili ülke değerini belirtin
-                  onValueChange={(itemValue, itemIndex) =>
-                    handleCityChange(itemValue)
-                  }
-                >
-                  <Picker.Item label="il Seç" value="" />
-                  {cities.map((city) => (
-                    <Picker.Item
-                      key={city.id}
-                      label={city.baslik}
-                      value={city.baslik}
-                    />
-                  ))}
-                </Picker>
-              </View>
-              </View>
+                style={styles.dropdownContainer}
+              />
             </View>
 
             <View
@@ -469,12 +432,114 @@ const SignupBusiness = ({ navigation }) => {
                   }}
                 >
                   <TextInput
-                    placeholder="Enter District"
+                    placeholder="Edit District"
                     placeholderTextColor={COLORS.black}
-                    keyboardType="email-address"
+                    keyboardType="text"
                     style={{
                       width: "100%",
                     }}
+                    value={formData.address.district}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          district: text,
+                        },
+                      }))
+                    }
+                  />
+                </View>
+              </View>
+
+              <View style={{ flex: 0.48, marginBottom: 12 }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 400,
+                    marginVertical: 8,
+                  }}
+                >
+                  Door Number
+                </Text>
+
+                <View
+                  style={{
+                    width: "100%",
+                    height: 48,
+                    borderColor: COLORS.black,
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingLeft: 22,
+                  }}
+                >
+                  <TextInput
+                    placeholder="Edit Door Number"
+                    placeholderTextColor={COLORS.black}
+                    keyboardType="numeric"
+                    style={{
+                      width: "100%",
+                    }}
+                    value={formData.address.buildingNumber}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          buildingNumber: text,
+                        },
+                      }))
+                    }
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <View style={{ flex: 0.48, marginBottom: 12 }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 400,
+                    marginVertical: 8,
+                  }}
+                >
+                  Street Number
+                </Text>
+
+                <View
+                  style={{
+                    width: "100%",
+                    height: 48,
+                    borderColor: COLORS.black,
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingLeft: 22,
+                  }}
+                >
+                  <TextInput
+                    placeholder="Edit District"
+                    placeholderTextColor={COLORS.black}
+                    keyboardType="text"
+                    style={{
+                      width: "100%",
+                    }}
+                    value={formData.address.streetNumber}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          streetNumber: text,
+                        },
+                      }))
+                    }
                   />
                 </View>
               </View>
@@ -502,15 +567,29 @@ const SignupBusiness = ({ navigation }) => {
                   }}
                 >
                   <TextInput
-                    placeholder="Enter Street"
+                    placeholder="Edit Street"
                     placeholderTextColor={COLORS.black}
                     keyboardType="email-address"
                     style={{
                       width: "100%",
                     }}
+                    value={formData.address.streetName}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          streetName: text,
+                        },
+                      }))
+                    }
                   />
                 </View>
               </View>
+            </View>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
               <View style={{ flex: 0.48, marginBottom: 12 }}>
                 <Text
                   style={{
@@ -519,7 +598,7 @@ const SignupBusiness = ({ navigation }) => {
                     marginVertical: 8,
                   }}
                 >
-                  Door Number
+                  PostCode
                 </Text>
 
                 <View
@@ -535,12 +614,22 @@ const SignupBusiness = ({ navigation }) => {
                   }}
                 >
                   <TextInput
-                    placeholder="Enter Door Number"
+                    placeholder="Edit District"
                     placeholderTextColor={COLORS.black}
                     keyboardType="numeric"
                     style={{
                       width: "100%",
                     }}
+                    value={String(formData.address.postCode)}
+                    onChangeText={(text) =>
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        address: {
+                          ...prevState.address,
+                          postCode: parseInt(text),
+                        },
+                      }))
+                    }
                   />
                 </View>
               </View>
