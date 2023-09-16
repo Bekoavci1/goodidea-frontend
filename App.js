@@ -7,8 +7,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import BottomTabNavigation from './navigation/BottomTabNavigation'
 import { Login, Signup, Welcome, SignupBusiness,LoginBusiness, BusinessEdit } from "./screens";
+import LogoUpdate from './screens/LogoUpdate'
 import { getToken } from './auth/Auth';
 import React, { useState, useEffect } from 'react';
+import { BusinessIdProvider } from './screens/BusinessIdContext'
 
 const Stack = createNativeStackNavigator();
 
@@ -17,17 +19,6 @@ export default function App() {
 
   // const [initialRoute, setInitialRoute] = useState('');
   const [initialRoute, setInitialRoute] = useState('Welcome');
-
-  // useEffect(() => {
-  //   const checkToken = async () => {
-  //     const token = await getToken();  // Token'ı alın
-  //     if (token) {
-  //       setInitialRoute('BottomTabNavigation');  // Eğer token varsa ana sayfaya yönlendir
-  //     }
-  //     console.log(getToken);
-  //   };
-  //   checkToken();
-  // }, []);
 
 
   useEffect(() => {
@@ -63,69 +54,69 @@ if (!fontsLoaded) {
 }
   
   return (
-    <SafeAreaProvider onLayout={onLayoutRootView}>
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName={initialRoute}
-      >
-        <Stack.Screen
-          name="Welcome"
-          component={Welcome}
-          options={{
-            headerShown: false
-          }}
-        />
-        <Stack.Screen
-          name="Login"
-          component={Login}
-          options={{
-            headerShown: false
-          }}
-        />
-        <Stack.Screen
-          name="Signup"
-          component={Signup}
-          options={{
-            headerShown: false
-          }}
-        />
-        <Stack.Screen
-        // initialRouteName={initialRoute}
-        
-        Updated upstream
-          name="BottomTabNavigation"
-          component={BottomTabNavigation}
-          options={{
-          headerShown: false,
-          }}
-        />
-
-        <Stack.Screen
-          name="SignupBusiness"
-          component={SignupBusiness}
-          options={{
-            headerShown: false
-          }}
-        />
-        <Stack.Screen
-          name="LoginBusiness"
-          component={LoginBusiness}
-          options={{
-            headerShown: false
-          }}
-        />
+    <BusinessIdProvider>
+      <SafeAreaProvider onLayout={onLayoutRootView}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName={initialRoute}
+        >
           <Stack.Screen
-          name="BusinessEdit"
-          component={BusinessEdit}
-          options={{
-            headerShown: false
-          }}
-        />
-        
-        {/* <Stack.Screen name="Profile" component={Profile} />
-        <Stack.Screen name="PhotoDetail" component={PhotoDetail} /> */}
-      </Stack.Navigator>
-    </NavigationContainer>
-    </SafeAreaProvider>
+            name="Welcome"
+            component={Welcome}
+            options={{
+              headerShown: false
+            }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{
+              headerShown: false
+            }}
+          />
+          <Stack.Screen
+            name="Signup"
+            component={Signup}
+            options={{
+              headerShown: false
+            }}
+          />
+          <Stack.Screen
+          // initialRouteName={initialRoute}
+          
+          Updated upstream
+            name="BottomTabNavigation"
+            component={BottomTabNavigation}
+            options={{
+            headerShown: false,
+            }}
+          />
+
+          <Stack.Screen
+            name="SignupBusiness"
+            component={SignupBusiness}
+            options={{
+              headerShown: false
+            }}
+          />
+          <Stack.Screen
+            name="LoginBusiness"
+            component={LoginBusiness}
+            options={{
+              headerShown: false
+            }}
+          />
+            <Stack.Screen
+            name="BusinessEdit"
+            component={BusinessEdit}
+            options={{
+              headerShown: false
+            }}
+          />
+          <Stack.Screen name="LogoUpdate" component={LogoUpdate} />
+        </Stack.Navigator>
+      </NavigationContainer>
+      </SafeAreaProvider>
+    </BusinessIdProvider>
   );
 }

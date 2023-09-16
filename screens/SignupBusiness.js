@@ -21,7 +21,7 @@ import Button from "../components/Button";
 import axios from "axios";
 import { useEffect } from "react";
 import { StyleSheet } from "react-native";
-import ModalDropdown from "react-native-modal-dropdown"; // Import the library
+import ModalDropdown from "react-native-modal-dropdown";
 const SignupBusiness = ({ navigation }) => {
   const [isPasswordShown, setIsPasswordShown] = useState(true);
   const [isPasswordConfirmShown, setIsPasswordConfirmShown] = useState(true);

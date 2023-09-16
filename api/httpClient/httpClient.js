@@ -73,6 +73,30 @@ export default class HTTPClient {
         })
     };
 
+
+
+    authClient = async () => {
+        try {
+            const token = await getToken();
+            console.log("token: ", token);
+            
+            const response = await axios.get("https://goodidea.azurewebsites.net/api/Users/businessprofile", {
+                headers: {
+                    "Authorization": "bearer " + token,
+                },
+            });
+    
+            console.log("httpclient:", response.data);
+            
+            const business = response.data;
+            console.log("business:", business);
+            return business;
+    
+        } catch (error) {
+            console.log("Error:", error);
+        }
+    };
+
     setAuthTokenAccess2 = () => {
         return getToken().then(token =>{
             if (token){
