@@ -43,7 +43,7 @@ const Profile = ({ businessData, route }) => {
                         responsee = await axios.get('https://goodidea.azurewebsites.net/api/Businesses/'+businessData); // {id} kısmını gerçek bir ID ile değiştirmeniz gerekiyor.
                         setUserData(responsee.data);
                     }
-                    // global._businessId = await Promise.all(userData.id);
+                  an;
                     setBusinessId(responsee.data.id);
                     const photoId = responsee.data.photoId;
                     const response = await axios.get('https://goodidea.azurewebsites.net/api/Photos/photos/'+photoId); 

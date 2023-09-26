@@ -1,6 +1,7 @@
 import {
   View,
   Text,
+  Button,
   TouchableOpacity,
   ScrollView,
   FlatList,
@@ -11,6 +12,7 @@ import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome } from "@expo/vector-icons";
 import { COLORS, FONTS, SIZES, images } from "../constants";
+import { Linking } from "react-native";
 import {
   MaterialIcons,
   Ionicons,
@@ -28,37 +30,35 @@ import * as Location from "expo-location";
 import { useEffect } from "react";
 import { HTTP_REQUESTS } from "../api/httpRequestService/httpRequestService";
 import axios from "axios";
-import { useNavigation } from '@react-navigation/native';
-
-const users = [images.user1, images.user2, images.user3, images.user4];
+import { useNavigation } from "@react-navigation/native";
+import {useVeri} from "../screens/LoginBusiness"
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { lati,longi } from "./BusinessIdContext";
+ 
 
 const Feed = () => {
+  //useStateler
+  const [directions, setDirections] = useState([]);
   const [isLiked, setIsLiked] = useState(true);
+  const [lat, setLat] = useState("");
+  const [lng, setLng] = useState("");
   const [likeCount, setLikeCount] = useState(22);
   const [refreshing, setRefreshing] = useState(false);
   const [isMapModalVisible, setMapModalVisible] = useState(false);
-  const openMapModal = () => {
-    setMapModalVisible(true);
-  };
-
-  const closeMapModal = () => {
-    setMapModalVisible(false);
-  };
-
-  const handleLikePress = () => {
-    if (isLiked) {
-      // Eğer beğeni yapılmışsa, beğeni durumunu kaldır ve beğeni sayısını azalt
-      setIsLiked(false);
-      setLikeCount(likeCount - 1);
-    } else {
-      // Eğer beğeni yapılmamışsa, beğeni durumunu aktif et ve beğeni sayısını artır
-      setIsLiked(true);
-      setLikeCount(likeCount + 1);
-    }
-  };
-
-  //   const selectedImageUri = route.params?.selectedImageUri;
-
+  const [address, setAddress] = useState(null);
+  const [postlat, setPostlar] = useState([]);
+  const [photoDataa, setphotoDataa] = useState(null);
+  const [items, setItems] = useState([]);
+  const navigation = useNavigation();
+  const [userData, setUserData] = useState(null);
+  let busines = [];
+  
+ 
+  //users prop
+  const users = [images.user1, images.user2, images.user3, images.user4];
+  //APIler
+  const API_KEY = "AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4";
+  //kaydırma ve refresh olayını sağlayan fonksiyon
   function renderSuggestionsContainer() {
     return (
       <View>
@@ -85,65 +85,201 @@ const Feed = () => {
       </View>
     );
   }
+  
+  //fetch data fonk(post ve business istekleri)
+  const fetchData = async () => {
+   // await getLocationAsync();
+     try {
+      // console.log("burası 6 lati:",lati);
+      // console.log("burası 6 longti:",longi);
 
-  function renderFeedPost() {
-    const [postlat, setPostlar] = useState([]);
-    const [lati, setLatitude] = useState("");
-    const [longi, setLongtitude] = useState("");
-    const [photoDataa, setphotoDataa] = useState(null);
-    const [items, setItems] = useState([]);
-    const navigation = useNavigation();
-    
-
-    // const selectedImageUri = route.params?.selectedImageUri;
-    const [userData, setUserData] = useState(null);
-    async function getLocationAsync() {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.error("Konum izni reddedildi");
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      setLatitude(location.coords.latitude);
-      setLongtitude(location.coords.longitude);
-
-      console.log("lati: ", location.coords.latitude);
-      console.log("longti: ", location.coords.longitude);
-    }
-    useEffect(() => {
-      getLocationAsync();
-      if (lati && longi) {
-        fetchData();
-        
-      }
-      const unsubscribe = navigation.addListener('focus', fetchData); 
-          return () => {
-            unsubscribe();
-          };
-    }, [lati, longi]);
-    
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("https://goodidea.azurewebsites.net/api/posts/getposts?lati=" + lati + "&longi=" + longi);
+      
+      const url = "https://goodidea.azurewebsites.net/api/posts/getposts?lati="+lati+"&longi="+longi;
+      const response = await axios.get(url);
         setPostlar(response.data);
+    // console.log("burası 7 lati:",lati);
+    //   console.log("burası 7 longti:",longi);
 
-        let businessRequests = response.data.flat().map(post => {
-            return axios.get("https://goodidea.azurewebsites.net/api/Businesses/" + post.businessId);
-        });
+    console.log("burası 8");
 
-        let businessResults = await Promise.all(businessRequests);
-        let businessesData = businessResults.map(response => response.data);
-        setItems(prevItems => [...prevItems, ...businessesData]);
+    let businessRequests = response.data.flat().map((post) => {
+      return axios.get(
+        "https://goodidea.azurewebsites.net/api/Businesses/" + post.businessId
+      );
+    });
+    console.log("burası 9");
 
-        businessesData.forEach((item) => {
-            console.log("Received business data:", item);
-        });
+    let businessResults = await Promise.all(businessRequests);
+    console.log("burası 10");
 
-    } catch (error) {
-        console.error("Error fetching data:", error);
+    let businessesData = await Promise.all(businessResults.map((response) => response.data));
+    console.log("burası 11");
+
+    setItems((prevItems) => [...prevItems, ...businessesData]);
+    console.log("burası 12");
+    var i = 0;
+    if (businessesData) {
+      for (const item of businessesData) {
+        console.log("business " + i+ "data",item);
+        busines[i++] = item; // Veriyi eklerken boş bir nesne kullanın
+      }
+      console.log("burası 14");
+
+      console.log("adresi set ettim kankr", address);
+      console.log("burası 15");
+
+      console.log("burası 25");
+
+
+    } else {
+      console.log("Buraya giremediğim için olmadı beler");
     }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+  };
+  ///Harita fonk
 
-    };
+  const navigasyonuAc = () => {
+    const hedefEnlem = lat; // Hedefinizin enlem değerini değiştirin
+    const hedefBoylam = lng; // Hedefinizin boylam değerini değiştirin
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${hedefEnlem},${hedefBoylam}`;
+
+    Linking.openURL(url)
+      .then(() => console.log("Navigasyon başarıyla açıldı"))
+      .catch((error) =>
+        console.error("Navigasyon açılırken hata oluştu", error)
+      );
+  };
+  const getCoordinate = async () => {
+    await fetchData();
+    try {
+      console.log("burası 16");
+      const addressParts = [];
+
+      if (busines[3] && busines[3].address && busines[3].address.streetName !== null) {
+        addressParts.push(busines[3].address.streetName);
+      }
+  
+      if (busines[3] && busines[3].address && busines[3].address.streetNumber !== null) {
+        addressParts.push(busines[3].address.streetNumber);
+      }
+  
+      if (busines[3] && busines[3].address && busines[3].address.buildingNumber !== null) {
+        addressParts.push("no:" + busines[3].address.buildingNumber);
+      }
+  
+      if (busines[3] && busines[3].address && busines[3].address.district !== null) {
+        addressParts.push(busines[3].address.district);
+      }
+  
+      if (busines[3] && busines[3].address && busines[3].address.city !== null) {
+        addressParts.push("/" + busines[3].address.city);
+      }
+  
+      if (busines[3] && busines[3].address && busines[3].address.country !== null) {
+        addressParts.push("/" + busines[3].address.country);
+      }
+  
+      if (busines[3] && busines[3].address && busines[3].address.postCode !== null) {
+        addressParts.push(busines[3].address.postCode);
+      }
+  
+      if (busines[3] && busines[3].name !== null) {
+        addressParts.push(busines[3].name);
+      }
+  
+      console.log("burası 17");
+      const formattedAddress = addressParts.join(" ");
+      console.log("burası 18");
+      console.log("formattedaddress:", formattedAddress);
+      // const addresss = adress.country+adress.city;
+      console.log("burası 19");
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+          formattedAddress
+        )}&key=${API_KEY}`
+      );
+      console.log("burası 20");
+      // let Coordinate = await Promise.all(response);
+      console.log("burası 21");
+
+      if (response.data.results.length > 0) {
+        console.log("burası 22");
+
+        setLat(response.data.results[0].geometry.location.lat);
+        console.log("burası 23");
+
+        setLng(response.data.results[0].geometry.location.lng);
+        console.log("burası 24");
+
+        console.log("aq senin:", lat, " ", lng);
+      } else {
+        throw new Error("Adres bulunamadı.");
+      }
+    } catch (error) {
+      console.error("Geocode hatası:", error);
+      throw error;
+    }
+  };
+  // const getDirections = async () => {
+  //   try {
+  //     // Google Maps Directions API'yi çağırın ve başlangıç ve varış adreslerini belirtin
+  //     const response = await axios.get(
+  //       `https://maps.googleapis.com/maps/api/directions/json?origin=İşçi Blokları, 1495. Sk. No:11, 06530 Çankaya/Ankara&destination=İşçi Blokları, Mahallesi, Öğretmenler Cd. No:14, 06530 Çankaya/Ankara&key=AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4`
+  //     );
+
+  //     // API yanıtındaki rota bilgilerini alın
+  //     const routes = response.data.routes;
+
+  //     // Rota bilgilerini durumda saklayın
+  //     setDirections(routes);
+  //   } catch (error) {
+  //     console.error("Rota alınamadı:", error);
+  //   }
+  // };
+
+  const openMapModal = () => {
+    setMapModalVisible(true);
+  };
+  const closeMapModal = () => {
+    setMapModalVisible(false);
+  };
+
+  //Beğeni fonk
+  const handleLikePress = () => {
+    if (isLiked) {
+      // Eğer beğeni yapılmışsa, beğeni durumunu kaldır ve beğeni sayısını azalt
+      setIsLiked(false);
+      setLikeCount(likeCount - 1);
+    } else {
+      // Eğer beğeni yapılmamışsa, beğeni durumunu aktif et ve beğeni sayısını artır
+      setIsLiked(true);
+      setLikeCount(likeCount + 1);
+    }
+  };
+  // genel view içeren fonk.
+  function renderFeedPost() {
+    useEffect(() => {
+      getCoordinate();
+      //getDirections();
+      const verileriAl = async () => {
+        try {
+  
+          console.log("dsadfsad:",lati," ",longi);
+        } catch (error) {
+          console.error('konumu alamadım aq: ', error);
+        }
+      };
+  
+      verileriAl();
+
+      const unsubscribe = navigation.addListener("focus", fetchData);
+      return () => {
+        unsubscribe();
+      };
+    }, [lati, longi]);
+
     var counter = 0;
     return (
       <View>
@@ -176,21 +312,27 @@ const Feed = () => {
                 }}
               >
                 {/* <Image
-                // source={{ uri: logos[counter].photoUrl }}
-                  style={{
-                    height: 52,
-                    width: 52,
-                    borderRadius: 20,
-                  }}
-                /> */}
+                  // source={{ uri: logos[counter].photoUrl }}
+                    style={{
+                      height: 52,
+                      width: 52,
+                      borderRadius: 20,
+                    }}
+                  /> */}
 
                 <View style={{ marginLeft: 12 }}>
-                <TouchableOpacity onPress={() => navigation.navigate('Profile', { businessId: post.businessId })}>
-                {items[counter] && items[counter].name ? (
-                    <Text style={{ ...FONTS.body2, fontWeight: "bold" }}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("Profile", {
+                        businessId: post.businessId,
+                      })
+                    }
+                  >
+                    {items[counter] && items[counter].name ? (
+                      <Text style={{ ...FONTS.body2, fontWeight: "bold" }}>
                         {items[index].name}
-                    </Text>
-                ) : null}
+                      </Text>
+                    ) : null}
                   </TouchableOpacity>
 
                   <Text
@@ -404,23 +546,40 @@ const Feed = () => {
                   <MapView
                     style={{ flex: 1 }}
                     initialRegion={{
-                      latitude: 37.78825, // İstenilen başlangıç enlem değeri ile değiştirin
-                      longitude: -122.4324, // İstenilen başlangıç boylam değeri ile değiştirin
+                      latitude: lat, // İstediğiniz enlem değeri ile değiştirin
+                      longitude: lng, // İstediğiniz boylam değeri ile değiştirin
                       latitudeDelta: 0.0922,
                       longitudeDelta: 0.0421,
                     }}
                   >
-                    {/* Konum için işaretçi */}
+                    {/* Gönderi konumu için işaretçi */}
                     <Marker
                       coordinate={{
-                        latitude: 37.78825, // Gönderi konumunun enlem değeri ile değiştirin
-                        longitude: -122.4324, // Gönderi konumunun boylam değeri ile değiştirin
+                        latitude: lat, // İstediğiniz enlem değeri ile değiştirin
+                        longitude: lng, // İstediğiniz boylam değeri ile değiştirin
                       }}
                       title="Gönderi Konumu"
                       description="Bu, gönderinin konumudur."
                     />
                   </MapView>
 
+                  <View>
+                    <View>
+                      <Button title="Git" onPress={navigasyonuAc} />
+                    </View>
+                    <Text>Rota Bilgileri:</Text>
+                    {directions.map((route, index) => (
+                      <View key={index}>
+                        <Text>
+                          Adım {index + 1} - Mesafe:{" "}
+                          {route.legs[0].distance.text}
+                        </Text>
+                        <Text>
+                          Adım {index + 1} - Süre: {route.legs[0].duration.text}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
                   {/* Kapatma düğmesi */}
                   <TouchableOpacity
                     onPress={closeMapModal}
@@ -494,5 +653,4 @@ const Feed = () => {
     </SafeAreaView>
   );
 };
-
 export default Feed;

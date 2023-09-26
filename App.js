@@ -6,11 +6,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import BottomTabNavigation from './navigation/BottomTabNavigation'
-import { Login, Signup, Welcome, SignupBusiness,LoginBusiness, BusinessEdit } from "./screens";
+import { Login, Signup, Welcome, SignupBusiness,LoginBusiness, BusinessEdit,Feed } from "./screens";
 import LogoUpdate from './screens/LogoUpdate'
 import { getToken } from './auth/Auth';
 import React, { useState, useEffect } from 'react';
-import { BusinessIdProvider } from './screens/BusinessIdContext'
+import { BusinessIdProvider, LatiLongidProvider } from './screens/BusinessIdContext'
 
 const Stack = createNativeStackNavigator();
 
@@ -55,6 +55,7 @@ if (!fontsLoaded) {
   
   return (
     <BusinessIdProvider>
+      <LatiLongidProvider >
       <SafeAreaProvider onLayout={onLayoutRootView}>
       <NavigationContainer>
         <Stack.Navigator
@@ -91,6 +92,13 @@ if (!fontsLoaded) {
             headerShown: false,
             }}
           />
+           <Stack.Screen
+            name="Feed"
+            component={Feed}
+            options={{
+              headerShown: false
+            }}
+          />
 
           <Stack.Screen
             name="SignupBusiness"
@@ -117,6 +125,7 @@ if (!fontsLoaded) {
         </Stack.Navigator>
       </NavigationContainer>
       </SafeAreaProvider>
+      </LatiLongidProvider>
     </BusinessIdProvider>
   );
 }
