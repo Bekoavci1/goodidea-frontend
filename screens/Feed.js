@@ -33,7 +33,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import {useVeri} from "../screens/LoginBusiness"
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { lati,longi } from "./BusinessIdContext";
+import { useBusinessId } from "./BusinessIdContext";
  
 
 const Feed = () => {
@@ -51,6 +51,9 @@ const Feed = () => {
   const [items, setItems] = useState([]);
   const navigation = useNavigation();
   const [userData, setUserData] = useState(null);
+  const { lati, longi } = useBusinessId(); 
+  let olamq1;
+  let olamq2;
   let busines = [];
   
  
@@ -93,8 +96,9 @@ const Feed = () => {
       // console.log("burası 6 lati:",lati);
       // console.log("burası 6 longti:",longi);
 
-      
-      const url = "https://goodidea.azurewebsites.net/api/posts/getposts?lati="+lati+"&longi="+longi;
+      olamq1=36.710577319030975;
+      olamq2=28.894407302410606;
+      const url = "https://goodidea.azurewebsites.net/api/posts/getposts?lati="+olamq1+"&longi="+olamq2;
       const response = await axios.get(url);
         setPostlar(response.data);
     // console.log("burası 7 lati:",lati);
@@ -152,7 +156,9 @@ const Feed = () => {
       );
   };
   const getCoordinate = async () => {
+
     await fetchData();
+
     try {
       console.log("burası 16");
       const addressParts = [];
@@ -267,6 +273,8 @@ const Feed = () => {
         try {
   
           console.log("dsadfsad:",lati," ",longi);
+          olamq1=lati;
+          olamq2=longi;
         } catch (error) {
           console.error('konumu alamadım aq: ', error);
         }
@@ -278,7 +286,7 @@ const Feed = () => {
       return () => {
         unsubscribe();
       };
-    }, [lati, longi]);
+    }, [olamq1, olamq2]);
 
     var counter = 0;
     return (

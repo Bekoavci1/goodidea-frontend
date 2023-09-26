@@ -19,20 +19,19 @@ import { HTTP_REQUESTS } from "../api/httpRequestService/httpRequestService";
 import COLORS from "../constants/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
+import { useBusinessId } from "./BusinessIdContext";
 
 const Login = ({ navigation }) => {
   const [isPasswordShown, setIsPasswordShown] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [lati, setLati] = useState("");
-  const [longi, setLongi] = useState("");
+  const { lati, longi, setLati, setLongi } = useBusinessId(); 
   const [lati1, setLati1] = useState(null);
   const [longi1, setLongi1] = useState(null);
   const [counter,setCounter] = useState(0);
   const [isLoading, setIsLoading] = useState(false); // Add loading state
-  let lat1;
-  let long1;
+  
 
   const getLocationAsync = () => {
     return new Promise(async (resolve, reject) => {
@@ -46,10 +45,10 @@ const Login = ({ navigation }) => {
         resolve();
         let location = await Location.getCurrentPositionAsync({});
         console.log("lok:", location)
-        lat1 = location.coords.latitude;
-        long1 = location.coords.longitude;
-        console.log("Gerçek lati benim lan:",lat1);
-        console.log("Gerçek longi benim lan:",long1);
+        setLati(location.coords.latitude);
+        setLongi(location.coords.longitude);
+        console.log("Gerçek lati benim lan:",lati);
+        console.log("Gerçek longi benim lan:",longi);
 
 
         // await AsyncStorage.setItem("latigit", lati.toString())
@@ -84,8 +83,8 @@ const Login = ({ navigation }) => {
         // setLongtitude(32.71444633734151);
         // latii = location.coords.latitude;
         // longii = location.coords.longitude;
-        console.log("lati: ", location.coords.latitude);
-        console.log("longti: ", location.coords.longitude);
+        // console.log("lati: ", location.coords.latitude);
+        // console.log("longti: ", location.coords.longitude);
 
         // Konum alma işlemi tamamlandı, resolve ile işlemi bitir
       } catch (error) {
@@ -101,13 +100,13 @@ const Login = ({ navigation }) => {
       { Email: email, Password: password },
       (response) => {
         storeToken(response);
-        if (lati !== null && longi !== null) {
-            setIsLoading(false);
+        if(isLocationReady)  {
+          setIsLoading(false);
             navigation.navigate("BottomTabNavigation");
           } else {
             //getLocationAsync();
-            //setCounter(counter+1);
-            handleLogin();
+            setCounter(counter+1);
+            //handleLogin();
           }
       },
       (error) => {
@@ -117,24 +116,20 @@ const Login = ({ navigation }) => {
       }
     );
   };
-  useEffect(() => {
-    if (lati1 !== null) {
-      setLati1(lati1);
-    }
-  }, [lati]);
+const [isLocationReady, setIsLocationReady] = useState(false);
 
-  useEffect(() => {
-    if (longi1 !== null) {
-      setLongi1(longi1);
-    }
-  }, [longi]);
+useEffect(() => {
+  if(lati && longi) setIsLocationReady(true);
+}, [lati, longi]);
   useEffect(() => {
     getLocationAsync();
+    console.log("Gerçek lati benim lan2:",lati);
+    console.log("Gerçek longi benim lan2:",longi);
     const unsubscribe = navigation.addListener("focus", getLocationAsync);
       return () => {
         unsubscribe();
       };
-  }, []);
+  }, [counter]);
 
   //deneme için dummy data
   // const handleLogin = async () => {

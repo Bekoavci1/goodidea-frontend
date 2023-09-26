@@ -10,7 +10,7 @@ import { Login, Signup, Welcome, SignupBusiness,LoginBusiness, BusinessEdit,Feed
 import LogoUpdate from './screens/LogoUpdate'
 import { getToken } from './auth/Auth';
 import React, { useState, useEffect } from 'react';
-import { BusinessIdProvider, LatiLongidProvider } from './screens/BusinessIdContext'
+import { BusinessIdProvider } from './screens/BusinessIdContext'
 
 const Stack = createNativeStackNavigator();
 
@@ -55,7 +55,6 @@ if (!fontsLoaded) {
   
   return (
     <BusinessIdProvider>
-      <LatiLongidProvider >
       <SafeAreaProvider onLayout={onLayoutRootView}>
       <NavigationContainer>
         <Stack.Navigator
@@ -125,7 +124,6 @@ if (!fontsLoaded) {
         </Stack.Navigator>
       </NavigationContainer>
       </SafeAreaProvider>
-      </LatiLongidProvider>
     </BusinessIdProvider>
   );
 }
