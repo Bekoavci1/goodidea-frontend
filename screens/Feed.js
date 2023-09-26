@@ -34,10 +34,13 @@ import { useNavigation } from "@react-navigation/native";
 import {useVeri} from "../screens/LoginBusiness"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { lati,longi } from "./BusinessIdContext";
+import Spinner from 'react-native-loading-spinner-overlay';
  
 
 const Feed = () => {
   //useStateler
+  const [isLoading, setIsLoading] = useState(true); // Loading durumu
+
   const [directions, setDirections] = useState([]);
   const [isLiked, setIsLiked] = useState(true);
   const [lat, setLat] = useState([]);
@@ -106,6 +109,7 @@ const Feed = () => {
         long1 = location.coords.longitude;
         console.log("Gerçek lati benim lan:",lat1);
         console.log("Gerçek longi benim lan:",long1);
+        
         getCoordinate();
 
         // await AsyncStorage.setItem("latigit", lati.toString())
@@ -152,11 +156,11 @@ const Feed = () => {
   };
   //fetch data fonk(post ve business istekleri)
   const fetchData = async () => {
-   // await getLocationAsync();
+  //  await getLocationAsync();
      try {
       // console.log("burası 6 lati:",lati);
       // console.log("burası 6 longti:",longi);
-
+     
       
       const url = "https://goodidea.azurewebsites.net/api/posts/getposts?lati="+lat1+"&longi="+long1;
       const response = await axios.get(url);
@@ -199,8 +203,12 @@ const Feed = () => {
     } else {
       console.log("Buraya giremediğim için olmadı beler");
     }
+    console.log("kanka postları çektim loadingi kapatcam",businessesData)
+    
+    
   } catch (error) {
     console.error("Error fetching data:", error);
+    
   }
   };
   ///Harita fonk
@@ -218,7 +226,11 @@ const Feed = () => {
   };
   //Kardelen Mah Başkent Bulvarı. No: 224 H, 06370 Yenimahalle/Ankara
   const getCoordinate = async () => {
+    
     await fetchData();
+    
+    setIsLoading(false);
+   
     try {
       console.log("burası 16");
       
@@ -290,6 +302,7 @@ const Feed = () => {
       } else {
         throw new Error("Adres bulunamadı.");
       }
+      
     }
      
     } catch (error) {
@@ -336,7 +349,14 @@ const Feed = () => {
   // genel view içeren fonk.
   function renderFeedPost() {
     useEffect(() => {
+      
+      
+
       getLocationAsync();
+      
+      
+      
+      
       //getDirections();
       const verileriAl = async () => {
         try {
@@ -348,6 +368,7 @@ const Feed = () => {
       };
   
       verileriAl();
+      
 
       const unsubscribe = navigation.addListener("focus", fetchData);
       return () => {
@@ -619,24 +640,24 @@ const Feed = () => {
                 >
                   {/* Harita */}
                   <MapView
-                    style={{ flex: 1 }}
-                    initialRegion={{
-                      latitude: lat[counter], // İstediğiniz enlem değeri ile değiştirin
-                      longitude: lng[counter], // İstediğiniz boylam değeri ile değiştirin
-                      latitudeDelta: 0.0922,
-                      longitudeDelta: 0.0421,
-                    }}
-                  >
-                    {/* Gönderi konumu için işaretçi */}
-                    <Marker
-                      coordinate={{
-                        latitude: lat[counter], // İstediğiniz enlem değeri ile değiştirin
-                        longitude: lng[counter], // İstediğiniz boylam değeri ile değiştirin
-                      }}
-                      title="Gönderi Konumu"
-                      description="Bu, gönderinin konumudur."
-                    />
-                  </MapView>
+  style={{ flex: 1 }}
+  initialRegion={{
+    latitude: lat[counter], // İstediğiniz enlem değeri ile değiştirin
+    longitude: lng[counter], // İstediğiniz boylam değeri ile değiştirin
+    latitudeDelta: 0.01, // Yakınlaştırmayı artırmak veya azaltmak için bu değeri ayarlayın
+    longitudeDelta: 0.01, // Yakınlaştırmayı artırmak veya azaltmak için bu değeri ayarlayın
+  }}
+>
+  {/* Gönderi konumu için işaretçi */}
+  <Marker
+    coordinate={{
+      latitude: lat[counter], // İstediğiniz enlem değeri ile değiştirin
+      longitude: lng[counter], // İstediğiniz boylam değeri ile değiştirin
+    }}
+    title="Gönderi Konumu"
+    description="Bu, gönderinin konumudur."
+  />
+</MapView>
 
                   <View>
                     <View>
@@ -720,6 +741,12 @@ const Feed = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#E7E7E7" }}>
       <View style={{ flex: 1, paddingHorizontal: 22 }}>
+        {/* Show loading spinner when isLoading is true */}
+        <Spinner
+          visible={isLoading}
+          textContent={'Loading...'}
+          textStyle={{ color: '#FFF' }}
+        />
         <ScrollView>
           {renderSuggestionsContainer()}
           {renderFeedPost()}

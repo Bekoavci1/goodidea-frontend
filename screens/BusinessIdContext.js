@@ -14,11 +14,9 @@ export const useLatiLongi = () => {
 
 export const BusinessIdProvider = ({ children }) => {
     const [businessId, setBusinessId] = useState(null);
-    const [lati, setLati] = useState(null);
-    const [longi, setLongi] = useState(null);
 
     return (
-        <BusinessIdContext.Provider value={{ businessId, setBusinessId,lati, setLati, longi, setLongi }}>
+        <BusinessIdContext.Provider value={{ businessId, setBusinessId }}>
             {children}
         </BusinessIdContext.Provider>
     )
