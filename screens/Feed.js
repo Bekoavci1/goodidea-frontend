@@ -33,7 +33,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import {useVeri} from "../screens/LoginBusiness"
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useBusinessId } from "./BusinessIdContext";
+import { lati,longi } from "./BusinessIdContext";
  
 
 const Feed = () => {
@@ -51,10 +51,10 @@ const Feed = () => {
   const [items, setItems] = useState([]);
   const navigation = useNavigation();
   const [userData, setUserData] = useState(null);
-  const { lati, longi } = useBusinessId(); 
-  let olamq1;
-  let olamq2;
   let busines = [];
+  let lat1;
+  let long1;
+
   
  
   //users prop
@@ -88,7 +88,66 @@ const Feed = () => {
       </View>
     );
   }
-  
+  const getLocationAsync = () => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          console.log("Konum izni reddedildi");
+          reject("Konum izni reddedildi");
+          return;
+        }
+        resolve();
+        let location = await Location.getCurrentPositionAsync({});
+        console.log("lok:", location)
+        lat1 = location.coords.latitude;
+        long1 = location.coords.longitude;
+        console.log("Gerçek lati benim lan:",lat1);
+        console.log("Gerçek longi benim lan:",long1);
+        getCoordinate();
+
+        // await AsyncStorage.setItem("latigit", lati.toString())
+        //   .then(async () => {
+        //     // This code will run after the setItem operation is complete
+        //     const lati11 = await AsyncStorage.getItem("latigit");
+        //     console.log("amq seninde",lati11)
+        //     setLati1(lati11);
+        //     console.log("lati1", lati1);
+        //   })
+        //   .catch((error) => {
+        //     console.error(
+        //       "Error setting or getting AsyncStorage values1:",
+        //       error
+        //     );
+        //   });
+        // await AsyncStorage.setItem("longigit", longi.toString())
+        //   .then(async () => {
+        //     // This code will run after the setItem operation is complete
+        //     const longi11 = await AsyncStorage.getItem("longigit");
+        //     console.log("amq",longi11)
+        //     setLongi1(longi11);
+        //     console.log("longi1", longi1);
+        //   })
+        //   .catch((error) => {
+        //     console.error(
+        //       "Error setting or getting AsyncStorage values2:",
+        //       error
+        //     );
+        //   });
+        // setLatitude(39.99598364966966);
+        // setLongtitude(32.71444633734151);
+        // latii = location.coords.latitude;
+        // longii = location.coords.longitude;
+        // console.log("lati: ", location.coords.latitude);
+        // console.log("longti: ", location.coords.longitude);
+
+        // Konum alma işlemi tamamlandı, resolve ile işlemi bitir
+      } catch (error) {
+        console.error("Konum alınamadı:", error);
+        reject(error);
+      }
+    });
+  };
   //fetch data fonk(post ve business istekleri)
   const fetchData = async () => {
    // await getLocationAsync();
@@ -96,9 +155,8 @@ const Feed = () => {
       // console.log("burası 6 lati:",lati);
       // console.log("burası 6 longti:",longi);
 
-      olamq1=36.710577319030975;
-      olamq2=28.894407302410606;
-      const url = "https://goodidea.azurewebsites.net/api/posts/getposts?lati="+olamq1+"&longi="+olamq2;
+      
+      const url = "https://goodidea.azurewebsites.net/api/posts/getposts?lati="+lat1+"&longi="+long1;
       const response = await axios.get(url);
         setPostlar(response.data);
     // console.log("burası 7 lati:",lati);
@@ -156,9 +214,7 @@ const Feed = () => {
       );
   };
   const getCoordinate = async () => {
-
     await fetchData();
-
     try {
       console.log("burası 16");
       const addressParts = [];
@@ -267,14 +323,12 @@ const Feed = () => {
   // genel view içeren fonk.
   function renderFeedPost() {
     useEffect(() => {
-      getCoordinate();
+      getLocationAsync();
       //getDirections();
       const verileriAl = async () => {
         try {
   
           console.log("dsadfsad:",lati," ",longi);
-          olamq1=lati;
-          olamq2=longi;
         } catch (error) {
           console.error('konumu alamadım aq: ', error);
         }
@@ -286,7 +340,7 @@ const Feed = () => {
       return () => {
         unsubscribe();
       };
-    }, [olamq1, olamq2]);
+    }, [lat1, long1]);
 
     var counter = 0;
     return (

@@ -19,95 +19,25 @@ import { HTTP_REQUESTS } from "../api/httpRequestService/httpRequestService";
 import COLORS from "../constants/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
-import { useBusinessId } from "./BusinessIdContext";
 
 const Login = ({ navigation }) => {
   const [isPasswordShown, setIsPasswordShown] = useState(true);
   const [isChecked, setIsChecked] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { lati, longi, setLati, setLongi } = useBusinessId(); 
-  const [lati1, setLati1] = useState(null);
-  const [longi1, setLongi1] = useState(null);
-  const [counter,setCounter] = useState(0);
   const [isLoading, setIsLoading] = useState(false); // Add loading state
-  
-
-  const getLocationAsync = () => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          console.log("Konum izni reddedildi");
-          reject("Konum izni reddedildi");
-          return;
-        }
-        resolve();
-        let location = await Location.getCurrentPositionAsync({});
-        console.log("lok:", location)
-        setLati(location.coords.latitude);
-        setLongi(location.coords.longitude);
-        console.log("Gerçek lati benim lan:",lati);
-        console.log("Gerçek longi benim lan:",longi);
-
-
-        // await AsyncStorage.setItem("latigit", lati.toString())
-        //   .then(async () => {
-        //     // This code will run after the setItem operation is complete
-        //     const lati11 = await AsyncStorage.getItem("latigit");
-        //     console.log("amq seninde",lati11)
-        //     setLati1(lati11);
-        //     console.log("lati1", lati1);
-        //   })
-        //   .catch((error) => {
-        //     console.error(
-        //       "Error setting or getting AsyncStorage values1:",
-        //       error
-        //     );
-        //   });
-        // await AsyncStorage.setItem("longigit", longi.toString())
-        //   .then(async () => {
-        //     // This code will run after the setItem operation is complete
-        //     const longi11 = await AsyncStorage.getItem("longigit");
-        //     console.log("amq",longi11)
-        //     setLongi1(longi11);
-        //     console.log("longi1", longi1);
-        //   })
-        //   .catch((error) => {
-        //     console.error(
-        //       "Error setting or getting AsyncStorage values2:",
-        //       error
-        //     );
-        //   });
-        // setLatitude(39.99598364966966);
-        // setLongtitude(32.71444633734151);
-        // latii = location.coords.latitude;
-        // longii = location.coords.longitude;
-        // console.log("lati: ", location.coords.latitude);
-        // console.log("longti: ", location.coords.longitude);
-
-        // Konum alma işlemi tamamlandı, resolve ile işlemi bitir
-      } catch (error) {
-        console.error("Konum alınamadı:", error);
-        reject(error);
-      }
-    });
-  };
+ 
+ 
 
   const handleLogin = () => {
-    setIsLoading(true);
+  
     HTTP_REQUESTS.USER_SERVICE.LOGIN_BUSINESS(
       { Email: email, Password: password },
       (response) => {
         storeToken(response);
-        if(isLocationReady)  {
-          setIsLoading(false);
+        
             navigation.navigate("BottomTabNavigation");
-          } else {
-            //getLocationAsync();
-            setCounter(counter+1);
-            //handleLogin();
-          }
+  
       },
       (error) => {
         setIsLoading(false);
@@ -116,20 +46,10 @@ const Login = ({ navigation }) => {
       }
     );
   };
-const [isLocationReady, setIsLocationReady] = useState(false);
-
-useEffect(() => {
-  if(lati && longi) setIsLocationReady(true);
-}, [lati, longi]);
+ 
   useEffect(() => {
-    getLocationAsync();
-    console.log("Gerçek lati benim lan2:",lati);
-    console.log("Gerçek longi benim lan2:",longi);
-    const unsubscribe = navigation.addListener("focus", getLocationAsync);
-      return () => {
-        unsubscribe();
-      };
-  }, [counter]);
+    
+  }, []);
 
   //deneme için dummy data
   // const handleLogin = async () => {
