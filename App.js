@@ -54,8 +54,9 @@ if (!fontsLoaded) {
 }
   
   return (
-    <BusinessIdProvider>
+    
       <SafeAreaProvider onLayout={onLayoutRootView}>
+        <BusinessIdProvider>
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName={initialRoute}
@@ -123,7 +124,7 @@ if (!fontsLoaded) {
           <Stack.Screen name="LogoUpdate" component={LogoUpdate} />
         </Stack.Navigator>
       </NavigationContainer>
+      </BusinessIdProvider>
       </SafeAreaProvider>
-    </BusinessIdProvider>
   );
 }

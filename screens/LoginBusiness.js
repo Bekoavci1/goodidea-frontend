@@ -33,11 +33,10 @@ const Login = ({ navigation }) => {
   
     HTTP_REQUESTS.USER_SERVICE.LOGIN_BUSINESS(
       { Email: email, Password: password },
-      (response) => {
-        storeToken(response);
-        
-            navigation.navigate("BottomTabNavigation");
-  
+      async (response) => {
+          console.log("response LOGIN_BUSINESS**123 : ",response)
+          await storeToken(response);
+          navigation.navigate("BottomTabNavigation");
       },
       (error) => {
         setIsLoading(false);

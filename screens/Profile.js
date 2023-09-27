@@ -18,7 +18,8 @@ const TaggedRoute = () => (
     <View style={{ flex: 1, backfaceColor: 'blue' }}></View>
 )
 
-const Profile = ({ businessData, route }) => {
+const Profile = ({ businessData,route,isOwner }) => {
+    console.log("route : ",route)
     const [userData, setUserData] = useState(null);
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
@@ -27,23 +28,19 @@ const Profile = ({ businessData, route }) => {
 
     function renderProfileCard() {   
         const [photoDataa, setphotoDataa] = useState(null);
-        const selectedImageUri = route.params?.selectedImageUri;
-        const businessId = route.params?.businessId; 
+        const selectedImageUri = route ? route.params?.selectedImageUri : ""
+        const businessId = businessData ? businessData.id : route ? route.params?.businessId : "false"
+        const isOwnerValue = isOwner ? isOwner : route ? route.params?.isOwner : false
         const { setBusinessId } = useBusinessId();
         const navigation = useNavigation();
         useEffect(() => {
             const fetchData = async () => {
                 try {
+                    console.log("businessId : ",businessId)
+                    console.log("isOwnerValue : ",isOwnerValue)
                     var responsee = "asd";
-                    if(businessId){
-                        responsee = await axios.get('https://goodidea.azurewebsites.net/api/Businesses/'+businessId); // {id} kısmını gerçek bir ID ile değiştirmeniz gerekiyor.
-                        setUserData(responsee.data);
-                    }
-                    else{ 
-                        responsee = await axios.get('https://goodidea.azurewebsites.net/api/Businesses/'+businessData); // {id} kısmını gerçek bir ID ile değiştirmeniz gerekiyor.
-                        setUserData(responsee.data);
-                    }
-                  ;
+                    responsee = await axios.get('https://goodidea.azurewebsites.net/api/Businesses/'+businessId); // {id} kısmını gerçek bir ID ile değiştirmeniz gerekiyor.
+                    setUserData(responsee.data);
                     setBusinessId(responsee.data.id);
                     const photoId = responsee.data.photoId;
                     const response = await axios.get('https://goodidea.azurewebsites.net/api/Photos/photos/'+photoId); 
@@ -129,14 +126,15 @@ const Profile = ({ businessData, route }) => {
                                 {userData.name}
                                 </Text>
                             </View>
-
-                            <Feather
-                                name="edit"
-                                size={24}
-                                color={COLORS.black}
-                                onPress={() => navigation.navigate('BusinessEdit')}
-
-                            />
+                            {
+                                isOwnerValue ? 
+                                 <Feather
+                                    name="edit"
+                                    size={24}
+                                    color={COLORS.black}
+                                    onPress={() => navigation.navigate('BusinessEdit')}
+                                /> : null
+                            }
                         </View>
 
                         <View

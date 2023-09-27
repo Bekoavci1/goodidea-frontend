@@ -8,9 +8,9 @@ import {
 } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { COLORS } from "../constants";
-import { Chat, Create, Feed, Notifications, Profile as ProfileScreen } from "../screens";
+import { Chat, Create, Feed, Notifications, Profile } from "../screens";
 import { LinearGradient } from "expo-linear-gradient";
-import HTTPClient from "../api/httpClient/httpClient";
+import { getLoggedInUserData } from "../auth/Auth";
 
 const Tab = createBottomTabNavigator();
 
@@ -33,22 +33,14 @@ const screenOptions = {
 
 
 const BottomTabNavigation = () => {
-
-    const Profile = (props) => {
-        return <ProfileScreen {...props} businessData={businessData.id} />;
-      };
-
-  const [businessData, setBusinessData] = useState(null);
+  const [businessData, setBusinessData] = useState({id:""});
   const [loading, setLoading] = useState(true);
-  const runAsyncFunction = async () => {
-    let client = new HTTPClient();
-    const data = await client.authClient();
-    setBusinessData(data);
-    setLoading(false);
-    console.log("businessData.role:", businessData.role);
-  };
   useEffect(() => {
-    runAsyncFunction();
+    getLoggedInUserData().then((userDataStr)=>{
+      const userData = JSON.parse(userDataStr)
+      setBusinessData(userData)
+      setLoading(false);
+    })
   }, []);
   if (loading) {
   } else {
@@ -129,7 +121,7 @@ const BottomTabNavigation = () => {
         {businessData && businessData.role === "Business" && (
           <Tab.Screen
             name="Profile"
-            component={Profile}
+            children={()=><Profile businessData={businessData} isOwner={true}/>}
             // {props => <Profile {...props} businessId={businessData.id} />}
             // children={() => <Profile businessData={businessData.id} />}
             options={{

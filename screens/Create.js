@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
-import HTTPClient from "../api/httpClient/httpClient";
 import { useNavigation } from '@react-navigation/native';
 
 export default function ImagePickerExample() {
@@ -66,10 +65,9 @@ export default function ImagePickerExample() {
     data.append('Photo.BusinessId', formData.PhotoBusinessId);
     data.append('Photo.Id', formData.photoId);
     data.append('Photo.ImageFile', formData.PhotoImageFile);
-    let client = new HTTPClient();
-    const token = await client.setAuthTokenAccess2();
+
     axios
-      .post("https://goodidea.azurewebsites.net/api/posts", data, {
+      .post("https://goodidea.azurewebsites31.net/api/posts", data, {
         headers: {
           "Content-Type": "multipart/form-data",
           "Accept": "multipart/form-data",

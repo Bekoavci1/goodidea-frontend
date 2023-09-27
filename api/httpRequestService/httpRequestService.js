@@ -1,6 +1,6 @@
 import HTTPClient from "../httpClient/httpClient";
 const mainPath = 'https://goodidea.azurewebsites.net/api'
-                //  'https://goodidea.azurewebsites.net/api/register-user'
+                //  'https://goodidea.azurewebsites.net/api/register-user' 
 export const HTTP_REQUESTS =
 {
     USER_SERVICE:
@@ -55,7 +55,7 @@ export const HTTP_REQUESTS =
         // },
         BUSINESS_EDIT_PROFILE_PUT: (registerCredentials,successCallback,errorCallback)=>{
             let client              = new HTTPClient();
-            client.requestPath      = mainPath+'/Businesses/1'
+            client.requestPath      = mainPath+'/Businesses/'+runAsyncFunction();
             client.requestType      = HTTPClient.REQUEST_TYPE.PUT;
             client.successCallback  = successCallback;
             client.failCallback     = errorCallback;
