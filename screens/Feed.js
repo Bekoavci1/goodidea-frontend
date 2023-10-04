@@ -233,7 +233,7 @@ const Feed = () => {
   const getCoordinate = async () => {
     await fetchData();
 
-    setIsLoading(false);
+    
 
     try {
       console.log("burası 16");
@@ -346,6 +346,7 @@ const Feed = () => {
           throw new Error("Adres bulunamadı.");
         }
       }
+      setIsLoading(false);
     } catch (error) {
       console.error("Geocode hatası:", error);
       throw error;
