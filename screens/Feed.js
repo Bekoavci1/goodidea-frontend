@@ -371,7 +371,7 @@ const Feed = () => {
                         fontWeight: "bold",
                       }}
                     >
-                      {late[index] + " " + longe[index]}
+                      {post.contentDescription || "#NoDescription"}
                     </Text>
                   </View>
                 </View>
@@ -686,17 +686,21 @@ const Feed = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#E7E7E7" }}>
       <View style={{ flex: 1, paddingHorizontal: 22 }}>
         {/* Show loading spinner when isLoading is true */}
-        <Spinner
-          visible={isLoading}
-          textContent={"Loading..."}
-          textStyle={{ color: "#FFF" }}
-        />
-        <ScrollView>
-          {renderSuggestionsContainer()}
-          {renderFeedPost()}
-        </ScrollView>
+       
+          <Spinner
+            visible={isLoading}
+            textContent={"Loading..."}
+            textStyle={{ color: "#FFF" }}
+          />
+      
+          <ScrollView>
+            {renderSuggestionsContainer()}
+            {renderFeedPost()}
+          </ScrollView>
+       
       </View>
     </SafeAreaView>
   );
+  
 };
 export default Feed;
