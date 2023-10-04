@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   ScrollView,
   Alert,
+  Keyboard,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,6 +20,9 @@ import { HTTP_REQUESTS } from "../api/httpRequestService/httpRequestService";
 import COLORS from "../constants/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
+import SecureStorage from "react-native-secure-storage";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+
 
 const Login = ({ navigation }) => {
   const [isPasswordShown, setIsPasswordShown] = useState(true);
@@ -27,10 +31,36 @@ const Login = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Add loading state
  
- 
+  const getLocationAsync = () => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          console.log("Konum izni reddedildi");
+          reject("Konum izni reddedildi");
+          return;
+        }
+        resolve();
+        let location = await Location.getCurrentPositionAsync({});
+        console.log("lok:", location);
+       
+        // console.log("Gerçek lati benim lan:", lat1);
+        // console.log("Gerçek longi benim lan:", long1);
+        await AsyncStorage.setItem('lats', location.coords.latitude.toString());
+await AsyncStorage.setItem('longs', location.coords.longitude.toString());
+
+      } catch (error) {
+        console.error("Konum alınamadı:", error);
+        reject(error);
+      }
+    });
+  };
 
   const handleLogin = () => {
-  
+    setTimeout(() => {
+      Keyboard.dismiss();
+    }, 100);
+
     HTTP_REQUESTS.USER_SERVICE.LOGIN_BUSINESS(
       { Email: email, Password: password },
       async (response) => {
@@ -47,7 +77,7 @@ const Login = ({ navigation }) => {
   };
  
   useEffect(() => {
-    
+    getLocationAsync();
   }, []);
 
   //deneme için dummy data
@@ -86,7 +116,7 @@ const Login = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps='handled'>
         <View style={{ flex: 1, marginHorizontal: 22 }}>
           <View style={{ marginVertical: 22 }}>
             <Text
