@@ -36,6 +36,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { lati, longi } from "./BusinessIdContext";
 import Spinner from "react-native-loading-spinner-overlay";
 import { useMemo } from "react";
+import SecureStorage from "react-native-secure-storage";
 
 const Feed = () => {
   //useStateler
@@ -56,8 +57,8 @@ const Feed = () => {
   const [items, setItems] = useState([]);
   const navigation = useNavigation();
   const [userData, setUserData] = useState(null);
-  const [late,setLate] = useState([]);
-  const [longe,setLonge] = useState([]);
+  const [late, setLate] = useState([]);
+  const [longe, setLonge] = useState([]);
   let busines = [];
   let lat1;
   let long1;
@@ -95,69 +96,9 @@ const Feed = () => {
       </View>
     );
   }
-  const getLocationAsync = () => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          console.log("Konum izni reddedildi");
-          reject("Konum izni reddedildi");
-          return;
-        }
-        resolve();
-        let location = await Location.getCurrentPositionAsync({});
-        console.log("lok:", location);
-        lat1 = location.coords.latitude;
-        long1 = location.coords.longitude;
-        console.log("Gerçek lati benim lan:", lat1);
-        console.log("Gerçek longi benim lan:", long1);
 
-        await getCoordinate();
-
-        // await AsyncStorage.setItem("latigit", lati.toString())
-        //   .then(async () => {
-        //     // This code will run after the setItem operation is complete
-        //     const lati11 = await AsyncStorage.getItem("latigit");
-        //     console.log("amq seninde",lati11)
-        //     setLati1(lati11);
-        //     console.log("lati1", lati1);
-        //   })
-        //   .catch((error) => {
-        //     console.error(
-        //       "Error setting or getting AsyncStorage values1:",
-        //       error
-        //     );
-        //   });
-        // await AsyncStorage.setItem("longigit", longi.toString())
-        //   .then(async () => {
-        //     // This code will run after the setItem operation is complete
-        //     const longi11 = await AsyncStorage.getItem("longigit");
-        //     console.log("amq",longi11)
-        //     setLongi1(longi11);
-        //     console.log("longi1", longi1);
-        //   })
-        //   .catch((error) => {
-        //     console.error(
-        //       "Error setting or getting AsyncStorage values2:",
-        //       error
-        //     );
-        //   });
-        // setLatitude(39.99598364966966);
-        // setLongtitude(32.71444633734151);
-        // latii = location.coords.latitude;
-        // longii = location.coords.longitude;
-        // console.log("lati: ", location.coords.latitude);
-        // console.log("longti: ", location.coords.longitude);
-
-        // Konum alma işlemi tamamlandı, resolve ile işlemi bitir
-      } catch (error) {
-        console.error("Konum alınamadı:", error);
-        reject(error);
-      }
-    });
-  };
   //fetch data fonk(post ve business istekleri)
-  const fetchData = async () => {
+  const fetchData = async (lats, longs) => {
     //  await getLocationAsync();
     try {
       // console.log("burası 6 lati:",lati);
@@ -165,13 +106,11 @@ const Feed = () => {
 
       const url =
         "https://goodidea.azurewebsites.net/api/posts/getposts?lati=" +
-        lat1 +
+        lats +
         "&longi=" +
-        long1;
+        longs;
       const response = await axios.get(url);
       setPostlar(response.data);
-      // console.log("burası 7 lati:",lati);
-      //   console.log("burası 7 longti:",longi);
 
       console.log("burası 8");
 
@@ -217,7 +156,7 @@ const Feed = () => {
   const navigasyonuAc = (index) => {
     const hedefEnlem = late[index]; // Hedefinizin enlem değerini değiştirin
     const hedefBoylam = longe[index]; // Hedefinizin boylam değerini değiştirin
-    console.log("vbvnbc",latArray[index]," ",longArray[index]);
+    console.log("vbvnbc", latArray[index], " ", longArray[index]);
     const url = `https://www.google.com/maps/dir/?api=1&destination=${hedefEnlem},${hedefBoylam}`;
 
     Linking.openURL(url)
@@ -227,147 +166,102 @@ const Feed = () => {
       );
   };
 
-  
   //Kardelen Mah Başkent Bulvarı. No: 224 H, 06370 Yenimahalle/Ankara
   var counter = 0;
   const getCoordinate = async () => {
-    await fetchData();
-
-    
-
+    const lats = await AsyncStorage.getItem("lats");
+    const longs = await AsyncStorage.getItem("longs");
+    const addresses = [];
+    await fetchData(lats, longs);
     try {
-      console.log("burası 16");
-
-      for (var i = 0; i < busines.length; i++) {
-        const addressParts = [];
-        if (
-          busines[i] &&
-          busines[i].address &&
-          busines[i].address.streetName !== null
-        ) {
-          addressParts.push(busines[i].address.streetName);
-        }
-
-        if (
-          busines[i] &&
-          busines[i].address &&
-          busines[i].address.streetNumber !== null
-        ) {
-          addressParts.push(busines[i].address.streetNumber);
-        }
-
-        if (
-          busines[i] &&
-          busines[i].address &&
-          busines[i].address.buildingNumber !== null
-        ) {
-          addressParts.push("no:" + busines[i].address.buildingNumber);
-        }
-
-        if (
-          busines[i] &&
-          busines[i].address &&
-          busines[i].address.district !== null
-        ) {
-          addressParts.push(busines[i].address.district);
-        }
-
-        if (
-          busines[i] &&
-          busines[i].address &&
-          busines[i].address.city !== null
-        ) {
-          addressParts.push("/" + busines[i].address.city);
-        }
-
-        if (
-          busines[i] &&
-          busines[i].address &&
-          busines[i].address.country !== null
-        ) {
-          addressParts.push("/" + busines[i].address.country);
-        }
-
-        if (
-          busines[i] &&
-          busines[i].address &&
-          busines[i].address.postCode !== null
-        ) {
-          addressParts.push(busines[i].address.postCode);
-        }
-
-        if (busines[i] && busines[i].name !== null) {
-          addressParts.push(busines[i].name);
-        }
-        console.log("burası 17");
-        const formattedAddress = addressParts.join(" ");
-        console.log("burası 18");
-        console.log("formattedaddress:", formattedAddress);
-        // const addresss = adress.country+adress.city;
-        console.log("burası 19");
-        const response = await axios.get(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-            formattedAddress
-          )}&key=${API_KEY}`
-        );
-        console.log("burası 20");
-        // let Coordinate = await Promise.all(response);
-        console.log("burası 21");
-
-        if (response.data.results.length > 0) {
-          console.log("burası 22");
-          latArray[i] = response.data.results[0].geometry.location.lat;
-          console.log(latArray[i])
-          console.log("burası 23");
-
-          longArray[i] = response.data.results[0].geometry.location.lng;
-          console.log(longArray[i])
-          if(busines.length -1 == i){
-            
+      const latArray = [];
+      const longArray = [];
+      for (let i = 0; i < busines.length; i++) {
+        const business = busines[i];
+        if (business && business.address) {
+          const addressParts = [];
+          if (
+            busines[i] &&
+            busines[i].address &&
+            busines[i].address.streetName !== null
+          ) {
+            addressParts.push(busines[i].address.streetName);
           }
-          console.log("burası 24");
-          console.log("asd: ", lat, "fdsf: ", lng);
 
-          console.log("aq senin:", i, " ", latArray[i], " ", longArray[i]);
-          console.log(
-            "gelen toplu:",
-            i,
-            " ",
-            latArray,
-            "sende öylesin: ",
-            longArray
+          if (
+            busines[i] &&
+            busines[i].address &&
+            busines[i].address.streetNumber !== null
+          ) {
+            addressParts.push(busines[i].address.streetNumber);
+          }
+
+          if (
+            busines[i] &&
+            busines[i].address &&
+            busines[i].address.buildingNumber !== null
+          ) {
+            addressParts.push("no:" + busines[i].address.buildingNumber);
+          }
+
+          if (
+            busines[i] &&
+            busines[i].address &&
+            busines[i].address.district !== null
+          ) {
+            addressParts.push(busines[i].address.district);
+          }
+
+          if (
+            busines[i] &&
+            busines[i].address &&
+            busines[i].address.city !== null
+          ) {
+            addressParts.push("/" + busines[i].address.city);
+          }
+
+          if (
+            busines[i] &&
+            busines[i].address &&
+            busines[i].address.country !== null
+          ) {
+            addressParts.push("/" + busines[i].address.country);
+          }
+
+          if (
+            busines[i] &&
+            busines[i].address &&
+            busines[i].address.postCode !== null
+          ) {
+            addressParts.push(busines[i].address.postCode);
+          }
+
+          if (busines[i] && busines[i].name !== null) {
+            addressParts.push(busines[i].name);
+          }
+          console.log("burası 17");
+          const formattedAddress = addressParts.join(" ");
+          addresses.push(formattedAddress);
+
+          const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+              addresses.join("|")
+            )}&key=${API_KEY}`
           );
-          if(busines.length -1 == i ){
-            setLate([...latArray]);
-            setLonge([...longArray]);
+          if (response.data.results.length > 0) {
+            latArray[i] = response.data.results[0].geometry.location.lat;
+            longArray[i] = response.data.results[0].geometry.location.lng;
           }
-          
-        } else {
-          throw new Error("Adres bulunamadı.");
         }
       }
+      setLate([...latArray]);
+      setLonge([...longArray]);
       setIsLoading(false);
     } catch (error) {
       console.error("Geocode hatası:", error);
       throw error;
     }
   };
-  // const getDirections = async () => {
-  //   try {
-  //     // Google Maps Directions API'yi çağırın ve başlangıç ve varış adreslerini belirtin
-  //     const response = await axios.get(
-  //       `https://maps.googleapis.com/maps/api/directions/json?origin=İşçi Blokları, 1495. Sk. No:11, 06530 Çankaya/Ankara&destination=İşçi Blokları, Mahallesi, Öğretmenler Cd. No:14, 06530 Çankaya/Ankara&key=AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4`
-  //     );
-
-  //     // API yanıtındaki rota bilgilerini alın
-  //     const routes = response.data.routes;
-
-  //     // Rota bilgilerini durumda saklayın
-  //     setDirections(routes);
-  //   } catch (error) {
-  //     console.error("Rota alınamadı:", error);
-  //   }
-  // };
 
   const openMapModal = () => {
     setMapModalVisible(true);
@@ -391,7 +285,8 @@ const Feed = () => {
   // genel view içeren fonk.
   function renderFeedPost() {
     useEffect(() => {
-      getLocationAsync();
+      // getLocationAsync();
+      getCoordinate();
       //getDirections();
       const verileriAl = async () => {
         try {
@@ -403,7 +298,7 @@ const Feed = () => {
       verileriAl();
       setLng(longArray);
       setLat(latArray);
-      console.log(late,"wasda",longe);
+      console.log(late, "wasda", longe);
 
       const unsubscribe = navigation.addListener("focus", fetchData);
       return () => {
@@ -413,86 +308,10 @@ const Feed = () => {
 
     var counter = 0;
     return (
-      <View 
-       
-      >
-        
-        {postlat.flat().map((post, index) => (
-       
-          <View
-            
-            style={{
-              backgroundColor: "#fff",
-              flexDirection: "column",
-              width: "100%",
-              borderRadius: 26,
-              borderWidth: 1,
-              borderColor: "#fff",
-              marginVertical: 12,
-            }}
-          >
-            {/* Post header */}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginTop: 8,
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginHorizontal: 8,
-                }}
-              >
-                {/* <Image
-                  // source={{ uri: logos[counter].photoUrl }}
-                    style={{
-                      height: 52,
-                      width: 52,
-                      borderRadius: 20,
-                    }}
-                  /> */}
-
-                <View style={{ marginLeft: 12 }}>
-                  <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate("Profile", {
-                        businessId: post.businessId,
-                        isOwner: false,
-                      })
-                    }
-                  >
-                    {items[counter] && items[counter].name ? (
-                      <Text style={{ ...FONTS.body2, fontWeight: "bold" }}>
-                        {items[index].name}
-                      </Text>
-                    ) : null}
-                  </TouchableOpacity>
-
-                  <Text
-                    style={{
-                      ...FONTS.body4,
-                      color: COLORS.primary,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {(late[index]+ " "+ longe[index])}
-                  </Text>
-                </View>
-              </View>
-
-              <MaterialCommunityIcons
-                name="dots-vertical"
-                size={24}
-                color={COLORS.black}
-              />
-            </View>
-
-            {/* Post content */}
-
+      <View>
+        {postlat
+          .flat()
+          .map((post, index) => (
             <View
               style={{
                 backgroundColor: "#fff",
@@ -504,289 +323,362 @@ const Feed = () => {
                 marginVertical: 12,
               }}
             >
-              {/* Post content */}
+              {/* Post header */}
               <View
                 style={{
-                  marginHorizontal: 8,
-                  marginVertical: 8,
-                }}
-              >
-                {/* Görsel */}
-                <Image
-                  source={{ uri: post.photo.photoUrl }} // İlgili gönderinin resim kaynağına göre güncelleyin
-                  style={{
-                    width: "100%",
-                    height: 200, // İstenilen yükseklik
-                    borderRadius: 20,
-                  }}
-                />
-              </View>
-
-              {/* Diğer gönderi içeriği */}
-              <View
-                style={{
-                  marginHorizontal: 8,
                   flexDirection: "row",
+                  justifyContent: "space-between",
                   alignItems: "center",
-                }}
-                onLayout={()=>{
-                  counter2++;
-                  console.log("COUNTERININDA MK", counter2);
-                  console.log("veriler as:", latArray);
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    fontFamily: "regular",
-                    color: COLORS.primary,
-                    marginLeft: 4,
-                  }}
-                >
-                    <TouchableOpacity onPress={() => navigasyonuAc(index)}>
-                    <Text
-                      style={{
-                        marginTop: 20,
-                        fontSize: 18,
-                        color: COLORS.primary,
-                      }}
-                    >
-                      <Ionicons
-                        name="location-outline"
-                        size={21}
-                        color={COLORS.primary}
-                      />
-                      <Text>Open With Maps</Text>
-                    </Text>
-                  </TouchableOpacity>
-                </Text>
-              </View>
-            </View>
-
-            {/* Posts likes and comments */}
-
-            <View
-              style={{
-                marginHorizontal: 8,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                paddingBottom: 6,
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
+                  marginTop: 8,
                 }}
               >
                 <View
                   style={{
                     flexDirection: "row",
-                    marginRight: SIZES.padding2,
+                    alignItems: "center",
+                    marginHorizontal: 8,
+                  }}
+                >
+                  {/* <Image
+                  // source={{ uri: logos[counter].photoUrl }}
+                    style={{
+                      height: 52,
+                      width: 52,
+                      borderRadius: 20,
+                    }}
+                  /> */}
+
+                  <View style={{ marginLeft: 12 }}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("Profile", {
+                          businessId: post.businessId,
+                          isOwner: false,
+                        })
+                      }
+                    >
+                      {items[counter] && items[counter].name ? (
+                        <Text style={{ ...FONTS.body2, fontWeight: "bold" }}>
+                          {items[index].name}
+                        </Text>
+                      ) : null}
+                    </TouchableOpacity>
+
+                    <Text
+                      style={{
+                        ...FONTS.body4,
+                        color: COLORS.primary,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {late[index] + " " + longe[index]}
+                    </Text>
+                  </View>
+                </View>
+
+                <MaterialCommunityIcons
+                  name="dots-vertical"
+                  size={24}
+                  color={COLORS.black}
+                />
+              </View>
+
+              {/* Post content */}
+
+              <View
+                style={{
+                  backgroundColor: "#fff",
+                  flexDirection: "column",
+                  width: "100%",
+                  borderRadius: 26,
+                  borderWidth: 1,
+                  borderColor: "#fff",
+                  marginVertical: 12,
+                }}
+              >
+                {/* Post content */}
+                <View
+                  style={{
+                    marginHorizontal: 8,
+                    marginVertical: 8,
+                  }}
+                >
+                  {/* Görsel */}
+                  <Image
+                    source={{ uri: post.photo.photoUrl }} // İlgili gönderinin resim kaynağına göre güncelleyin
+                    style={{
+                      width: "100%",
+                      height: 200, // İstenilen yükseklik
+                      borderRadius: 20,
+                    }}
+                  />
+                </View>
+
+                {/* Diğer gönderi içeriği */}
+                <View
+                  style={{
+                    marginHorizontal: 8,
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                  onLayout={() => {
+                    counter2++;
+                    console.log("COUNTERININDA MK", counter2);
+                    console.log("veriler as:", latArray);
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontFamily: "regular",
+                      color: COLORS.primary,
+                      marginLeft: 4,
+                    }}
+                  >
+                    <TouchableOpacity onPress={() => navigasyonuAc(index)}>
+                      <Text
+                        style={{
+                          marginTop: 20,
+                          fontSize: 18,
+                          color: COLORS.primary,
+                        }}
+                      >
+                        <Ionicons
+                          name="location-outline"
+                          size={21}
+                          color={COLORS.primary}
+                        />
+                        <Text>Open With Maps</Text>
+                      </Text>
+                    </TouchableOpacity>
+                  </Text>
+                </View>
+              </View>
+
+              {/* Posts likes and comments */}
+
+              <View
+                style={{
+                  marginHorizontal: 8,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  paddingBottom: 6,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
                   }}
                 >
                   <View
                     style={{
-                      marginHorizontal: 8,
                       flexDirection: "row",
+                      marginRight: SIZES.padding2,
+                    }}
+                  >
+                    <View
+                      style={{
+                        marginHorizontal: 8,
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      <TouchableOpacity onPress={() => handleLikePress()}>
+                        <Animatable.View
+                          animation={isLiked ? "pulse" : undefined}
+                          duration={300}
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                          }}
+                        >
+                          <View>
+                            <FontAwesome
+                              name={isLiked ? "heart" : "heart-o"}
+                              size={20}
+                              color={isLiked ? "red" : "black"}
+                              onPress={() => handleLikePress()}
+                            />
+                          </View>
+                          <Text>{likeCount} Beğeni</Text>
+                        </Animatable.View>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+
                       alignItems: "center",
                     }}
                   >
-                    <TouchableOpacity onPress={() => handleLikePress()}>
-                      <Animatable.View
-                        animation={isLiked ? "pulse" : undefined}
-                        duration={300}
+                    <MaterialCommunityIcons
+                      name="message-text-outline"
+                      size={20}
+                      color={COLORS.black}
+                    />
+                    <Text style={{ ...FONTS.body4, marginLeft: 2 }}>22</Text>
+                  </View>
+                </View>
+
+                <View style={{ flexDirection: "row" }}>
+                  <View>
+                    <Text style={{ ...FONTS.body4, fontWeight: "bold" }}>
+                      Liked By 340
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginLeft: 10,
+                    }}
+                  >
+                    {users.map((user, index) => (
+                      <Image
+                        source={user}
+                        key={index}
                         style={{
-                          flexDirection: "row",
-                          alignItems: "center",
+                          width: 25,
+                          height: 25,
+                          borderRadius: 999,
+                          borderWidth: 1,
+                          borderColor: "#fff",
+                          marginLeft: -5,
                         }}
-                      >
-                        <View>
-                          <FontAwesome
-                            name={isLiked ? "heart" : "heart-o"}
-                            size={20}
-                            color={isLiked ? "red" : "black"}
-                            onPress={() => handleLikePress()}
-                          />
+                      />
+                    ))}
+                  </View>
+                </View>
+              </View>
+
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isMapModalVisible}
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  }}
+                >
+                  <View
+                    style={{
+                      width: "80%",
+                      aspectRatio: 1, // Kare boyut
+                      borderRadius: 20,
+                      overflow: "hidden",
+                    }}
+                  >
+                    {/* Harita */}
+                    <MapView
+                      style={{ flex: 1 }}
+                      initialRegion={{
+                        latitude: late[index], // İstediğiniz enlem değeri ile değiştirin
+                        longitude: longe[index], // İstediğiniz boylam değeri ile değiştirin
+                        latitudeDelta: 0.01, // Yakınlaştırmayı artırmak veya azaltmak için bu değeri ayarlayın
+                        longitudeDelta: 0.01, // Yakınlaştırmayı artırmak veya azaltmak için bu değeri ayarlayın
+                      }}
+                    >
+                      {/* {console.log("index",index)} */}
+                      {/* {console.log("latierhan:",index, late[index]," longiemre ",longe[index])} */}
+                      {/* Gönderi konumu için işaretçi */}
+                      <Marker
+                        coordinate={{
+                          latitude: late[index], // İstediğiniz enlem değeri ile değiştirin
+                          longitude: longe[index], // İstediğiniz boylam değeri ile değiştirin
+                        }}
+                        title="Gönderi Konumu"
+                        description="Bu, gönderinin konumudur."
+                      />
+                      {/* {console.log("latimarker:", late[index]," longi marker",longe[index])} */}
+                    </MapView>
+
+                    <View>
+                      <View>
+                        <Button title="Git" />
+                      </View>
+
+                      <Text>Rota Bilgileri:</Text>
+                      {directions.map((route, index) => (
+                        <View key={index}>
+                          <Text>
+                            Adım {index + 1} - Mesafe:{" "}
+                            {route.legs[0].distance.text}
+                          </Text>
+                          <Text>
+                            Adım {index + 1} - Süre:{" "}
+                            {route.legs[0].duration.text}
+                          </Text>
                         </View>
-                        <Text>{likeCount} Beğeni</Text>
-                      </Animatable.View>
+                      ))}
+                    </View>
+                    {/* Kapatma düğmesi */}
+                    <TouchableOpacity
+                      onPress={closeMapModal}
+                      style={{
+                        position: "absolute",
+                        top: 16,
+                        right: 16,
+                        backgroundColor: "rgba(255, 255, 255, 0.8)",
+                        borderRadius: 20,
+                        padding: 10,
+                      }}
+                    >
+                      <Text style={{ fontSize: 16, color: COLORS.primary }}>
+                        Kapat
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 </View>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-
-                    alignItems: "center",
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="message-text-outline"
-                    size={20}
-                    color={COLORS.black}
-                  />
-                  <Text style={{ ...FONTS.body4, marginLeft: 2 }}>22</Text>
-                </View>
-              </View>
-
-              <View style={{ flexDirection: "row" }}>
-                <View>
-                  <Text style={{ ...FONTS.body4, fontWeight: "bold" }}>
-                    Liked By 340
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginLeft: 10,
-                  }}
-                >
-                  {users.map((user, index) => (
-                    <Image
-                      source={user}
-                      key={index}
-                      style={{
-                        width: 25,
-                        height: 25,
-                        borderRadius: 999,
-                        borderWidth: 1,
-                        borderColor: "#fff",
-                        marginLeft: -5,
-                      }}
-                    />
-                  ))}
-                </View>
-              </View>
-            </View>
-
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={isMapModalVisible}
-            >
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: "rgba(0, 0, 0, 0.5)",
-                }}
-              >
-                <View
-                  style={{
-                    width: "80%",
-                    aspectRatio: 1, // Kare boyut
-                    borderRadius: 20,
-                    overflow: "hidden",
-                  }}
-                >
-                  {/* Harita */}
-                  <MapView
-                    style={{ flex: 1 }}
-                    
-                    initialRegion={{
-                      latitude: late[index], // İstediğiniz enlem değeri ile değiştirin
-                      longitude: longe[index], // İstediğiniz boylam değeri ile değiştirin
-                      latitudeDelta: 0.01, // Yakınlaştırmayı artırmak veya azaltmak için bu değeri ayarlayın
-                      longitudeDelta: 0.01, // Yakınlaştırmayı artırmak veya azaltmak için bu değeri ayarlayın
-                    }}
-                  >
-                    {console.log("index",index)}
-                    {/* {console.log("latierhan:",index, late[index]," longiemre ",longe[index])} */}
-                    {/* Gönderi konumu için işaretçi */}
-                    <Marker
-                      coordinate={{
-
-                        latitude: late[index], // İstediğiniz enlem değeri ile değiştirin
-                        longitude: longe[index], // İstediğiniz boylam değeri ile değiştirin
-                      }}
-                      title="Gönderi Konumu"
-                      description="Bu, gönderinin konumudur."
-                    />
-                    {/* {console.log("latimarker:", late[index]," longi marker",longe[index])} */}
-                  </MapView>
-
-                  <View>
-                    <View>
-                      <Button title="Git" />
-                    </View>
-
-                    <Text>Rota Bilgileri:</Text>
-                    {directions.map((route, index) => (
-                      <View key={index}>
-                        <Text>
-                          Adım {index + 1} - Mesafe:{" "}
-                          {route.legs[0].distance.text}
-                        </Text>
-                        <Text>
-                          Adım {index + 1} - Süre: {route.legs[0].duration.text}
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-                  {/* Kapatma düğmesi */}
-                  <TouchableOpacity
-                    onPress={closeMapModal}
-                    style={{
-                      position: "absolute",
-                      top: 16,
-                      right: 16,
-                      backgroundColor: "rgba(255, 255, 255, 0.8)",
-                      borderRadius: 20,
-                      padding: 10,
-                    }}
-                  >
-                    <Text style={{ fontSize: 16, color: COLORS.primary }}>
-                      Kapat
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </Modal>
-
-            <View
-              style={{
-                flexDirection: "row",
-                marginHorizontal: 8,
-                paddingVertical: 18,
-                borderTopWidth: 1,
-                borderTopColor: "#FDF6ED",
-              }}
-            >
-              <Image
-                source={images.user2}
-                resizeMode="contain"
-                style={{
-                  height: 52,
-                  width: 52,
-                  borderRadius: 26,
-                }}
-              />
+              </Modal>
 
               <View
                 style={{
-                  flex: 1,
-                  height: 52,
-                  borderRadius: 26,
-                  borderWidth: 1,
-                  borderColor: "#CCC",
-                  marginLeft: 12,
-                  paddingLeft: 12,
-                  justifyContent: "center",
+                  flexDirection: "row",
+                  marginHorizontal: 8,
+                  paddingVertical: 18,
+                  borderTopWidth: 1,
+                  borderTopColor: "#FDF6ED",
                 }}
               >
-                <TextInput
-                  placeholder="Add a comment"
-                  placeholderTextColor="#CCC"
+                <Image
+                  source={images.user2}
+                  resizeMode="contain"
+                  style={{
+                    height: 52,
+                    width: 52,
+                    borderRadius: 26,
+                  }}
                 />
+
+                <View
+                  style={{
+                    flex: 1,
+                    height: 52,
+                    borderRadius: 26,
+                    borderWidth: 1,
+                    borderColor: "#CCC",
+                    marginLeft: 12,
+                    paddingLeft: 12,
+                    justifyContent: "center",
+                  }}
+                >
+                  <TextInput
+                    placeholder="Add a comment"
+                    placeholderTextColor="#CCC"
+                  />
+                </View>
               </View>
             </View>
-          </View>
-        )).reverse()}
+          ))
+          .reverse()}
       </View>
     );
   }
