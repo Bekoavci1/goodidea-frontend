@@ -35,12 +35,14 @@ import { useVeri } from "../screens/LoginBusiness";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { lati, longi } from "./BusinessIdContext";
 import Spinner from "react-native-loading-spinner-overlay";
+import { useMemo } from "react";
 
 const Feed = () => {
   //useStateler
   const [mapLocation, setMapLocation] = useState({ latitude: 0, longitude: 0 });
   const [isLoading, setIsLoading] = useState(true); // Loading durumu
   let counter2 = -1;
+  let counter3 = 0;
   const [directions, setDirections] = useState([]);
   const [isLiked, setIsLiked] = useState(true);
   const [lat, setLat] = useState([]);
@@ -54,6 +56,8 @@ const Feed = () => {
   const [items, setItems] = useState([]);
   const navigation = useNavigation();
   const [userData, setUserData] = useState(null);
+  const [late,setLate] = useState([]);
+  const [longe,setLonge] = useState([]);
   let busines = [];
   let lat1;
   let long1;
@@ -108,7 +112,7 @@ const Feed = () => {
         console.log("Gerçek lati benim lan:", lat1);
         console.log("Gerçek longi benim lan:", long1);
 
-        getCoordinate();
+        await getCoordinate();
 
         // await AsyncStorage.setItem("latigit", lati.toString())
         //   .then(async () => {
@@ -210,9 +214,10 @@ const Feed = () => {
   };
   ///Harita fonk
 
-  const navigasyonuAc = () => {
-    const hedefEnlem = lat[5]; // Hedefinizin enlem değerini değiştirin
-    const hedefBoylam = lng[5]; // Hedefinizin boylam değerini değiştirin
+  const navigasyonuAc = (index) => {
+    const hedefEnlem = late[index]; // Hedefinizin enlem değerini değiştirin
+    const hedefBoylam = longe[index]; // Hedefinizin boylam değerini değiştirin
+    console.log("vbvnbc",latArray[index]," ",longArray[index]);
     const url = `https://www.google.com/maps/dir/?api=1&destination=${hedefEnlem},${hedefBoylam}`;
 
     Linking.openURL(url)
@@ -221,6 +226,8 @@ const Feed = () => {
         console.error("Navigasyon açılırken hata oluştu", error)
       );
   };
+
+  
   //Kardelen Mah Başkent Bulvarı. No: 224 H, 06370 Yenimahalle/Ankara
   var counter = 0;
   const getCoordinate = async () => {
@@ -310,24 +317,31 @@ const Feed = () => {
         if (response.data.results.length > 0) {
           console.log("burası 22");
           latArray[i] = response.data.results[0].geometry.location.lat;
-
+          console.log(latArray[i])
           console.log("burası 23");
 
           longArray[i] = response.data.results[0].geometry.location.lng;
-
-         
+          console.log(longArray[i])
+          if(busines.length -1 == i){
+            
+          }
           console.log("burası 24");
           console.log("asd: ", lat, "fdsf: ", lng);
 
           console.log("aq senin:", i, " ", latArray[i], " ", longArray[i]);
           console.log(
-            "amcıksın:",
+            "gelen toplu:",
             i,
             " ",
             latArray,
             "sende öylesin: ",
             longArray
           );
+          if(busines.length -1 == i ){
+            setLate([...latArray]);
+            setLonge([...longArray]);
+          }
+          
         } else {
           throw new Error("Adres bulunamadı.");
         }
@@ -388,6 +402,7 @@ const Feed = () => {
       verileriAl();
       setLng(longArray);
       setLat(latArray);
+      console.log(late,"wasda",longe);
 
       const unsubscribe = navigation.addListener("focus", fetchData);
       return () => {
@@ -396,12 +411,13 @@ const Feed = () => {
     }, []);
 
     var counter = 0;
-    const [ol,setOl]=useState(-1);
     return (
       <View 
        
       >
+        
         {postlat.flat().map((post, index) => (
+       
           <View
             
             style={{
@@ -462,7 +478,7 @@ const Feed = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    {post.contentDescription || "#NoDescription"}
+                    {(late[index]+ " "+ longe[index])}
                   </Text>
                 </View>
               </View>
@@ -526,7 +542,7 @@ const Feed = () => {
                     marginLeft: 4,
                   }}
                 >
-                  <TouchableOpacity onPress={() => openMapModal()}>
+                    <TouchableOpacity onPress={() => navigasyonuAc(index)}>
                     <Text
                       style={{
                         marginTop: 20,
@@ -672,27 +688,32 @@ const Feed = () => {
                     style={{ flex: 1 }}
                     
                     initialRegion={{
-                      latitude: lat[5], // İstediğiniz enlem değeri ile değiştirin
-                      longitude: lng[5], // İstediğiniz boylam değeri ile değiştirin
+                      latitude: late[index], // İstediğiniz enlem değeri ile değiştirin
+                      longitude: longe[index], // İstediğiniz boylam değeri ile değiştirin
                       latitudeDelta: 0.01, // Yakınlaştırmayı artırmak veya azaltmak için bu değeri ayarlayın
                       longitudeDelta: 0.01, // Yakınlaştırmayı artırmak veya azaltmak için bu değeri ayarlayın
                     }}
                   >
+                    {console.log("index",index)}
+                    {/* {console.log("latierhan:",index, late[index]," longiemre ",longe[index])} */}
                     {/* Gönderi konumu için işaretçi */}
                     <Marker
                       coordinate={{
-                        latitude: lat[5], // İstediğiniz enlem değeri ile değiştirin
-                        longitude: lng[5], // İstediğiniz boylam değeri ile değiştirin
+
+                        latitude: late[index], // İstediğiniz enlem değeri ile değiştirin
+                        longitude: longe[index], // İstediğiniz boylam değeri ile değiştirin
                       }}
                       title="Gönderi Konumu"
                       description="Bu, gönderinin konumudur."
                     />
+                    {/* {console.log("latimarker:", late[index]," longi marker",longe[index])} */}
                   </MapView>
 
                   <View>
                     <View>
-                      <Button title="Git" onPress={navigasyonuAc} />
+                      <Button title="Git" />
                     </View>
+
                     <Text>Rota Bilgileri:</Text>
                     {directions.map((route, index) => (
                       <View key={index}>
@@ -764,7 +785,7 @@ const Feed = () => {
               </View>
             </View>
           </View>
-        ))}
+        )).reverse()}
       </View>
     );
   }
