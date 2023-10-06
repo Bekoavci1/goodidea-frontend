@@ -1,5 +1,6 @@
 import * as SecureStore from 'expo-secure-store'
 import axios from 'axios';
+import { useState } from 'react';
 
 authClient = async (token) => {
     console.log("authClient : ",token)
@@ -56,14 +57,16 @@ export const getLoggedInUserData = () => {
     }
 };
 
-export const getToken = () => {
+export const getToken = async () => {
     try {
-        return SecureStore.getItemAsync('accessToken')
+      const userDataa = await SecureStore.getItemAsync('accessToken');
+      console.log('accessTokenas :', userDataa);
+      return userDataa;
     } catch (error) {
-        console.error("Token alınırken hata:", error);
-        throw error
+      console.error('Token alınırken hata:', error);
+      throw error;
     }
-};
+  };
 
 export const removeToken = () => {
     try {

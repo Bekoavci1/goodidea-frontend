@@ -68,8 +68,6 @@ export default class HTTPClient {
     setAuthTokenAccess = () => {
         return getToken().then(token =>{
             if (token){
-                // this._token = token;
-                // return token;
                 return axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             }
         })
@@ -104,7 +102,7 @@ export default class HTTPClient {
 
 
     _build = () => {
-        const headers = { 'Accept': this._acceptType, 'Authorization': `Bearer ${this._token}`};
+        const headers = { 'Content-Type': this._contentType, 'Accept': this._acceptType};
         const params = this._formData ? this._formData : this._params;
         this._promise = null;
         switch (this._reqType) {
@@ -185,5 +183,4 @@ HTTPClient.RESPONSE_TYPE = {
 HTTPClient.ACCEPT = {
     DEFAULT: "application/json, text/plain, */*",
     JSON: "application/json,*/*",
-    MULTIPART: "multipart/form-data"
 };

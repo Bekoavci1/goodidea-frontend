@@ -79,12 +79,15 @@ const BusinessEdit = ({ navigation }) => {
         }
       },
       (error) => {
-        // console.error("bilgileri çekemedik:", error);
+        console.error("bilgileri çekemedik:", error);
       }
     );
   }, []);
 
   const handleUpdate = () => {
+    if(formData.address.postCode == "" || formData.address.postCode == null){
+      formData.address.postCode = 0;
+    }
     HTTP_REQUESTS.USER_SERVICE.BUSINESS_EDIT_PROFILE_PUT(
       formData,
       (response) => {
@@ -94,7 +97,7 @@ const BusinessEdit = ({ navigation }) => {
       },
       (error) => {
         console.log(error)
-        Alert.alert("Error", "write your current password.");
+        Alert.alert("Error","özge kızarsa kötü olur.");
       }
     );
   };

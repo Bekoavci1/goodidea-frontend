@@ -67,6 +67,7 @@ const Login = ({ navigation }) => {
           console.log("response LOGIN_BUSINESS**123 : ",response)
           await storeToken(response);
           navigation.navigate("BottomTabNavigation");
+          setIsLoading(false);
       },
       (error) => {
         setIsLoading(false);

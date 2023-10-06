@@ -37,7 +37,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { lati, longi } from "./BusinessIdContext";
 import Spinner from "react-native-loading-spinner-overlay";
 import { useMemo } from "react";
-import SecureStorage from "react-native-secure-storage";
+import { getLoggedInUserData } from "../auth/Auth";
+import * as SecureStore from 'expo-secure-store'
 
 const Feed = () => {
   //useStateler
@@ -105,7 +106,6 @@ const Feed = () => {
     try {
       // //console.log("burası 6 lati:",lati);
       // //console.log("burası 6 longti:",longi);
-
       const url =
         "https://goodidea.azurewebsites.net/api/posts/getposts?lati=" +
         lats +
@@ -114,13 +114,14 @@ const Feed = () => {
       const response = await axios.get(url);
       setPostlar(response.data);
 
-      ////console.log("burası 8");
-
+       ////console.log("burası 8");
+       
       let businessRequests = response.data.flat().map((post) => {
         return axios.get(
           "https://goodidea.azurewebsites.net/api/Businesses/" + post.businessId
         );
       });
+
       //console.log("burası 9");
 
       let businessResults = await Promise.all(businessRequests);
@@ -315,6 +316,12 @@ const Feed = () => {
     useEffect(() => {
       // getLocationAsync();
       getCoordinate();
+      // SecureStore.getItemAsync('userData').then((userDataa) => {
+      //   console.log("sadsaf",userDataa)
+      // setUserData(JSON.parse(userDataa))
+      //   console.log("434rfef",userData.id)
+
+      // })
       //getDirections();
       const verileriAl = async () => {
         try {
@@ -326,6 +333,8 @@ const Feed = () => {
       verileriAl();
       setLng(longArray);
       setLat(latArray);
+      var logged = getLoggedInUserData();
+      console.log("loggedInUserData:",logged );
       //console.log(late, "wasda", longe);
 
       const unsubscribe = navigation.addListener("focus", fetchData);
@@ -340,7 +349,8 @@ const Feed = () => {
         {postlat
           .flat()
           .map((post, index) => (
-            <View
+            <View 
+              key={index}
               style={{
                 backgroundColor: "#fff",
                 flexDirection: "column",
@@ -377,20 +387,13 @@ const Feed = () => {
                   /> */}
 
                   <View style={{ marginLeft: 12 }}>
-                    <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate("Profile", {
-                          businessId: post.businessId,
-                          isOwner: false,
-                        })
-                      }
-                    >
-                      {items[counter] && items[counter].name ? (
-                        <Text style={{ ...FONTS.body2, fontWeight: "bold" }}>
-                          {items[index].name}
-                        </Text>
-                      ) : null}
-                    </TouchableOpacity>
+                  <TouchableOpacity onPress={() => navigation.navigate('Profile', { businessId: post.businessId })}>
+                {items[counter] && items[counter].name ? (
+                    <Text style={{ ...FONTS.body2, fontWeight: "bold" }}>
+                        {items[index].name}
+                    </Text>
+                ) : null}
+                  </TouchableOpacity>
 
                     <Text
                       style={{
