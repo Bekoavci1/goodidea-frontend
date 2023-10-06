@@ -9,8 +9,10 @@ import {
   Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import axios from "axios";
 import { useNavigation } from '@react-navigation/native';
+import { HTTP_REQUESTS } from "../api/httpRequestService/httpRequestService";
+import HTTPClient from "../api/httpClient/httpClient";
+import axios from "axios";
 
 export default function ImagePickerExample() {
   const navigation = useNavigation();
@@ -66,8 +68,24 @@ export default function ImagePickerExample() {
     data.append('Photo.Id', formData.photoId);
     data.append('Photo.ImageFile', formData.PhotoImageFile);
 
+  //   HTTP_REQUESTS.USER_SERVICE.POST_CREATE(
+  //     { formData:data },
+  //     async (response) => {
+  //         console.log("giriş yaptım : ",response)
+  //         console.log(data);
+  //         navigation.navigate("BottomTabNavigation");
+  //     },
+  //     (error) => {
+  //       setIsLoading(false);
+  //       console.error("Giriş hatası:", error);
+  //       Alert.alert("The Post unsuccsess!");
+  //     }
+  //   );
+  // };
+  let client = new HTTPClient();
+  const token = await client.setAuthTokenAccess2();
     axios
-      .post("https://goodidea.azurewebsites31.net/api/posts", data, {
+      .post("https://goodidea.azurewebsites.net/api/posts", data, {
         headers: {
           "Content-Type": "multipart/form-data",
           "Accept": "multipart/form-data",
@@ -76,7 +94,7 @@ export default function ImagePickerExample() {
       })
       .then((response) => {
         console.log("Success:", response.data);
-        navigation.navigate("Feed");
+        navigation.navigate("Profile");
       })
       .catch((error) => {
         console.log("Error:", error);

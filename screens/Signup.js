@@ -13,7 +13,7 @@ import {
   Button as RNButton,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import DateTimePicker from "@react-native-community/datetimepicker";
+// import DateTimePicker from "@react-native-community/datetimepicker";
 import COLORS from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
@@ -591,7 +591,7 @@ const Signup = ({ navigation }) => {
           
         </View>
 
-        {showDatePicker && (
+        {/* {showDatePicker && (
           <View>
             <DateTimePicker
               value={date}
@@ -617,7 +617,7 @@ const Signup = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
           </View>
-        )}
+        )} */}
       </View>
       <View
           style={{

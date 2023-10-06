@@ -92,6 +92,18 @@ export const HTTP_REQUESTS =
             client.timeout          = 20000; // 5 seconds
             client.send();
         },
+        // POST_CREATE: (successCallback, errorCallback, formData) => {
+        //     let client = new HTTPClient();
+        //     client.requestPath = mainPath + '/posts';
+        //     client.requestType = HTTPClient.REQUEST_TYPE.POST;
+        //     client.successCallback = successCallback;
+        //     client.failCallback = errorCallback;
+        //     client.timeout = 20000; // 5 seconds
+        //     client.contentType = "multipart/form-data",
+        //     client.acceptType = "multipart/form-data",
+        //     client.formData = formData;
+        //     client.send();
+        // },
         GET_ALL: (calendarId,search, successCallback, errorCallback) => {
             let searchParams = new URLSearchParams();
             if(search){

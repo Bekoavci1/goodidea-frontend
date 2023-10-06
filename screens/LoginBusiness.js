@@ -47,7 +47,7 @@ const Login = ({ navigation }) => {
         // console.log("Gerçek lati benim lan:", lat1);
         // console.log("Gerçek longi benim lan:", long1);
         await AsyncStorage.setItem('lats', location.coords.latitude.toString());
-await AsyncStorage.setItem('longs', location.coords.longitude.toString());
+        await AsyncStorage.setItem('longs', location.coords.longitude.toString());
 
       } catch (error) {
         console.error("Konum alınamadı:", error);
