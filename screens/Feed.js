@@ -7,6 +7,7 @@ import {
   FlatList,
   Image,
   TextInput,
+  RefreshControl
 } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -59,6 +60,7 @@ const Feed = () => {
   const [userData, setUserData] = useState(null);
   const [late, setLate] = useState([]);
   const [longe, setLonge] = useState([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   let busines = [];
   let lat1;
   let long1;
@@ -101,8 +103,8 @@ const Feed = () => {
   const fetchData = async (lats, longs) => {
     //  await getLocationAsync();
     try {
-      // console.log("burası 6 lati:",lati);
-      // console.log("burası 6 longti:",longi);
+      // //console.log("burası 6 lati:",lati);
+      // //console.log("burası 6 longti:",longi);
 
       const url =
         "https://goodidea.azurewebsites.net/api/posts/getposts?lati=" +
@@ -112,41 +114,41 @@ const Feed = () => {
       const response = await axios.get(url);
       setPostlar(response.data);
 
-      console.log("burası 8");
+      ////console.log("burası 8");
 
       let businessRequests = response.data.flat().map((post) => {
         return axios.get(
           "https://goodidea.azurewebsites.net/api/Businesses/" + post.businessId
         );
       });
-      console.log("burası 9");
+      //console.log("burası 9");
 
       let businessResults = await Promise.all(businessRequests);
-      console.log("burası 10");
+      //console.log("burası 10");
 
       let businessesData = await Promise.all(
         businessResults.map((response) => response.data)
       );
-      console.log("burası 11");
+      //console.log("burası 11");
 
       setItems((prevItems) => [...prevItems, ...businessesData]);
-      console.log("burası 12");
+      //console.log("burası 12");
       var i = 0;
       if (businessesData) {
         for (const item of businessesData) {
-          console.log("business " + i + "data", item);
+          //console.log("business " + i + "data", item);
           busines[i++] = item; // Veriyi eklerken boş bir nesne kullanın
         }
-        console.log("burası 14");
+        //console.log("burası 14");
 
-        console.log("adresi set ettim kankr", address);
-        console.log("burası 15");
+        //console.log("adresi set ettim kankr", address);
+        //console.log("burası 15");
 
-        console.log("burası 25");
+        //console.log("burası 25");
       } else {
-        console.log("Buraya giremediğim için olmadı beler");
+        //console.log("Buraya giremediğim için olmadı beler");
       }
-      console.log("kanka postları çektim loadingi kapatcam", businessesData);
+      //console.log("kanka postları çektim loadingi kapatcam", businessesData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -156,7 +158,8 @@ const Feed = () => {
   const navigasyonuAc = (index) => {
     const hedefEnlem = late[index]; // Hedefinizin enlem değerini değiştirin
     const hedefBoylam = longe[index]; // Hedefinizin boylam değerini değiştirin
-    console.log("vbvnbc", latArray[index], " ", longArray[index]);
+    //console.log("vbvnbc", latArray[index], " ", longArray[index]);
+    //console.log("navigasyonAç  lat:"+late[index]+" long:"+longe[index])
     const url = `https://www.google.com/maps/dir/?api=1&destination=${hedefEnlem},${hedefBoylam}`;
 
     Linking.openURL(url)
@@ -174,89 +177,114 @@ const Feed = () => {
     const addresses = [];
     await fetchData(lats, longs);
     try {
-      const latArray = [];
-      const longArray = [];
-      for (let i = 0; i < busines.length; i++) {
-        const business = busines[i];
-        if (business && business.address) {
-          const addressParts = [];
-          if (
-            busines[i] &&
-            busines[i].address &&
-            busines[i].address.streetName !== null
-          ) {
-            addressParts.push(busines[i].address.streetName);
-          }
+      //console.log("burası 16");
 
-          if (
-            busines[i] &&
-            busines[i].address &&
-            busines[i].address.streetNumber !== null
-          ) {
-            addressParts.push(busines[i].address.streetNumber);
-          }
+      for (var i = 0; i < busines.length; i++) {
+        const addressParts = [];
+        if (
+          busines[i] &&
+          busines[i].address &&
+          busines[i].address.streetName !== null
+        ) {
+          addressParts.push(busines[i].address.streetName);
+        }
 
-          if (
-            busines[i] &&
-            busines[i].address &&
-            busines[i].address.buildingNumber !== null
-          ) {
-            addressParts.push("no:" + busines[i].address.buildingNumber);
-          }
+        if (
+          busines[i] &&
+          busines[i].address &&
+          busines[i].address.streetNumber !== null
+        ) {
+          addressParts.push(busines[i].address.streetNumber);
+        }
 
-          if (
-            busines[i] &&
-            busines[i].address &&
-            busines[i].address.district !== null
-          ) {
-            addressParts.push(busines[i].address.district);
-          }
+        if (
+          busines[i] &&
+          busines[i].address &&
+          busines[i].address.buildingNumber !== null
+        ) {
+          addressParts.push("no:" + busines[i].address.buildingNumber);
+        }
 
-          if (
-            busines[i] &&
-            busines[i].address &&
-            busines[i].address.city !== null
-          ) {
-            addressParts.push("/" + busines[i].address.city);
-          }
+        if (
+          busines[i] &&
+          busines[i].address &&
+          busines[i].address.district !== null
+        ) {
+          addressParts.push(busines[i].address.district);
+        }
 
-          if (
-            busines[i] &&
-            busines[i].address &&
-            busines[i].address.country !== null
-          ) {
-            addressParts.push("/" + busines[i].address.country);
-          }
+        if (
+          busines[i] &&
+          busines[i].address &&
+          busines[i].address.city !== null
+        ) {
+          addressParts.push("/" + busines[i].address.city);
+        }
 
-          if (
-            busines[i] &&
-            busines[i].address &&
-            busines[i].address.postCode !== null
-          ) {
-            addressParts.push(busines[i].address.postCode);
-          }
+        if (
+          busines[i] &&
+          busines[i].address &&
+          busines[i].address.country !== null
+        ) {
+          addressParts.push("/" + busines[i].address.country);
+        }
 
-          if (busines[i] && busines[i].name !== null) {
-            addressParts.push(busines[i].name);
-          }
-          console.log("burası 17");
-          const formattedAddress = addressParts.join(" ");
-          addresses.push(formattedAddress);
+        if (
+          busines[i] &&
+          busines[i].address &&
+          busines[i].address.postCode !== null
+        ) {
+          addressParts.push(busines[i].address.postCode);
+        }
 
-          const response = await axios.get(
-            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-              addresses.join("|")
-            )}&key=${API_KEY}`
-          );
-          if (response.data.results.length > 0) {
-            latArray[i] = response.data.results[0].geometry.location.lat;
-            longArray[i] = response.data.results[0].geometry.location.lng;
+        if (busines[i] && busines[i].name !== null) {
+          addressParts.push(busines[i].name);
+        }
+        //console.log("burası 17");
+        const formattedAddress = addressParts.join(" ");
+        //console.log("burası 18");
+        //console.log("formattedaddress:", formattedAddress);
+        // const addresss = adress.country+adress.city;
+        //console.log("burası 19");
+        const response = await axios.get(
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+            formattedAddress
+          )}&key=${API_KEY}`
+        );
+        //console.log("burası 20");
+        // let Coordinate = await Promise.all(response);
+        //console.log("burası 21");
+          //console.log("response:",response)
+        if (response.data.results.length > 0) {
+          //console.log("burası 22");
+          latArray[i] = response.data.results[0].geometry.location.lat;
+
+          //console.log("burası 23");
+
+          longArray[i] = response.data.results[0].geometry.location.lng;
+
+          if(busines.length -1 == i ){
+            setLate([...latArray]);
+            setLonge([...longArray]);
+            setIsLoading(false)
           }
+         
+          //console.log("burası 24");
+          //console.log("asd: ", lat, "fdsf: ", lng);
+
+          //console.log("aq senin:", i, " ", latArray[i], " ", longArray[i]);
+          // //console.log(
+          //   "amdscıksın:",
+          //   i,
+          //   " ",
+          //   latArray,
+          //   "sende öylesin: ",
+          //   longArray
+          //);
+        } else {
+          throw new Error("Adres bulunamadı.");
         }
       }
-      setLate([...latArray]);
-      setLonge([...longArray]);
-      setIsLoading(false);
     } catch (error) {
       console.error("Geocode hatası:", error);
       throw error;
@@ -290,7 +318,7 @@ const Feed = () => {
       //getDirections();
       const verileriAl = async () => {
         try {
-          console.log("dsadfsad:", lati, " ", longi);
+          //console.log("dsadfsad:", lati, " ", longi);
         } catch (error) {
           console.error("konumu alamadım aq: ", error);
         }
@@ -298,13 +326,13 @@ const Feed = () => {
       verileriAl();
       setLng(longArray);
       setLat(latArray);
-      console.log(late, "wasda", longe);
+      //console.log(late, "wasda", longe);
 
       const unsubscribe = navigation.addListener("focus", fetchData);
       return () => {
         unsubscribe();
       };
-    }, []);
+    }, [postlat.length]);
 
     var counter = 0;
     return (
@@ -423,8 +451,8 @@ const Feed = () => {
                   }}
                   onLayout={() => {
                     counter2++;
-                    console.log("COUNTERININDA MK", counter2);
-                    console.log("veriler as:", latArray);
+                    //console.log("COUNTERININDA MK", counter2);
+                    //console.log("veriler as:", latArray);
                   }}
                 >
                   <Text
@@ -586,8 +614,8 @@ const Feed = () => {
                         longitudeDelta: 0.01, // Yakınlaştırmayı artırmak veya azaltmak için bu değeri ayarlayın
                       }}
                     >
-                      {/* {console.log("index",index)} */}
-                      {/* {console.log("latierhan:",index, late[index]," longiemre ",longe[index])} */}
+                      {/*/console.log("index",index)} 
+                      {/* {//console.log("latierhan:",index, late[index]," longiemre ",longe[index])} */}
                       {/* Gönderi konumu için işaretçi */}
                       <Marker
                         coordinate={{
@@ -597,7 +625,7 @@ const Feed = () => {
                         title="Gönderi Konumu"
                         description="Bu, gönderinin konumudur."
                       />
-                      {/* {console.log("latimarker:", late[index]," longi marker",longe[index])} */}
+                      {/* {//console.log("latimarker:", late[index]," longi marker",longe[index])} */}
                     </MapView>
 
                     <View>
