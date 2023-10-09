@@ -31,31 +31,7 @@ const Login = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Add loading state
  
-  const getLocationAsync = () => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          console.log("Konum izni reddedildi");
-          reject("Konum izni reddedildi");
-          return;
-        }
-        resolve();
-        let location = await Location.getCurrentPositionAsync({});
-        console.log("lok:", location);
-       
-        // console.log("Gerçek lati benim lan:", lat1);
-        // console.log("Gerçek longi benim lan:", long1);
-        await AsyncStorage.setItem('lats', location.coords.latitude.toString());
-        await AsyncStorage.setItem('longs', location.coords.longitude.toString());
-
-      } catch (error) {
-        console.error("Konum alınamadı:", error);
-        reject(error);
-      }
-    });
-  };
-
+ 
   const handleLogin = () => {
     setTimeout(() => {
       Keyboard.dismiss();
@@ -78,7 +54,6 @@ const Login = ({ navigation }) => {
   };
  
   useEffect(() => {
-    getLocationAsync();
   }, []);
 
   //deneme için dummy data

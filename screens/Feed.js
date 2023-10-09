@@ -7,7 +7,7 @@ import {
   FlatList,
   Image,
   TextInput,
-  RefreshControl
+  RefreshControl,
 } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -38,7 +38,7 @@ import { lati, longi } from "./BusinessIdContext";
 import Spinner from "react-native-loading-spinner-overlay";
 import { useMemo } from "react";
 import { getLoggedInUserData } from "../auth/Auth";
-import * as SecureStore from 'expo-secure-store'
+import * as SecureStore from "expo-secure-store";
 
 const Feed = () => {
   //useStateler
@@ -62,6 +62,8 @@ const Feed = () => {
   const [late, setLate] = useState([]);
   const [longe, setLonge] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [page, setPage] = useState(1); // Current page
+
   let busines = [];
   let lat1;
   let long1;
@@ -101,59 +103,134 @@ const Feed = () => {
   }
 
   //fetch data fonk(post ve business istekleri)
-  const fetchData = async (lats, longs) => {
-    //  await getLocationAsync();
+  const fetchData = async () => {
     try {
-      // //console.log("burası 6 lati:",lati);
-      // //console.log("burası 6 longti:",longi);
+      const lats = await AsyncStorage.getItem("lats");
+      const longs = await AsyncStorage.getItem("longs");
+      console.log("lats", lats, "longs", longs);
       const url =
         "https://goodidea.azurewebsites.net/api/posts/getposts?lati=" +
         lats +
         "&longi=" +
         longs;
       const response = await axios.get(url);
+      console.log("1");
       setPostlar(response.data);
-
-       ////console.log("burası 8");
-       
+      console.log("2");
       let businessRequests = response.data.flat().map((post) => {
         return axios.get(
           "https://goodidea.azurewebsites.net/api/Businesses/" + post.businessId
         );
       });
-
-      //console.log("burası 9");
-
+      console.log("3");
       let businessResults = await Promise.all(businessRequests);
-      //console.log("burası 10");
-
+      console.log("4");
       let businessesData = await Promise.all(
         businessResults.map((response) => response.data)
       );
-      //console.log("burası 11");
-
+      console.log("5");
       setItems((prevItems) => [...prevItems, ...businessesData]);
-      //console.log("burası 12");
+      console.log("6");
       var i = 0;
       if (businessesData) {
         for (const item of businessesData) {
-          //console.log("business " + i + "data", item);
-          busines[i++] = item; // Veriyi eklerken boş bir nesne kullanın
+          const addressParts = [];
+          console.log("7");
+          if (item && item.address && item.address.streetName !== null) {
+            addressParts.push(item.address.streetName);
+          }
+
+          if (item && item.address && item.address.streetNumber !== null) {
+            addressParts.push(item.address.streetNumber);
+          }
+
+          if (item && item.address && item.address.buildingNumber !== null) {
+            addressParts.push("no:" + item.address.buildingNumber);
+          }
+
+          if (item && item.address && item.address.district !== null) {
+            addressParts.push(item.address.district);
+          }
+
+          if (item && item.address && item.address.city !== null) {
+            addressParts.push("/" + item.address.city);
+          }
+
+          if (item && item.address && item.address.country !== null) {
+            addressParts.push("/" + item.address.country);
+          }
+          if (item && item.address && item.address.postCode !== null) {
+            addressParts.push(item.address.postCode);
+          }
+          if (item && item.name !== null) {
+            addressParts.push(item.name);
+          }
+          const formattedAddress = addressParts.join(" ");
+
+          await getDirections(formattedAddress, lats, longs);
+
+          const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+              formattedAddress
+            )}&key=${API_KEY}`
+          );
+          console.log("8");
+          if (response.data.results.length > 0) {
+            latArray[i] = response.data.results[0].geometry.location.lat;
+            longArray[i++] = response.data.results[0].geometry.location.lng;
+            console.log("9");
+          } else {
+            throw new Error("Adres bulunamadı.");
+          }
         }
-        //console.log("burası 14");
-
-        //console.log("adresi set ettim kankr", address);
-        //console.log("burası 15");
-
-        //console.log("burası 25");
-      } else {
-        //console.log("Buraya giremediğim için olmadı beler");
       }
-      //console.log("kanka postları çektim loadingi kapatcam", businessesData);
+      // console.log("9")
+      setLate([...latArray]);
+      setLonge([...longArray]);
+      console.log("10");
+      setIsLoading(false);
+      console.log("11");
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+  const getDirections = async (addressGet, lats, longs) => {
+    try {
+      // Google Maps Directions API'yi çağırın ve başlangıç ve varış adreslerini belirtin
+      console.log("Gerçek adres benim ananın amı:", addressGet);
+      console.log("API_KEY:", API_KEY);
+
+      const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lats},${longs}&key=AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4`;
+
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+
+      if (data.status === "OK" && data.results[0]) {
+        const address = data.results[0].formatted_address;
+        // console.log("Adres:", address);
+
+        const responsee = await axios.get(
+          `https://maps.googleapis.com/maps/api/directions/json?origin=${address}&destination=${addressGet}&key=AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4`
+        );
+        // console.log("responseum benim", responsee);
+
+        // API yanıtındaki rota bilgilerini alın
+        const routes = responsee.data.routes;
+
+        // Rota bilgilerini durumda saklayın
+        if(responsee.data.routes.length>0){
+          
+          setDirections([...directions,routes[0].legs[0].distance.text]);
+          // console.log("directions:", directions);
+        }
+      } else {
+        console.log("Adres bulunamadı.");
+      }
+    } catch (error) {
+      console.error("Rota alınamadı:", error);
+    }
+  };
+
   ///Harita fonk
 
   const navigasyonuAc = (index) => {
@@ -172,125 +249,7 @@ const Feed = () => {
 
   //Kardelen Mah Başkent Bulvarı. No: 224 H, 06370 Yenimahalle/Ankara
   var counter = 0;
-  const getCoordinate = async () => {
-    const lats = await AsyncStorage.getItem("lats");
-    const longs = await AsyncStorage.getItem("longs");
-    const addresses = [];
-    await fetchData(lats, longs);
-    try {
-      //console.log("burası 16");
-
-      for (var i = 0; i < busines.length; i++) {
-        const addressParts = [];
-        if (
-          busines[i] &&
-          busines[i].address &&
-          busines[i].address.streetName !== null
-        ) {
-          addressParts.push(busines[i].address.streetName);
-        }
-
-        if (
-          busines[i] &&
-          busines[i].address &&
-          busines[i].address.streetNumber !== null
-        ) {
-          addressParts.push(busines[i].address.streetNumber);
-        }
-
-        if (
-          busines[i] &&
-          busines[i].address &&
-          busines[i].address.buildingNumber !== null
-        ) {
-          addressParts.push("no:" + busines[i].address.buildingNumber);
-        }
-
-        if (
-          busines[i] &&
-          busines[i].address &&
-          busines[i].address.district !== null
-        ) {
-          addressParts.push(busines[i].address.district);
-        }
-
-        if (
-          busines[i] &&
-          busines[i].address &&
-          busines[i].address.city !== null
-        ) {
-          addressParts.push("/" + busines[i].address.city);
-        }
-
-        if (
-          busines[i] &&
-          busines[i].address &&
-          busines[i].address.country !== null
-        ) {
-          addressParts.push("/" + busines[i].address.country);
-        }
-
-        if (
-          busines[i] &&
-          busines[i].address &&
-          busines[i].address.postCode !== null
-        ) {
-          addressParts.push(busines[i].address.postCode);
-        }
-
-        if (busines[i] && busines[i].name !== null) {
-          addressParts.push(busines[i].name);
-        }
-        //console.log("burası 17");
-        const formattedAddress = addressParts.join(" ");
-        //console.log("burası 18");
-        //console.log("formattedaddress:", formattedAddress);
-        // const addresss = adress.country+adress.city;
-        //console.log("burası 19");
-        const response = await axios.get(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-            formattedAddress
-          )}&key=${API_KEY}`
-        );
-        //console.log("burası 20");
-        // let Coordinate = await Promise.all(response);
-        //console.log("burası 21");
-          //console.log("response:",response)
-        if (response.data.results.length > 0) {
-          //console.log("burası 22");
-          latArray[i] = response.data.results[0].geometry.location.lat;
-
-          //console.log("burası 23");
-
-          longArray[i] = response.data.results[0].geometry.location.lng;
-
-          if(busines.length -1 == i ){
-            setLate([...latArray]);
-            setLonge([...longArray]);
-            setIsLoading(false)
-          }
-         
-          //console.log("burası 24");
-          //console.log("asd: ", lat, "fdsf: ", lng);
-
-          //console.log("aq senin:", i, " ", latArray[i], " ", longArray[i]);
-          // //console.log(
-          //   "amdscıksın:",
-          //   i,
-          //   " ",
-          //   latArray,
-          //   "sende öylesin: ",
-          //   longArray
-          //);
-        } else {
-          throw new Error("Adres bulunamadı.");
-        }
-      }
-    } catch (error) {
-      console.error("Geocode hatası:", error);
-      throw error;
-    }
-  };
+ 
 
   const openMapModal = () => {
     setMapModalVisible(true);
@@ -315,7 +274,7 @@ const Feed = () => {
   function renderFeedPost() {
     useEffect(() => {
       // getLocationAsync();
-      getCoordinate();
+      fetchData();
       // SecureStore.getItemAsync('userData').then((userDataa) => {
       //   console.log("sadsaf",userDataa)
       // setUserData(JSON.parse(userDataa))
@@ -333,9 +292,9 @@ const Feed = () => {
       verileriAl();
       setLng(longArray);
       setLat(latArray);
-      var logged = getLoggedInUserData();
-      console.log("loggedInUserData:",logged );
-      //console.log(late, "wasda", longe);
+      // var logged = getLoggedInUserData();
+      // console.log("loggedInUserData:",logged );
+      // //console.log(late, "wasda", longe);
 
       const unsubscribe = navigation.addListener("focus", fetchData);
       return () => {
@@ -349,7 +308,7 @@ const Feed = () => {
         {postlat
           .flat()
           .map((post, index) => (
-            <View 
+            <View
               key={index}
               style={{
                 backgroundColor: "#fff",
@@ -387,13 +346,19 @@ const Feed = () => {
                   /> */}
 
                   <View style={{ marginLeft: 12 }}>
-                  <TouchableOpacity onPress={() => navigation.navigate('Profile', { businessId: post.businessId })}>
-                {items[counter] && items[counter].name ? (
-                    <Text style={{ ...FONTS.body2, fontWeight: "bold" }}>
-                        {items[index].name}
-                    </Text>
-                ) : null}
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("Profile", {
+                          businessId: post.businessId,
+                        })
+                      }
+                    >
+                      {items[counter] && items[counter].name ? (
+                        <Text style={{ ...FONTS.body2, fontWeight: "bold" }}>
+                          {items[index].name}
+                        </Text>
+                      ) : null}
+                    </TouchableOpacity>
 
                     <Text
                       style={{
@@ -406,7 +371,20 @@ const Feed = () => {
                     </Text>
                   </View>
                 </View>
-
+               {console.log("directionsss:", directions[index])}
+               {directions.map((item, index) => (
+                      <View key={index}>
+                        <Text>
+                          Adım {index + 1} - Mesafe:{" "}
+                          {item}
+                        </Text>
+                        <Text>
+                          Adım 
+                        </Text>
+                      </View>
+                    ))}
+                  
+               
                 <MaterialCommunityIcons
                   name="dots-vertical"
                   size={24}
@@ -635,20 +613,6 @@ const Feed = () => {
                       <View>
                         <Button title="Git" />
                       </View>
-
-                      <Text>Rota Bilgileri:</Text>
-                      {directions.map((route, index) => (
-                        <View key={index}>
-                          <Text>
-                            Adım {index + 1} - Mesafe:{" "}
-                            {route.legs[0].distance.text}
-                          </Text>
-                          <Text>
-                            Adım {index + 1} - Süre:{" "}
-                            {route.legs[0].duration.text}
-                          </Text>
-                        </View>
-                      ))}
                     </View>
                     {/* Kapatma düğmesi */}
                     <TouchableOpacity
@@ -717,21 +681,19 @@ const Feed = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#E7E7E7" }}>
       <View style={{ flex: 1, paddingHorizontal: 22 }}>
         {/* Show loading spinner when isLoading is true */}
-       
-          <Spinner
-            visible={isLoading}
-            textContent={"Loading..."}
-            textStyle={{ color: "#FFF" }}
-          />
-      
-          <ScrollView>
-            {renderSuggestionsContainer()}
-            {renderFeedPost()}
-          </ScrollView>
-       
+
+        <Spinner
+          visible={isLoading}
+          textContent={"Loading..."}
+          textStyle={{ color: "#FFF" }}
+        />
+
+        <ScrollView>
+          {renderSuggestionsContainer()}
+          {renderFeedPost()}
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
-  
 };
 export default Feed;

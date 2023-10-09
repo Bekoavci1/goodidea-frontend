@@ -1,10 +1,41 @@
 import { View, Text, Pressable, Image } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { LinearGradient } from "expo-linear-gradient";
 import COLORS from '../constants/colors';
 import Button from '../components/Button';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Location from "expo-location";
 
 const Welcome = ({ navigation }) => {
+
+    const getLocationAsync = () => {
+        return new Promise(async (resolve, reject) => {
+          try {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== "granted") {
+              console.log("Konum izni reddedildi");
+              reject("Konum izni reddedildi");
+              return;
+            }
+            resolve();
+            let location = await Location.getCurrentPositionAsync({});
+            console.log("lok:", location);
+           
+            // console.log("Gerçek lati benim lan:", lat1);
+            // console.log("Gerçek longi benim lan:", long1);
+            await AsyncStorage.setItem('lats', location.coords.latitude.toString());
+            await AsyncStorage.setItem('longs', location.coords.longitude.toString());
+    
+          } catch (error) {
+            console.error("Konum alınamadı:", error);
+            reject(error);
+          }
+        });
+      };
+      
+      useEffect(() => {
+        getLocationAsync();
+      }, []);
 
     return (
         <LinearGradient
