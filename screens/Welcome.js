@@ -5,6 +5,9 @@ import COLORS from '../constants/colors';
 import Button from '../components/Button';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
+import { useState } from 'react';
+import { postData, businessResultData } from './data';
+import axios from "axios";
 
 const Welcome = ({ navigation }) => {
 
@@ -25,6 +28,33 @@ const Welcome = ({ navigation }) => {
             // console.log("Gerçek longi benim lan:", long1);
             await AsyncStorage.setItem('lats', location.coords.latitude.toString());
             await AsyncStorage.setItem('longs', location.coords.longitude.toString());
+
+            let lats = location.coords.latitude.toString();
+            let longs = location.coords.longitude.toString();
+            const url =
+                "https://goodidea.azurewebsites.net/api/posts/getposts?lati=" +
+                lats +
+                "&longi=" +
+                longs;
+            const response = await axios.get(url);
+            console.log("1", response.data);
+            postData.push(response.data);
+            console.log("sad", postData)
+            console.log("2");
+            let businessRequests = response.data.flat().map((post) => {
+                return axios.get(
+                "https://goodidea.azurewebsites.net/api/Businesses/" + post.businessId
+                );
+            });
+            console.log("3");
+            let businessResults = await Promise.all(businessRequests);
+            console.log("4");
+            let businessesData = await Promise.all(
+                businessResults.map((response) => response.data)
+            );
+            console.log("5", businessesData);
+            businessResultData.push(businessesData);
+            console.log("6");
     
           } catch (error) {
             console.error("Konum alınamadı:", error);

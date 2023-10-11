@@ -39,6 +39,7 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { useMemo } from "react";
 import { getLoggedInUserData } from "../auth/Auth";
 import * as SecureStore from "expo-secure-store";
+import {postData, businessResultData} from './data';
 
 const Feed = () => {
   //useStateler
@@ -105,123 +106,202 @@ const Feed = () => {
   //fetch data fonk(post ve business istekleri)
   const fetchData = async () => {
     try {
-      const lats = await AsyncStorage.getItem("lats");
-      const longs = await AsyncStorage.getItem("longs");
+      const [lats, longs] = await Promise.all([
+        AsyncStorage.getItem("lats"),
+        AsyncStorage.getItem("longs"),
+      ]);
+
+
+      // const lats = await AsyncStorage.getItem("lats");
+      // const longs = await AsyncStorage.getItem("longs");
       console.log("lats", lats, "longs", longs);
-      const url =
-        "https://goodidea.azurewebsites.net/api/posts/getposts?lati=" +
-        lats +
-        "&longi=" +
-        longs;
-      const response = await axios.get(url);
-      console.log("1");
-      setPostlar(response.data);
-      console.log("2");
-      let businessRequests = response.data.flat().map((post) => {
-        return axios.get(
-          "https://goodidea.azurewebsites.net/api/Businesses/" + post.businessId
-        );
-      });
-      console.log("3");
-      let businessResults = await Promise.all(businessRequests);
-      console.log("4");
-      let businessesData = await Promise.all(
-        businessResults.map((response) => response.data)
-      );
-      console.log("5");
+
+      // console.log("postlar geldi bra: ",JSON.stringfy(postData));
+      // console.log("Businessler geldi bra: ", JSON.stringfy(businessResultData));
+
+      
+      console.log("21dsad",postData[0])
+      setPostlar(postData[0]);
+      console.log("21w",postlat)
+    
+      // let businessesData = JSON.stringfy(businessResultData);
+
+      //console.log("businessData: ", businessesData);
+
+      // setItems((prevItems) => [...prevItems, ...businessesData]);
+      var businessesData = businessResultData.flat();
+      //setItems([...prevItems,businessesData]);
       setItems((prevItems) => [...prevItems, ...businessesData]);
-      console.log("6");
-      var i = 0;
+
       if (businessesData) {
-        for (const item of businessesData) {
+        const promises = businessesData.map(async (item) => {
           const addressParts = [];
-          console.log("7");
           if (item && item.address && item.address.streetName !== null) {
             addressParts.push(item.address.streetName);
           }
-
           if (item && item.address && item.address.streetNumber !== null) {
-            addressParts.push(item.address.streetNumber);
-          }
-
-          if (item && item.address && item.address.buildingNumber !== null) {
-            addressParts.push("no:" + item.address.buildingNumber);
-          }
-
-          if (item && item.address && item.address.district !== null) {
-            addressParts.push(item.address.district);
-          }
-
-          if (item && item.address && item.address.city !== null) {
-            addressParts.push("/" + item.address.city);
-          }
-
-          if (item && item.address && item.address.country !== null) {
-            addressParts.push("/" + item.address.country);
-          }
-          if (item && item.address && item.address.postCode !== null) {
-            addressParts.push(item.address.postCode);
-          }
-          if (item && item.name !== null) {
-            addressParts.push(item.name);
-          }
-          const formattedAddress = addressParts.join(" ");
-
-          await getDirections(formattedAddress, lats, longs);
-
-          const response = await axios.get(
-            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-              formattedAddress
-            )}&key=${API_KEY}`
-          );
-          console.log("8");
+                  addressParts.push(item.address.streetNumber);
+                }
+      
+                if (item && item.address && item.address.buildingNumber !== null) {
+                  addressParts.push("no:" + item.address.buildingNumber);
+                }
+      
+                if (item && item.address && item.address.district !== null) {
+                  addressParts.push(item.address.district);
+                }
+      
+                if (item && item.address && item.address.city !== null) {
+                  addressParts.push("/" + item.address.city);
+                }
+      
+                if (item && item.address && item.address.country !== null) {
+                  addressParts.push("/" + item.address.country);
+                }
+                if (item && item.address && item.address.postCode !== null) {
+                  addressParts.push(item.address.postCode);
+                }
+                if (item && item.name !== null) {
+                  addressParts.push(item.name);
+                }
+            const formattedAddress = addressParts.join(" ");
+            await getDirections(formattedAddress, lats, longs);
+            const response = await axios.get(
+              `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+                formattedAddress
+              )}&key=${API_KEY}`
+            );
+  
           if (response.data.results.length > 0) {
-            latArray[i] = response.data.results[0].geometry.location.lat;
-            longArray[i++] = response.data.results[0].geometry.location.lng;
-            console.log("9");
+            latArray.push(response.data.results[0].geometry.location.lat);
+            longArray.push(response.data.results[0].geometry.location.lng);
           } else {
             throw new Error("Adres bulunamadı.");
           }
-        }
-      }
-      // console.log("9")
+        });
+  
+        await Promise.all(promises);
+      
+      var i = 0;
       setLate([...latArray]);
       setLonge([...longArray]);
       console.log("10");
       setIsLoading(false);
       console.log("11");
-    } catch (error) {
+    }} catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+      // if (businessesData) {
+      //   for (const item of businessesData) {
+      //     const addressParts = [];
+      //     console.log("7");
+      //     if (item && item.address && item.address.streetName !== null) {
+      //       addressParts.push(item.address.streetName);
+      //     }
+
+      //     if (item && item.address && item.address.streetNumber !== null) {
+      //       addressParts.push(item.address.streetNumber);
+      //     }
+
+      //     if (item && item.address && item.address.buildingNumber !== null) {
+      //       addressParts.push("no:" + item.address.buildingNumber);
+      //     }
+
+      //     if (item && item.address && item.address.district !== null) {
+      //       addressParts.push(item.address.district);
+      //     }
+
+      //     if (item && item.address && item.address.city !== null) {
+      //       addressParts.push("/" + item.address.city);
+      //     }
+
+      //     if (item && item.address && item.address.country !== null) {
+      //       addressParts.push("/" + item.address.country);
+      //     }
+      //     if (item && item.address && item.address.postCode !== null) {
+      //       addressParts.push(item.address.postCode);
+      //     }
+      //     if (item && item.name !== null) {
+      //       addressParts.push(item.name);
+      //     }
+      //     const formattedAddress = addressParts.join(" ");
+
+      //     //await getDirections(formattedAddress, lats, longs);
+
+      //     const response = await axios.get(
+      //       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      //         formattedAddress
+      //       )}&key=${API_KEY}`
+      //     );
+      //     console.log("8");
+      //     if (response.data.results.length > 0) {
+      //       latArray[i] = response.data.results[0].geometry.location.lat;
+      //       longArray[i++] = response.data.results[0].geometry.location.lng;
+      //       console.log("9");
+      //     } else {
+      //       throw new Error("Adres bulunamadı.");
+      //     }
+      //   }
+      
+      // console.log("9")
+  // const getDirections = async (addressGet, lats, longs) => {
+  //   try {
+  //     // Google Maps Directions API'yi çağırın ve başlangıç ve varış adreslerini belirtin
+  //     console.log("Gerçek adres benim ananın amı:", addressGet);
+  //     console.log("API_KEY:", API_KEY);
+
+  //     const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lats},${longs}&key=AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4`;
+  //     // const [response, data] = await Promise.all([
+  //     //    fetch(apiUrl),
+  //     //    response.json()
+
+  //     // ]);
+  //     const response = await fetch(apiUrl);
+  //     const data = await response.json();
+
+  //     if (data.status === "OK" && data.results[0]) {
+  //       const address = data.results[0].formatted_address;
+  //       // console.log("Adres:", address);
+
+  //       const responsee = await axios.get(
+  //         `https://maps.googleapis.com/maps/api/directions/json?origin=${address}&destination=${addressGet}&key=AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4`
+  //       );
+  //       // console.log("responseum benim", responsee);
+
+  //       // API yanıtındaki rota bilgilerini alın
+  //       const routes = responsee.data.routes;
+
+  //       // Rota bilgilerini durumda saklayın
+  //       if(responsee.data.routes.length>0){
+          
+  //         setDirections([...directions,routes[0].legs[0].distance.text]);
+  //         // console.log("directions:", directions);
+  //       }
+  //     } else {
+  //       console.log("Adres bulunamadı.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Rota alınamadı:", error);
+  //   }
+  // };
+
   const getDirections = async (addressGet, lats, longs) => {
     try {
-      // Google Maps Directions API'yi çağırın ve başlangıç ve varış adreslerini belirtin
-      console.log("Gerçek adres benim ananın amı:", addressGet);
-      console.log("API_KEY:", API_KEY);
-
-      const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lats},${longs}&key=AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4`;
-
-      const response = await fetch(apiUrl);
-      const data = await response.json();
-
-      if (data.status === "OK" && data.results[0]) {
-        const address = data.results[0].formatted_address;
-        // console.log("Adres:", address);
-
-        const responsee = await axios.get(
-          `https://maps.googleapis.com/maps/api/directions/json?origin=${address}&destination=${addressGet}&key=AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4`
-        );
-        // console.log("responseum benim", responsee);
-
-        // API yanıtındaki rota bilgilerini alın
-        const routes = responsee.data.routes;
-
-        // Rota bilgilerini durumda saklayın
-        if(responsee.data.routes.length>0){
-          
-          setDirections([...directions,routes[0].legs[0].distance.text]);
-          // console.log("directions:", directions);
+      const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lats},${longs}&key=${API_KEY}`;
+      const geocodeResponse = await fetch(geocodeUrl);
+      const geocodeData = await geocodeResponse.json();
+  
+      if (geocodeData.status === "OK" && geocodeData.results[0]) {
+        const address = geocodeData.results[0].formatted_address;
+  
+        const directionsUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${address}&destination=${addressGet}&key=${API_KEY}`;
+        const directionsResponse = await fetch(directionsUrl);
+        const directionsData = await directionsResponse.json();
+        console.log("sdad: ",directionsData.routes[0].legs[0].distance.text )
+  
+        if (directionsData.routes.length > 0) {
+          setDirections([...directions, directionsData.routes[0].legs[0].distance.text]);
         }
       } else {
         console.log("Adres bulunamadı.");
@@ -230,6 +310,7 @@ const Feed = () => {
       console.error("Rota alınamadı:", error);
     }
   };
+  
 
   ///Harita fonk
 
@@ -274,6 +355,7 @@ const Feed = () => {
   function renderFeedPost() {
     useEffect(() => {
       // getLocationAsync();
+      
       fetchData();
       // SecureStore.getItemAsync('userData').then((userDataa) => {
       //   console.log("sadsaf",userDataa)
@@ -300,7 +382,7 @@ const Feed = () => {
       return () => {
         unsubscribe();
       };
-    }, [postlat.length]);
+    }, [postlat]);
 
     var counter = 0;
     return (
@@ -371,18 +453,21 @@ const Feed = () => {
                     </Text>
                   </View>
                 </View>
-               {console.log("directionsss:", directions[index])}
-               {directions.map((item, index) => (
-                      <View key={index}>
+                <View>
+                <Text>
+                  Mesafe: {directions[0][index]}
+                </Text>
+              </View>
+               {/* { console.log("directionsss:", directions[index]) } */}
+               {/* {directions.map((item, index) => ( */}
+                      {/* <View >
                         <Text>
-                          Adım {index + 1} - Mesafe:{" "}
-                          {item}
+                          Mesafe:{" "}
+                          {directions[index]}
                         </Text>
-                        <Text>
-                          Adım 
-                        </Text>
-                      </View>
-                    ))}
+
+                      </View> */}
+                    {/* ))} */}
                   
                
                 <MaterialCommunityIcons
