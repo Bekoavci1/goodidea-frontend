@@ -39,7 +39,7 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { useMemo } from "react";
 import { getLoggedInUserData } from "../auth/Auth";
 import * as SecureStore from "expo-secure-store";
-import {postData, businessResultData} from './data';
+import { postData, businessResultData } from "./data";
 
 const Feed = () => {
   //useStateler
@@ -115,6 +115,7 @@ const Feed = () => {
       var businessesData = businessResultData.flat();
       setItems((prevItems) => [...prevItems, ...businessesData]);
       var i = 0;
+
       if (businessesData) {
         for (const item of businessesData) {
           const addressParts = [];
@@ -168,6 +169,10 @@ const Feed = () => {
         }
       }
       // console.log("9")
+      for (let index = 0; index < directions.length; index++) {
+        console.log("bakalım", directions[index]);
+      }
+      setDirections([...directions]);
       setLate([...latArray]);
       setLonge([...longArray]);
       console.log("10");
@@ -195,16 +200,16 @@ const Feed = () => {
         const responsee = await axios.get(
           `https://maps.googleapis.com/maps/api/directions/json?origin=${address}&destination=${addressGet}&key=AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4`
         );
-        // console.log("responseum benim", responsee);
+        //console.log("responseum benim", responsee);
 
         // API yanıtındaki rota bilgilerini alın
         const routes = responsee.data.routes;
+        console.log("routes:", routes[0].legs[0].distance.text);
 
         // Rota bilgilerini durumda saklayın
-        if(responsee.data.routes.length>0){
-          
-          setDirections([...directions,routes[0].legs[0].distance.text]);
-          // console.log("directions:", directions);
+        if (responsee.data.routes.length > 0) {
+          console.log("directions:", directions);
+          directions.push(routes[0].legs[0].distance.text);
         }
       } else {
         console.log("Adres bulunamadı.");
@@ -232,7 +237,6 @@ const Feed = () => {
 
   //Kardelen Mah Başkent Bulvarı. No: 224 H, 06370 Yenimahalle/Ankara
   var counter = 0;
- 
 
   const openMapModal = () => {
     setMapModalVisible(true);
@@ -354,20 +358,18 @@ const Feed = () => {
                     </Text>
                   </View>
                 </View>
-               {console.log("directionsss:", directions[index])}
-               {directions.map((item, index) => (
-                      <View key={index}>
-                        <Text>
-                          Adım {index + 1} - Mesafe:{" "}
-                          {item}
-                        </Text>
-                        <Text>
-                          Adım 
-                        </Text>
-                      </View>
-                    ))}
-                  
-               
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginLeft: 10,
+                  }}
+                >
+                  <Text>{directions[index]}</Text>
+                </View>
+
                 <MaterialCommunityIcons
                   name="dots-vertical"
                   size={24}
