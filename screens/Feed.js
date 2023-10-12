@@ -39,6 +39,7 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { useMemo } from "react";
 import { getLoggedInUserData } from "../auth/Auth";
 import * as SecureStore from "expo-secure-store";
+import {postData, businessResultData} from './data';
 
 const Feed = () => {
   //useStateler
@@ -108,29 +109,11 @@ const Feed = () => {
       const lats = await AsyncStorage.getItem("lats");
       const longs = await AsyncStorage.getItem("longs");
       console.log("lats", lats, "longs", longs);
-      const url =
-        "https://goodidea.azurewebsites.net/api/posts/getposts?lati=" +
-        lats +
-        "&longi=" +
-        longs;
-      const response = await axios.get(url);
-      console.log("1");
-      setPostlar(response.data);
-      console.log("2");
-      let businessRequests = response.data.flat().map((post) => {
-        return axios.get(
-          "https://goodidea.azurewebsites.net/api/Businesses/" + post.businessId
-        );
-      });
-      console.log("3");
-      let businessResults = await Promise.all(businessRequests);
-      console.log("4");
-      let businessesData = await Promise.all(
-        businessResults.map((response) => response.data)
-      );
-      console.log("5");
+      var posts = postData.flat();
+      setPostlar(posts);
+
+      var businessesData = businessResultData.flat();
       setItems((prevItems) => [...prevItems, ...businessesData]);
-      console.log("6");
       var i = 0;
       if (businessesData) {
         for (const item of businessesData) {
