@@ -70,6 +70,7 @@ const Feed = () => {
   let long1;
   let latArray = [];
   let longArray = [];
+  let direksiyon = [];
 
   //users prop
   const users = [images.user1, images.user2, images.user3, images.user4];
@@ -115,11 +116,12 @@ const Feed = () => {
       var businessesData = businessResultData.flat();
       setItems((prevItems) => [...prevItems, ...businessesData]);
       var i = 0;
-
+      console.log("anayın amcuuğuu",businessesData.length)
+      
       if (businessesData) {
         for (const item of businessesData) {
           const addressParts = [];
-          console.log("7");
+         // console.log("7");
           if (item && item.address && item.address.streetName !== null) {
             addressParts.push(item.address.streetName);
           }
@@ -158,11 +160,11 @@ const Feed = () => {
               formattedAddress
             )}&key=${API_KEY}`
           );
-          console.log("8");
+          //console.log("8");
           if (response.data.results.length > 0) {
             latArray[i] = response.data.results[0].geometry.location.lat;
             longArray[i++] = response.data.results[0].geometry.location.lng;
-            console.log("9");
+            //console.log("9");
           } else {
             throw new Error("Adres bulunamadı.");
           }
@@ -172,12 +174,12 @@ const Feed = () => {
       for (let index = 0; index < directions.length; index++) {
         console.log("bakalım", directions[index]);
       }
-      setDirections([...directions]);
+      setDirections([...direksiyon]);
       setLate([...latArray]);
       setLonge([...longArray]);
-      console.log("10");
+     // console.log("10");
       setIsLoading(false);
-      console.log("11");
+     // console.log("11");
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -185,8 +187,8 @@ const Feed = () => {
   const getDirections = async (addressGet, lats, longs) => {
     try {
       // Google Maps Directions API'yi çağırın ve başlangıç ve varış adreslerini belirtin
-      console.log("Gerçek adres benim ananın amı:", addressGet);
-      console.log("API_KEY:", API_KEY);
+     // console.log("Gerçek adres benim ananın amı:", addressGet);
+      //console.log("API_KEY:", API_KEY);
 
       const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lats},${longs}&key=AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4`;
 
@@ -207,9 +209,12 @@ const Feed = () => {
         console.log("routes:", routes[0].legs[0].distance.text);
 
         // Rota bilgilerini durumda saklayın
+      //  console.log(postlat.length)
+        
         if (responsee.data.routes.length > 0) {
           console.log("directions:", directions);
-          directions.push(routes[0].legs[0].distance.text);
+         // directions.push(routes[0].legs[0].distance.text);
+         direksiyon.push(routes[0].legs[0].distance.text);
         }
       } else {
         console.log("Adres bulunamadı.");

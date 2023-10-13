@@ -30,7 +30,7 @@ export default function App() {
         setInitialRoute('Welcome'); // Yoksa Welcome ekranına yönlendir
       }
     };
-    checkToken();
+  
   }, []);
 
   const [fontsLoaded] = useFonts({
