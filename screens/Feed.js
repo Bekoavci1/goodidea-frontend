@@ -43,7 +43,11 @@ import { postData, businessResultData } from "./data";
 
 const Feed = () => {
   //useStateler
-  const [mapLocation, setMapLocation] = useState({ latitude: 0, longitude: 0 });
+  const [isMapModalVisible, setIsMapModalVisible] = useState(false);
+  const [selectedPostLocation, setSelectedPostLocation] = useState({
+    lat: 0,
+    lng: 0,
+  });
   const [isLoading, setIsLoading] = useState(true); // Loading durumu
   let counter2 = -1;
   let counter3 = 0;
@@ -53,7 +57,6 @@ const Feed = () => {
   const [lng, setLng] = useState([]);
   const [likeCount, setLikeCount] = useState(22);
   const [refreshing, setRefreshing] = useState(false);
-  const [isMapModalVisible, setMapModalVisible] = useState(false);
   const [address, setAddress] = useState(null);
   const [postlat, setPostlar] = useState([]);
   const [photoDataa, setphotoDataa] = useState(null);
@@ -103,6 +106,68 @@ const Feed = () => {
       </View>
     );
   }
+
+  const MapModal = ({ isVisible, lat, lng, onClose, onSetRoutePress }) => {
+    return (
+      <Modal visible={isVisible} animationType="slide">
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity
+            onPress={onClose}
+            style={{
+              position: 'absolute',
+              top: 16,
+              right: 16,
+              padding: 10,
+              zIndex: 2,
+            }}
+          >
+            <Ionicons name="close" size={40} color="black" style={{ top:20 }}  />
+          </TouchableOpacity>
+          <MapView
+            style={{ flex: 1 }}
+
+            initialRegion={{
+              latitude: lat,
+              longitude: lng,
+              latitudeDelta: 0.002,
+              longitudeDelta: 0.002,
+            }}
+          >
+            <Marker coordinate={{ latitude: lat, longitude: lng }} />
+          </MapView>
+          <TouchableOpacity
+  onPress={() => onSetRoutePress(lat, lng)}
+  style={{
+    position: 'absolute',
+    bottom: 30,
+    left: 250,
+
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    backgroundColor: 'white', // Set the background color to white
+    zIndex: 2,
+    borderWidth: 1,
+    borderColor: COLORS.primary, // Add a border with the primary color
+  }}
+>
+  <Text style={{ fontSize: 18, color: COLORS.primary, textAlign: 'center' }}>
+    <Ionicons name="location-outline" size={21} color={COLORS.primary} />
+    Set Route
+  </Text>
+</TouchableOpacity>
+
+
+
+
+
+
+
+        </View>
+      </Modal>
+    );
+  };
+
 
   //fetch data fonk(post ve business istekleri)
   const fetchData = async () => {
@@ -226,9 +291,9 @@ const Feed = () => {
 
   ///Harita fonk
 
-  const navigasyonuAc = (index) => {
-    const hedefEnlem = late[index]; // Hedefinizin enlem değerini değiştirin
-    const hedefBoylam = longe[index]; // Hedefinizin boylam değerini değiştirin
+  const navigasyonuAc = (lat,lng) => {
+    const hedefEnlem = lat; // Hedefinizin enlem değerini değiştirin
+    const hedefBoylam = lng; // Hedefinizin boylam değerini değiştirin
     //console.log("vbvnbc", latArray[index], " ", longArray[index]);
     //console.log("navigasyonAç  lat:"+late[index]+" long:"+longe[index])
     const url = `https://www.google.com/maps/dir/?api=1&destination=${hedefEnlem},${hedefBoylam}`;
@@ -363,7 +428,7 @@ const Feed = () => {
                     </Text>
                   </View>
                 </View>
-
+                
                 <View
                   style={{
                     flexDirection: "row",
@@ -372,13 +437,14 @@ const Feed = () => {
                     marginLeft: 10,
                   }}
                 >
-                  <Text>{directions[index]}</Text>
+                  <FontAwesome name="map-marker" size={20} color={COLORS.primary}  />
+                  <Text style={{left:20}}>{directions[index]}</Text>
                 </View>
 
                 <MaterialCommunityIcons
                   name="dots-vertical"
                   size={24}
-                  color={COLORS.black}
+                  color={COLORS.primary}
                 />
               </View>
 
@@ -434,7 +500,15 @@ const Feed = () => {
                       marginLeft: 4,
                     }}
                   >
-                    <TouchableOpacity onPress={() => navigasyonuAc(index)}>
+                   <TouchableOpacity
+                      onPress={() => {
+                        setSelectedPostLocation({
+                          lat: late[index],
+                          lng: longe[index],
+                        });
+                        setIsMapModalVisible(true);
+                      }}
+                    >
                       <Text
                         style={{
                           marginTop: 20,
@@ -447,12 +521,20 @@ const Feed = () => {
                           size={21}
                           color={COLORS.primary}
                         />
-                        <Text>Open With Maps</Text>
+                        <Text>Show on Maps</Text>
                       </Text>
                     </TouchableOpacity>
+
                   </Text>
                 </View>
               </View>
+              <MapModal
+  isVisible={isMapModalVisible}
+  lat={selectedPostLocation.lat}
+  lng={selectedPostLocation.lng}
+  onClose={() => setIsMapModalVisible(false)}
+  onSetRoutePress={(lat, lng) => navigasyonuAc(lat, lng)}
+/>
 
               {/* Posts likes and comments */}
 
