@@ -114,18 +114,22 @@ const Feed = () => {
           <TouchableOpacity
             onPress={onClose}
             style={{
-              position: 'absolute',
+              position: "absolute",
               top: 16,
               right: 16,
               padding: 10,
               zIndex: 2,
             }}
           >
-            <Ionicons name="close" size={40} color="black" style={{ top:20 }}  />
+            <Ionicons
+              name="close"
+              size={40}
+              color="black"
+              style={{ top: 20 }}
+            />
           </TouchableOpacity>
           <MapView
             style={{ flex: 1 }}
-
             initialRegion={{
               latitude: lat,
               longitude: lng,
@@ -136,38 +140,40 @@ const Feed = () => {
             <Marker coordinate={{ latitude: lat, longitude: lng }} />
           </MapView>
           <TouchableOpacity
-  onPress={() => onSetRoutePress(lat, lng)}
-  style={{
-    position: 'absolute',
-    bottom: 30,
-    left: 250,
+            onPress={() => onSetRoutePress(lat, lng)}
+            style={{
+              position: "absolute",
+              bottom: 30,
+              left: 250,
 
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    backgroundColor: 'white', // Set the background color to white
-    zIndex: 2,
-    borderWidth: 1,
-    borderColor: COLORS.primary, // Add a border with the primary color
-  }}
->
-  <Text style={{ fontSize: 18, color: COLORS.primary, textAlign: 'center' }}>
-    <Ionicons name="location-outline" size={21} color={COLORS.primary} />
-    Set Route
-  </Text>
-</TouchableOpacity>
-
-
-
-
-
-
-
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              borderRadius: 20,
+              backgroundColor: "white", // Set the background color to white
+              zIndex: 2,
+              borderWidth: 1,
+              borderColor: COLORS.primary, // Add a border with the primary color
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 18,
+                color: COLORS.primary,
+                textAlign: "center",
+              }}
+            >
+              <Ionicons
+                name="location-outline"
+                size={21}
+                color={COLORS.primary}
+              />
+              Set Route
+            </Text>
+          </TouchableOpacity>
         </View>
       </Modal>
     );
   };
-
 
   //fetch data fonk(post ve business istekleri)
   const fetchData = async () => {
@@ -181,12 +187,12 @@ const Feed = () => {
       var businessesData = businessResultData.flat();
       setItems((prevItems) => [...prevItems, ...businessesData]);
       var i = 0;
-      console.log("anayın amcuuğuu",businessesData.length)
-      
+      console.log("anayın amcuuğuu", businessesData.length);
+
       if (businessesData) {
         for (const item of businessesData) {
           const addressParts = [];
-         // console.log("7");
+          // console.log("7");
           if (item && item.address && item.address.streetName !== null) {
             addressParts.push(item.address.streetName);
           }
@@ -242,9 +248,9 @@ const Feed = () => {
       setDirections([...direksiyon]);
       setLate([...latArray]);
       setLonge([...longArray]);
-     // console.log("10");
+      // console.log("10");
       setIsLoading(false);
-     // console.log("11");
+      // console.log("11");
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -252,7 +258,7 @@ const Feed = () => {
   const getDirections = async (addressGet, lats, longs) => {
     try {
       // Google Maps Directions API'yi çağırın ve başlangıç ve varış adreslerini belirtin
-     // console.log("Gerçek adres benim ananın amı:", addressGet);
+      // console.log("Gerçek adres benim ananın amı:", addressGet);
       //console.log("API_KEY:", API_KEY);
 
       const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lats},${longs}&key=AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4`;
@@ -274,12 +280,12 @@ const Feed = () => {
         console.log("routes:", routes[0].legs[0].distance.text);
 
         // Rota bilgilerini durumda saklayın
-      //  console.log(postlat.length)
-        
+        //  console.log(postlat.length)
+
         if (responsee.data.routes.length > 0) {
           console.log("directions:", directions);
-         // directions.push(routes[0].legs[0].distance.text);
-         direksiyon.push(routes[0].legs[0].distance.text);
+          // directions.push(routes[0].legs[0].distance.text);
+          direksiyon.push(routes[0].legs[0].distance.text);
         }
       } else {
         console.log("Adres bulunamadı.");
@@ -291,7 +297,7 @@ const Feed = () => {
 
   ///Harita fonk
 
-  const navigasyonuAc = (lat,lng) => {
+  const navigasyonuAc = (lat, lng) => {
     const hedefEnlem = lat; // Hedefinizin enlem değerini değiştirin
     const hedefBoylam = lng; // Hedefinizin boylam değerini değiştirin
     //console.log("vbvnbc", latArray[index], " ", longArray[index]);
@@ -428,7 +434,7 @@ const Feed = () => {
                     </Text>
                   </View>
                 </View>
-                
+
                 <View
                   style={{
                     flexDirection: "row",
@@ -437,8 +443,12 @@ const Feed = () => {
                     marginLeft: 10,
                   }}
                 >
-                  <FontAwesome name="map-marker" size={20} color={COLORS.primary}  />
-                  <Text style={{left:20}}>{directions[index]}</Text>
+                  <FontAwesome
+                    name="map-marker"
+                    size={20}
+                    color={COLORS.primary}
+                  />
+                  <Text style={{ left: 20 }}>{directions[index]}</Text>
                 </View>
 
                 <MaterialCommunityIcons
@@ -500,7 +510,7 @@ const Feed = () => {
                       marginLeft: 4,
                     }}
                   >
-                   <TouchableOpacity
+                    <TouchableOpacity
                       onPress={() => {
                         setSelectedPostLocation({
                           lat: late[index],
@@ -524,17 +534,16 @@ const Feed = () => {
                         <Text>Show on Maps</Text>
                       </Text>
                     </TouchableOpacity>
-
                   </Text>
                 </View>
               </View>
               <MapModal
-  isVisible={isMapModalVisible}
-  lat={selectedPostLocation.lat}
-  lng={selectedPostLocation.lng}
-  onClose={() => setIsMapModalVisible(false)}
-  onSetRoutePress={(lat, lng) => navigasyonuAc(lat, lng)}
-/>
+                isVisible={isMapModalVisible}
+                lat={selectedPostLocation.lat}
+                lng={selectedPostLocation.lng}
+                onClose={() => setIsMapModalVisible(false)}
+                onSetRoutePress={(lat, lng) => navigasyonuAc(lat, lng)}
+              />
 
               {/* Posts likes and comments */}
 

@@ -79,6 +79,11 @@ const ProfileUser = () => {
           });
           console.log("aSA",response)
         }
+        const unsubscribe = navigation.addListener('focus', fetchData); 
+
+        return () => {
+            unsubscribe();
+        };
       },
       (error) => {
         console.error("bilgileri çekemedik:", error);
