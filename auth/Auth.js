@@ -1,10 +1,52 @@
 import * as SecureStore from 'expo-secure-store'
 import axios from 'axios';
 
-authClient = async (token) => {
+// authClient = async (token) => {
+//     console.log("authClient : ",token)
+//     if(role==='Business'){
+//        try {
+//         const response = await axios.get("https://goodidea.azurewebsites.net/api/Users/businessprofile", {
+//             headers: {
+//                 "Authorization": "bearer " + token,
+//             },
+//         });
+//         console.log("authClient response.data :",response.data)
+//         storeLoggedInUserData(response.data)
+//     } catch (error) {
+//         console.log("Error:", error);
+//     } 
+//     }
+//     else if (role==='Users'){
+//         try {
+//             const response = await axios.get("https://goodidea.azurewebsites.net/api/Users/userprofile", {
+//                 headers: {
+//                     "Authorization": "bearer " + token,
+//                 },
+//             });
+//             console.log("authClient response.data :",response.data)
+//             storeLoggedInUserData(response.data)
+//         } catch (error) {
+//             console.log("Error:", error);
+//         } 
+//     }
+    
+// };
+authClient = async (token, role) => {
     console.log("authClient : ",token)
+    let endpoint = "https://goodidea.azurewebsites.net/api/users/";
+
+    if(role==='Business'){
+        endpoint += "businessprofile";
+    }
+    else if (role==='User'){
+        endpoint += "userprofile";
+    } else {
+        console.error("Geçersiz role değeri:", role);
+        throw 'Invalid role';
+    }
+    
     try {
-        const response = await axios.get("https://goodidea.azurewebsites.net/api/Users/businessprofile", {
+        const response = await axios.get(endpoint , {
             headers: {
                 "Authorization": "bearer " + token,
             },
@@ -12,11 +54,11 @@ authClient = async (token) => {
         console.log("authClient response.data :",response.data)
         storeLoggedInUserData(response.data)
     } catch (error) {
-        console.log("Error:", error);
-    }
+        console.log("Error:as", error);
+    } 
 };
 
-export const storeToken = async (token) => {
+export const storeToken = async (token,role) => {
     if (!token) {
         console.error("Geçersiz token değeri:", token);
         throw 'No token';
@@ -24,7 +66,7 @@ export const storeToken = async (token) => {
     try{
         await SecureStore.setItemAsync('accessToken', token)
         console.log("storeToken çağırıldı")
-        await authClient(token)
+        await authClient(token,role)
     }catch(err){
         console.log("error storeToken: ",err)
         throw err
@@ -40,6 +82,7 @@ const storeLoggedInUserData = (userData) => {
     }
     try{
         SecureStore.setItemAsync('userData', JSON.stringify(userData))
+        console.log("calısmıyorum")
     }catch(err){
         console.log("error storeLoggedInUserData: ",err)
         throw err

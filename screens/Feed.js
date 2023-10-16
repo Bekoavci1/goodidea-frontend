@@ -37,7 +37,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { lati, longi } from "./BusinessIdContext";
 import Spinner from "react-native-loading-spinner-overlay";
 import { useMemo } from "react";
-import SecureStorage from "react-native-secure-storage";
 
 const Feed = () => {
   //useStateler
@@ -379,7 +378,7 @@ const Feed = () => {
                   <View style={{ marginLeft: 12 }}>
                     <TouchableOpacity
                       onPress={() =>
-                        navigation.navigate("Profile", {
+                        navigation.navigate("SafariProfile", {
                           businessId: post.businessId,
                           isOwner: false,
                         })

@@ -18,7 +18,7 @@ const TaggedRoute = () => (
     <View style={{ flex: 1, backfaceColor: 'blue' }}></View>
 )
 
-const Profile = ({ businessData,route,isOwner }) => {
+const SafariProfile = ({ businessData,route,isOwner }) => {
     console.log("route : ",route)
     const [userData, setUserData] = useState(null);
     const [isModalVisible, setModalVisible] = useState(false);
@@ -426,22 +426,22 @@ const Profile = ({ businessData,route,isOwner }) => {
         )
     }
     
-    const deletePost = async (postId) => {
-        let client = new HTTPClient();
-        const token = await client.setAuthTokenAccess2();
-        try {
-            const response = await axios.delete('https://goodidea.azurewebsites.net/api/Posts/'+postId, {
-            headers: {
-                "Authorization": token
-            }
-        });
-            const updatedPosts = postProfıle.filter(post => post.id !== postId);
-            setpostProfıle(updatedPosts);
-            setModalVisible(false);
-        } catch (error) {
-            console.error("delete error:", error);
-        }
-    }
+    // const deletePost = async (postId) => {
+    //     let client = new HTTPClient();
+    //     const token = await client.setAuthTokenAccess2();
+    //     try {
+    //         const response = await axios.delete('https://goodidea.azurewebsites.net/api/Posts/'+postId, {
+    //         headers: {
+    //             "Authorization": token
+    //         }
+    //     });
+    //         const updatedPosts = postProfıle.filter(post => post.id !== postId);
+    //         setpostProfıle(updatedPosts);
+    //         setModalVisible(false);
+    //     } catch (error) {
+    //         console.error("delete error:", error);
+    //     }
+    // }
     return (
         <SafeAreaView
             style={{
@@ -478,17 +478,17 @@ const Profile = ({ businessData,route,isOwner }) => {
                                 <Image source={{ uri: selectedPost.photo.photoUrl }} style={{ width: '80%', height: '50%', marginBottom: 20 }} />
 
                                 {/* Comment Section - Placeholder */}
-                                <View style={{ width: '80%', padding: 10, backgroundColor: 'rgba(255, 255, 255, 1)', borderRadius: 10, marginBottom: 20 }}>
+                                {/* <View style={{ width: '80%', padding: 10, backgroundColor: 'rgba(255, 255, 255, 1)', borderRadius: 10, marginBottom: 20 }}>
                                     <TextInput
                                     style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                                     onChangeText={text => setComment(text)}
                                     value={comment}
                                     placeholder="Write a comment..."
                                 />
-                                </View>
+                                </View> */}
 
                                 {/* Delete Button */}
-                                <Button title="Delete" onPress={() => deletePost(selectedPost.id)} />
+                                {/* <Button title="Delete" onPress={() => deletePost(selectedPost.id)} /> */}
                             </View>
                         </TouchableOpacity>
                     </Modal>
@@ -497,4 +497,4 @@ const Profile = ({ businessData,route,isOwner }) => {
         </SafeAreaView>
     )
 }
-export default Profile
+export default SafariProfile

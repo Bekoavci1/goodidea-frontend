@@ -8,7 +8,7 @@ import {
 } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { COLORS } from "../constants";
-import { Chat, Create, Feed, Notifications, Profile } from "../screens";
+import { Chat, Create, Feed, Notifications, Profile, ProfileUser } from "../screens";
 import { LinearGradient } from "expo-linear-gradient";
 import { getLoggedInUserData } from "../auth/Auth";
 
@@ -118,6 +118,7 @@ const BottomTabNavigation = () => {
             },
           }}
         />
+        
         {businessData && businessData.role === "Business" && (
           <Tab.Screen
             name="Profile"
@@ -135,11 +136,28 @@ const BottomTabNavigation = () => {
                 );
               },
             }}
-          />
-          
+          />  
         )}
-        
-        
+
+        {businessData && businessData.role === "User" && (
+          <Tab.Screen
+            name="ProfileUser"
+            children={()=><ProfileUser businessData={businessData} isOwner={true}/>}
+            // {props => <Profile {...props} businessId={businessData.id} />}
+            // children={() => <Profile businessData={businessData.id} />}
+            options={{
+              tabBarIcon: ({ focused }) => {
+                return (
+                  <FontAwesome
+                    name="user-circle"
+                    size={24}
+                    color={focused ? COLORS.primary : COLORS.black}
+                  />
+                );
+              },
+            }}
+          />
+        )}
       </Tab.Navigator>
     );
   }

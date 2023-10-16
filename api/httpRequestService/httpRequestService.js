@@ -1,6 +1,14 @@
 import HTTPClient from "../httpClient/httpClient";
+import * as SecureStore from "expo-secure-store";
 const mainPath = 'https://goodidea.azurewebsites.net/api'
-                //  'https://goodidea.azurewebsites.net/api/register-user' 
+
+async function getBusinessId() {
+    let userDataa = await SecureStore.getItemAsync("userData");
+    const parsedData = JSON.parse(userDataa);
+    console.log("user data id", parsedData.id);
+    return parsedData.id;
+}
+
 export const HTTP_REQUESTS =
 {
     USER_SERVICE:
@@ -33,6 +41,26 @@ export const HTTP_REQUESTS =
             client.failCallback     = errorCallback;
             client.timeout          = 20000; // 5 seconds
             client.addParameters(registerCredentials);
+            client.send();
+        },
+        USER_EDIT_PROFILE_GET: (successCallback, errorCallback) => {
+            let client = new HTTPClient();
+            client.requestPath = mainPath + "/users/userprofile";
+            client.requestType = HTTPClient.REQUEST_TYPE.GET;
+            client.successCallback = successCallback;
+            client.failCallback = errorCallback;
+            client.timeout = 20000; // 5 seconds
+            client.send();
+          },
+        USER_EDIT_PROFILE_PUT: async (formData,successCallback, errorCallback) => {
+            let client = new HTTPClient();
+            let userId = await getBusinessId();
+            client.requestPath = mainPath + "/users/"+ userId;
+            client.requestType = HTTPClient.REQUEST_TYPE.PUT;
+            client.successCallback = successCallback;
+            client.failCallback = errorCallback;
+            client.timeout = 20000; // 5 seconds
+            client.addParameters(formData);
             client.send();
         },
         BUSINESS_EDIT_PROFILE_GET: (successCallback,errorCallback)=>{

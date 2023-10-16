@@ -104,7 +104,7 @@ export default class HTTPClient {
 
 
     _build = () => {
-        const headers = { 'Accept': this._acceptType, 'Authorization': `Bearer ${this._token}`};
+        const headers = { 'Content-Type': this._contentType ,'Accept': this._acceptType };
         const params = this._formData ? this._formData : this._params;
         this._promise = null;
         switch (this._reqType) {

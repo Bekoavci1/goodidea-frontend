@@ -20,8 +20,6 @@ import { HTTP_REQUESTS } from "../api/httpRequestService/httpRequestService";
 import COLORS from "../constants/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
-import SecureStorage from "react-native-secure-storage";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 
 const Login = ({ navigation }) => {
@@ -65,7 +63,7 @@ const Login = ({ navigation }) => {
       { Email: email, Password: password },
       async (response) => {
           console.log("response LOGIN_BUSINESS**123 : ",response)
-          await storeToken(response);
+          await storeToken(response, "Business");
           navigation.navigate("BottomTabNavigation");
       },
       (error) => {
