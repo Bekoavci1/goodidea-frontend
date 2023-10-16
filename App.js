@@ -7,10 +7,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import BottomTabNavigation from './navigation/BottomTabNavigation'
 import { Login, Signup, Welcome, SignupBusiness,LoginBusiness, BusinessEdit,Feed } from "./screens";
-import LogoUpdate from './screens/LogoUpdate'
+import LogoUpdate from "./screens/LogoUpdate"
 import { getToken } from './auth/Auth';
 import React, { useState, useEffect } from 'react';
 import { BusinessIdProvider } from './screens/BusinessIdContext'
+import EditProfile from './screens/EditProfile'
+import SafariProfile from './screens/SafariProfile'
 
 const Stack = createNativeStackNavigator();
 
@@ -110,6 +112,20 @@ if (!fontsLoaded) {
           <Stack.Screen
             name="LoginBusiness"
             component={LoginBusiness}
+            options={{
+              headerShown: false
+            }}
+          />
+          <Stack.Screen
+            name="EditProfile"
+            component={EditProfile}
+            options={{
+              headerShown: false
+            }}
+          />
+          <Stack.Screen
+            name="SafariProfile"
+            component={SafariProfile}
             options={{
               headerShown: false
             }}

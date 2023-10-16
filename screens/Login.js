@@ -18,7 +18,7 @@ const Login = ({ navigation }) => {
         HTTP_REQUESTS.USER_SERVICE.LOGIN(
             {Username: username, Password: password},
             async(response)=>{
-                await storeToken(response);
+                await storeToken(response, "User");
                 navigation.navigate("BottomTabNavigation");
             },(error)=>{
                 console.error("Giriş hatası:", error);

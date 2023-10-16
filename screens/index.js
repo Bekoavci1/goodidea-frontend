@@ -4,11 +4,14 @@ import Signup from "./Signup";
 import Feed from './Feed'
 import Create from './Create'
 import Profile from './Profile'
+import ProfileUser from './ProfileUser'
 import Notifications from './Notifications'
 import Chat from './Chat'
 import SignupBusiness from "./SignupBusiness";
 import LoginBusiness from "./LoginBusiness";
 import BusinessEdit from "./BusinessEdit";
+import EditProfile from "./EditProfile";
+import SafariProfile from "./SafariProfile";
 
 
 export {
@@ -23,5 +26,7 @@ export {
     SignupBusiness,
     LoginBusiness,
     BusinessEdit,
-
+    ProfileUser,
+    EditProfile,
+    SafariProfile,
 }

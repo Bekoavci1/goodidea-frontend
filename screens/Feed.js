@@ -405,7 +405,7 @@ const Feed = () => {
                   <View style={{ marginLeft: 12 }}>
                     <TouchableOpacity
                       onPress={() =>
-                        navigation.navigate("Profile", {
+                        navigation.navigate("SafariProfile", {
                           businessId: post.businessId,
                         })
                       }
