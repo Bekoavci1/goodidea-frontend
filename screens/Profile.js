@@ -41,6 +41,7 @@ const Profile = ({ businessData,route,isOwner }) => {
                     var responsee = "asd";
                     responsee = await axios.get('https://goodidea.azurewebsites.net/api/Businesses/'+businessId); // {id} kısmını gerçek bir ID ile değiştirmeniz gerekiyor.
                     setUserData(responsee.data);
+                    console.log("ben değil alttaki piç error veriyo");
                     setBusinessId(responsee.data.id);
                     const photoId = responsee.data.photoId;
                     const response = await axios.get('https://goodidea.azurewebsites.net/api/Photos/photos/'+ photoId); 
