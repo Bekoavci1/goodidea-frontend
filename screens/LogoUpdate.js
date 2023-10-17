@@ -7,6 +7,7 @@ import HTTPClient from "../api/httpClient/httpClient";
 const LogoUpdate = ({ navigation, route })  => {
 
   const [selectedImageUri, setSelectedImageUri] = useState(null);
+  
 
   const handleImagePick = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -44,7 +45,7 @@ const LogoUpdate = ({ navigation, route })  => {
           });
         
           if (uploadResponse.status === 200) {
-            navigation.navigate('Profile', { selectedImageUri: selectedImageUri });
+            navigation.navigate('EditProfile', { selectedImageUri: selectedImageUri });
           } else {
             Alert.alert('Error', 'Image upload failed. Please try again.');
           }

@@ -29,7 +29,7 @@ const Login = ({ navigation }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-            <ScrollView>
+            <ScrollView keyboardShouldPersistTaps='handled'>
                 <View style={{ flex: 1, marginHorizontal: 22 }}>
                     <View style={{ marginVertical: 22 }}>
                         <Text style={{

@@ -1,4 +1,4 @@
-import React,{useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,17 +12,18 @@ import { COLORS, FONTS } from "../constants";
 import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import { HTTP_REQUESTS } from "../api/httpRequestService/httpRequestService";
+import { removeToken } from "../auth/Auth";
 
 const ProfileUser = () => {
   const [userData, setUserData] = useState(null);
   const [userDat, setUserDat] = useState("");
-  const [businessId,setBusinessId] = useState('');
+  const [businessId, setBusinessId] = useState("");
 
   const [formData, setFormData] = useState({
     id: "",
     username: "",
     name: "",
-    surname:"",
+    surname: "",
     email: "",
     password: "",
     passwordConfirmation: "",
@@ -31,7 +32,7 @@ const ProfileUser = () => {
     photoId: "",
     addressId: "",
     address: {
-      id:"",
+      id: "",
       country: "",
       city: "",
       buildingNumber: "",
@@ -43,55 +44,55 @@ const ProfileUser = () => {
     createdTime: "",
     updatedTime: "",
     deletedTime: "",
-  });  
+  });
   useEffect(() => {
-    HTTP_REQUESTS.USER_SERVICE.USER_EDIT_PROFILE_GET(
-      (response)=> {
-        
-        if(response){
-          console.log("beko",response);
-          setFormData({
-            ...formData,
-            id:response.id,
-            username:response.username,
-            name: response.name,
-            surname: response.surname,
-            email: response.email,
-            password: response.password,
-            passwordConfirmation: response.password,
-            phoneNumber: response.phoneNumber,
-            role: response.role,
-            photoId : response.photoId,
-            addressId: response.addressId ? String(response.addressId) : "",
-            address: {
-              id:response.address.id || "",
-              country: response.address.country || "",
-              city: response.address.city || "",
-              // buildingNumber: response.address.buildingNumber || "",
-              // district: response.address.district || "",
-              // postCode: response.address.postCode || "",
-              // streetName: response.address.streetName || "",
-              // streetNumber: response.address.streetNumber || "",
-            },
-            createdTime : response.createdTime,
-            updatedTime : new Date().toISOString(),
-            deletedTime : new Date().toISOString(),
-          });
-          console.log("aSA",response)
+    const fetchData = async () => {
+      HTTP_REQUESTS.USER_SERVICE.USER_EDIT_PROFILE_GET(
+        (response) => {
+          if (response) {
+            console.log("beko", response);
+            setFormData({
+              ...formData,
+              id: response.id,
+              username: response.username,
+              name: response.name,
+              surname: response.surname,
+              email: response.email,
+              password: response.password,
+              passwordConfirmation: response.password,
+              phoneNumber: response.phoneNumber,
+              role: response.role,
+              photoId: response.photoId,
+              addressId: response.addressId ? String(response.addressId) : "",
+              address: {
+                id: response.address.id || "",
+                country: response.address.country || "",
+                city: response.address.city || "",
+                buildingNumber: response.address.buildingNumber || "",
+                district: response.address.district || "",
+                postCode: response.address.postCode || "",
+                streetName: response.address.streetName || "",
+                streetNumber: response.address.streetNumber || "",
+              },
+              createdTime: response.createdTime,
+              updatedTime: new Date().toISOString(),
+              deletedTime: new Date().toISOString(),
+            });
+            console.log("aSA", response);
+          }
+        },
+        (error) => {
+          console.error("bilgileri çekemedik:", error);
         }
-        const unsubscribe = navigation.addListener('focus', fetchData); 
+      );
+    };
+    const unsubscribe = navigation.addListener("focus", fetchData);
 
-        return () => {
-            unsubscribe();
-        };
-      },
-      (error) => {
-        console.error("bilgileri çekemedik:", error);
-      }
-    );
+    return () => {
+      unsubscribe();
+    };
     // fetchData();
-  }, []);
-
+  }, [navigation]);
 
   const navigation = useNavigation();
   const navigateToEditProfile = () => {
@@ -122,13 +123,13 @@ const ProfileUser = () => {
     console.log("Terms and Policies function");
   };
 
-  const navigateToFreeSpace = () => {
-    console.log("Free Space function");
-  };
+  // const navigateToFreeSpace = () => {
+  //   console.log("Free Space function");
+  // };
 
-  const navigateToDateSaver = () => {
-    console.log("Date saver");
-  };
+  // const navigateToDateSaver = () => {
+  //   console.log("Date saver");
+  // };
 
   const navigateToReportProblem = () => {
     console.log("Report a problem");
@@ -138,8 +139,9 @@ const ProfileUser = () => {
     console.log("Aadd account ");
   };
 
-  const logout = () => {
-    console.log("Logout");
+  const logOut = (response) => {
+    removeToken(response);
+    navigation.navigate("Welcome");
   };
 
   const accountItems = [
@@ -171,14 +173,14 @@ const ProfileUser = () => {
     },
   ];
 
-  const cacheAndCellularItems = [
-    {
-      icon: "delete-outline",
-      text: "Free up space",
-      action: navigateToFreeSpace,
-    },
-    { icon: "save-alt", text: "Date Saver", action: navigateToDateSaver },
-  ];
+  // const cacheAndCellularItems = [
+  //   {
+  //     icon: "delete-outline",
+  //     text: "Free up space",
+  //     action: navigateToFreeSpace,
+  //   },
+  //   { icon: "save-alt", text: "Date Saver", action: navigateToDateSaver },
+  // ];
 
   const actionsItems = [
     {
@@ -187,7 +189,7 @@ const ProfileUser = () => {
       action: navigateToReportProblem,
     },
     { icon: "people-outline", text: "Add Account", action: addAccount },
-    { icon: "logout", text: "Log out", action: logout },
+    { icon: "logout", text: "Log out", action: logOut },
   ];
 
   const renderSettingsItem = ({ icon, text, action }) => (
@@ -243,7 +245,7 @@ const ProfileUser = () => {
           />
         </TouchableOpacity>
 
-        <Text style={{ ...FONTS.h3, marginBottom: 20  }}>Profile</Text>
+        <Text style={{ ...FONTS.h3, marginBottom: 20 }}>Profile</Text>
       </View>
       <View style={{ flex: 30, alignItems: "center" }}>
         <Text
@@ -253,7 +255,9 @@ const ProfileUser = () => {
             marginVertical: 8,
           }}
         >
-          {`${formData?.name || "Loading..."} ${formData?.surname || "Loading..."}`}
+          {`${formData?.name || "Loading..."} ${
+            formData?.surname || "Loading..."
+          }`}
         </Text>
         <Text
           style={{
@@ -278,12 +282,14 @@ const ProfileUser = () => {
               marginLeft: 4,
             }}
           >
-            {`${formData.address?.city || "Loading..."} ${formData.address?.country || "Loading..."}`}
+            {`${formData.address?.city || "Loading..."} ${
+              formData.address?.country || "Loading..."
+            }`}
           </Text>
         </View>
       </View>
 
-      <ScrollView style={{ marginHorizontal: 12 }}>
+      <ScrollView style={{ marginHorizontal: 12, marginBottom: 100 }}>
         {/* Account Settings */}
         <View style={{ marginBottom: 12 }}>
           <Text style={{ ...FONTS.h4, marginVertical: 1 }}>Account</Text>
@@ -322,7 +328,7 @@ const ProfileUser = () => {
         </View>
 
         {/* Cache & Cellular */}
-        <View style={{ marginBottom: 12 }}>
+        {/* <View style={{ marginBottom: 12 }}>
           <Text style={{ ...FONTS.h4, marginVertical: 10 }}>
             Cache & Cellular{" "}
           </Text>
@@ -338,7 +344,7 @@ const ProfileUser = () => {
               </React.Fragment>
             ))}
           </View>
-        </View>
+        </View> */}
 
         {/* Actions Settings */}
 

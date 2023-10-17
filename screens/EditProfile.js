@@ -116,6 +116,7 @@ const EditProfile = ({ route, isOwner,navigation }) => {
       (response) => {
         Alert.alert("Sucsess", "Sucsess Profile.");
         console.log("Güncelleme başarılı", response);
+        navigation.goBack();
       },
       (error) => {
         console.log(error)
@@ -181,7 +182,7 @@ const EditProfile = ({ route, isOwner,navigation }) => {
             marginVertical: 22,
           }}
         >
-          <TouchableOpacity >
+          <TouchableOpacity onPress={() => navigation.navigate('LogoUpdate')}>
             <Image
               source={{ uri: selectedImageUri || photoDataa?.photoUrl }}
               style={{
@@ -192,6 +193,7 @@ const EditProfile = ({ route, isOwner,navigation }) => {
                 borderColor: COLORS.primary,
               }}
             />
+             
 
             <View
               style={{
@@ -248,6 +250,38 @@ const EditProfile = ({ route, isOwner,navigation }) => {
               marginBottom: 6,
             }}
           >
+            <Text style={{ ...FONTS.h4 }}>Surname</Text>
+            <View
+              style={{
+                height: 44,
+                width: "100%",
+                borderColor: COLORS.secondaryGray,
+                borderWidth: 1,
+                borderRadius: 4,
+                marginVertical: 6,
+                justifyContent: "center",
+                paddingLeft: 8,
+              }}
+            >
+              <TextInput
+                value={formData.surname}
+                onChangeText={(text) =>
+                  
+                  setFormData((prevState) => ({ ...prevState, surname: text }))
+                }
+                editable={true}
+                
+              />
+            </View>
+          </View>
+
+
+          <View
+            style={{
+              flexDirection: "column",
+              marginBottom: 6,
+            }}
+          >
             <Text style={{ ...FONTS.h4 }}>Email</Text>
             <View
               style={{
@@ -271,13 +305,13 @@ const EditProfile = ({ route, isOwner,navigation }) => {
             </View>
           </View>
 
-          <View
+          {/* <View
             style={{
               flexDirection: "column",
               marginBottom: 6,
             }}
           >
-            <Text style={{ ...FONTS.h4 }}>City</Text>
+            <Text style={{ ...FONTS.h4 }}>Password</Text>
             <View
               style={{
                 height: 44,
@@ -291,21 +325,15 @@ const EditProfile = ({ route, isOwner,navigation }) => {
               }}
             >
               <TextInput
-                value={formData.address.city}
+                value={formData.password}
                 onChangeText={(text) =>
-                  setFormData((prevState) => ({
-                    ...prevState,
-                    address: {
-                      ...prevState.address,
-                      city: text,
-                    },
-                  }))
+                  setFormData((prevState) => ({ ...prevState, password: text }))
                 }
               />
             </View>
-          </View>
+          </View> */}
         </View>
-        <View
+        {/* <View
           style={{
             flexDirection: "column",
             marginBottom: 6,
@@ -337,7 +365,7 @@ const EditProfile = ({ route, isOwner,navigation }) => {
               }
             />
           </View>
-        </View>
+        </View> */}
 
         <TouchableOpacity
         onPress={handleUpdate}
