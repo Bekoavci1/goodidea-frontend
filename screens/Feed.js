@@ -224,7 +224,7 @@ const Feed = () => {
           }
           const formattedAddress = addressParts.join(" ");
 
-          await getDirections(formattedAddress, lats, longs);
+          // await getDirections(formattedAddress, lats, longs);
 
           const response = await axios.get(
             `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(

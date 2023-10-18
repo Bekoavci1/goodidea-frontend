@@ -47,7 +47,7 @@ const Profile = ({ businessData,route,isOwner }) => {
                     const response = await axios.get('https://goodidea.azurewebsites.net/api/Photos/photos/'+ photoId); 
                     setphotoDataa(response.data);
                 } catch (error) {
-                    console.error("Veri çekerken bir hata oluştu", error);
+                    // console.error("Veri çekerken bir hata oluştu", error);
                 }
             };
             fetchData();
@@ -236,7 +236,7 @@ const Profile = ({ businessData,route,isOwner }) => {
                     }
                 } catch (error) {
                     // console.log("asd",route);
-                    console.error("Veri çekerken hata oluştu:", error);
+                    // console.error("Veri çekerken hata oluştu:", error);
                 }
             };
 

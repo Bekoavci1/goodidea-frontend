@@ -37,7 +37,7 @@ export const HTTP_REQUESTS = {
       client.requestType = HTTPClient.REQUEST_TYPE.POST;
       client.successCallback = successCallback;
       client.failCallback = errorCallback;
-      client.timeout = 20000; // 5 seconds
+      
       client.addParameters(registerCredentials);
       client.send();
     },
@@ -47,7 +47,7 @@ export const HTTP_REQUESTS = {
         client.requestType = HTTPClient.REQUEST_TYPE.GET;
         client.successCallback = successCallback;
         client.failCallback = errorCallback;
-        client.timeout = 20000; // 5 seconds
+        
         client.send();
       },
     USER_EDIT_PROFILE_PUT: async (formData,successCallback, errorCallback) => {
@@ -57,7 +57,7 @@ export const HTTP_REQUESTS = {
         client.requestType = HTTPClient.REQUEST_TYPE.PUT;
         client.successCallback = successCallback;
         client.failCallback = errorCallback;
-        client.timeout = 20000; // 5 seconds
+        
         client.addParameters(formData);
         client.send();
     },
@@ -67,7 +67,7 @@ export const HTTP_REQUESTS = {
       client.requestType = HTTPClient.REQUEST_TYPE.GET;
       client.successCallback = successCallback;
       client.failCallback = errorCallback;
-      client.timeout = 20000; // 5 seconds
+      
       client.send();
     },
     // PROFILE_PHOTO_GET: (successCallback,errorCallback)=>{
@@ -90,7 +90,7 @@ export const HTTP_REQUESTS = {
       client.requestType = HTTPClient.REQUEST_TYPE.PUT;
       client.successCallback = successCallback;
       client.failCallback = errorCallback;
-      client.timeout = 20000; // 5 seconds
+     
       client.addParameters(registerCredentials);
       client.send();
     },
@@ -100,7 +100,7 @@ export const HTTP_REQUESTS = {
       client.requestType = HTTPClient.REQUEST_TYPE.GET;
       client.successCallback = successCallback;
       client.failCallback = errorCallback;
-      client.timeout = 20000; // 5 seconds
+      
       client.addParameters(loginCredentials);
       client.send();
     },
@@ -110,7 +110,7 @@ export const HTTP_REQUESTS = {
       client.requestType = HTTPClient.REQUEST_TYPE.POST;
       client.successCallback = successCallback;
       client.failCallback = errorCallback;
-      client.timeout = 20000; // 5 seconds
+      
       client.addParameters(postCredentials);
       client.send();
     },
@@ -121,7 +121,7 @@ export const HTTP_REQUESTS = {
       client.requestType = HTTPClient.REQUEST_TYPE.GET;
       client.successCallback = successCallback;
       client.failCallback = errorCallback;
-      client.timeout = 20000; // 5 seconds
+      
       client.send();
     },
     // POST_CREATE: (successCallback, errorCallback, formData) => {
