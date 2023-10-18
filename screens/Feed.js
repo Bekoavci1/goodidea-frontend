@@ -407,6 +407,7 @@ const Feed = () => {
                       borderRadius: 20,
                     }}
                   /> */}
+                  
 
                   <View style={{ marginLeft: 12 }}>
                     <TouchableOpacity
@@ -423,6 +424,23 @@ const Feed = () => {
                       ) : null}
                     </TouchableOpacity>
 
+                    <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "left",
+                    
+                  }}
+                >
+                  <FontAwesome
+                    name="map-marker"
+                    size={20}
+                    color={COLORS.primary}
+                  />
+                  <Text style={{ left:5 }}>{directions[index]}</Text>
+                </View>
+
+
                     <Text
                       style={{
                         ...FONTS.body4,
@@ -432,25 +450,14 @@ const Feed = () => {
                     >
                       {post.contentDescription || "#NoDescription"}
                     </Text>
+
+                    
+
+                    
                   </View>
                 </View>
 
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginLeft: 10,
-                  }}
-                >
-                  <FontAwesome
-                    name="map-marker"
-                    size={20}
-                    color={COLORS.primary}
-                  />
-                  <Text style={{ left: 20 }}>{directions[index]}</Text>
-                </View>
-
+                
                 <MaterialCommunityIcons
                   name="dots-vertical"
                   size={24}
