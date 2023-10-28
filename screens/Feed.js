@@ -78,7 +78,7 @@ const Feed = () => {
   //users prop
   const users = [images.user1, images.user2, images.user3, images.user4];
   //APIler
-  const API_KEY = "AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4";
+  const API_KEY = "AIzaSyB2j5mO5Ltil4lJAU5X_pmq2yXZpgx4Ro0";
   //kaydırma ve refresh olayını sağlayan fonksiyon
   function renderSuggestionsContainer() {
     return (
@@ -261,7 +261,7 @@ const Feed = () => {
       // console.log("Gerçek adres benim ananın amı:", addressGet);
       //console.log("API_KEY:", API_KEY);
 
-      const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lats},${longs}&key=AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4`;
+      const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lats},${longs}&key=AIzaSyB2j5mO5Ltil4lJAU5X_pmq2yXZpgx4Ro0`;
 
       const response = await fetch(apiUrl);
       const data = await response.json();
@@ -271,7 +271,7 @@ const Feed = () => {
         // console.log("Adres:", address);
 
         const responsee = await axios.get(
-          `https://maps.googleapis.com/maps/api/directions/json?origin=${address}&destination=${addressGet}&key=AIzaSyDU_pWP66-BTzvW7AnEcQRSaBPutMzWxU4`
+          `https://maps.googleapis.com/maps/api/directions/json?origin=${address}&destination=${addressGet}&key=AIzaSyB2j5mO5Ltil4lJAU5X_pmq2yXZpgx4Ro0`
         );
         //console.log("responseum benim", responsee);
 
