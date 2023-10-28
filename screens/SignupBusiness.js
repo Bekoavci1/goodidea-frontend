@@ -88,7 +88,7 @@ const SignupBusiness = ({ navigation }) => {
     //     return;
 
     // }
-    console.log(formData);
+  
     const apiUrl = "https://goodidea.azurewebsites.net/api/register-business";
     formData.address.country = countryname;
     formData.address.city = cityname;
@@ -96,12 +96,12 @@ const SignupBusiness = ({ navigation }) => {
       .post(apiUrl, formData)
       .then((response) => {
         navigation.navigate("LoginBusiness"); // bunu sonra login olarak değiştir
-        console.log("Signup successful", response.data);
+
       })
       .catch((error) => {
-        console.error("Error during signup", error);
+   
         Alert.alert("Error", "An error occurred while signing up.");
-        7;
+        
       });
 
     // axios.post(apiUrl, {
@@ -133,12 +133,12 @@ const SignupBusiness = ({ navigation }) => {
         // console.log("gelen ülkeler", response.data);
       })
       .catch((error) => {
-        console.error("Ülke verileri alınamadı", error);
+  
       });
   }, []);
  
   const handleCountryChange = (country) => {
-    console.log("seçilen country:", country.baslik);
+
     setSelectedCountry(country.id);
     setCountryname(country.baslik);
     
@@ -147,16 +147,16 @@ const SignupBusiness = ({ navigation }) => {
       .get("https://goodidea.azurewebsites.net/api/Businesses/cities/" + country.id)
       .then((response) => {
         setCities(response.data); // API'den gelen şehir verilerini ayarlayın
-        console.log("gelen iller", response.data);
+
       })
       .catch((error) => {
-        console.error("il verileri alınamadı", error);
+
       });
   
-    console.log("seçilen ülke: ", selectedCountry);
+
   };
   const handleCityChange = (city) => {
-    console.log("seçilen şehir: ", city.baslik);
+
     setSelectedCity(city.id);
     setCityname(city.baslik);
     

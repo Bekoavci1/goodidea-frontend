@@ -59,19 +59,19 @@ const Signup = ({ navigation }) => {
 
   const handleSignup = () => {
     if (formData.password !== formData.passwordConfirmation) {
-      console.log("pas", formData.password);
+
       Alert.alert("Error", "Passwords do not match!");
       return;
     }
-    console.log(formData);
+
 
     HTTP_REQUESTS.USER_SERVICE.REGISTER(
     formData,
     (response)=>{
         navigation.navigate("Login"); // bunu sonra login olarak değiştir
-        console.log("Signup successful", response);
+  
     },(error)=>{
-        console.error("Error during signup", error);
+    
         Alert.alert('Error', 'An error occurred while signing up.');
     })
   };

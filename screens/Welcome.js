@@ -15,16 +15,14 @@ const Welcome = ({ navigation }) => {
           try {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== "granted") {
-              console.log("Konum izni reddedildi");
+              
               reject("Konum izni reddedildi");
               return;
             }
             resolve();
             let location = await Location.getCurrentPositionAsync({});
-            console.log("lok:", location);
+         
            
-            // console.log("Gerçek lati benim lan:", lat1);
-            // console.log("Gerçek longi benim lan:", long1);
             await AsyncStorage.setItem('lats', location.coords.latitude.toString());
             await AsyncStorage.setItem('longs', location.coords.longitude.toString());
 
@@ -37,23 +35,22 @@ const Welcome = ({ navigation }) => {
             "&longi=" +
             longs;
             const response = await axios.get(url);
-            console.log("1", response.data);
+            
             postData.push(response.data);
-            console.log("2", postData);
+           
             let businessRequests = response.data.flat().map((post) => {
                 return axios.get(
                 "https://goodidea.azurewebsites.net/api/Businesses/" + post.businessId
                 );
             });
-            console.log("3");
+           
             let businessResults = await Promise.all(businessRequests);
-            console.log("4");
+         
             let businessesData = await Promise.all(
                 businessResults.map((response) => response.data)
             );
             businessResultData.push(businessesData);
-            console.log("5",businessesData);
-            console.log("6",businessResultData);
+           
     
           } catch (error) {
             console.error("Konum alınamadı:", error);

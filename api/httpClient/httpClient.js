@@ -95,7 +95,7 @@ export default class HTTPClient {
             removeToken()
             //refresh koy
         } catch (error) {
-            console.log("error logout : ",error)
+            
         }
     }
 
@@ -119,7 +119,7 @@ export default class HTTPClient {
                 this._promise = axios.delete(this._reqPath, {data:params, headers: headers, timeout: this._timeout, responseType: this._responseType, withCredentials:true  });
                 break;
             default:
-                console.log(`This request type (${this._reqType}) not handled by HTTPClient`);
+               
                 break;
         }
     };
@@ -133,7 +133,7 @@ export default class HTTPClient {
                 if (err.response) {
                     // Request made and server responded
                     if(err.response.status === 401){
-                        console.log("UNAUTHORIZE ERROR : Token Headera set edilmedi veya token geçersiz !")
+                      
                         this.callLogout()
                         // if(err.response.data.err && err.response.data.err === "Invalid Token"){
                         //     HTTP_REQUESTS.FIREBASE_SERVICE.REFRESH_TOKEN((idToken) => {
@@ -141,7 +141,7 @@ export default class HTTPClient {
                         //         localStorage.setItem('accessToken', idToken.toString());
                         //         window.location.reload();
                         //     },(err) => {
-                        //         console.log("error", err)
+                        //     
                         //         this.callLogout()
                         //     })
                         // }else{

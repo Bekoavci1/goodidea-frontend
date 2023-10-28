@@ -6,7 +6,7 @@ const mainPath = "https://goodidea.azurewebsites.net/api";
 async function getBusinessId() {
   let userDataa = await SecureStore.getItemAsync("userData");
   const parsedData = JSON.parse(userDataa);
-  console.log("user data id", parsedData.id);
+
   return parsedData.id;
 }
 export const HTTP_REQUESTS = {

@@ -38,14 +38,14 @@ const Login = ({ navigation }) => {
     HTTP_REQUESTS.USER_SERVICE.LOGIN_BUSINESS(
       { Email: email, Password: password },
       async (response) => {
-          console.log("response LOGIN_BUSINESS**123 : ",response)
+         
           await storeToken(response, "Business");
           navigation.navigate("BottomTabNavigation");
           setIsLoading(false);
       },
       (error) => {
         setIsLoading(false);
-        console.error("Giriş hatası:", error);
+  
         Alert.alert("The Username or Password is wrong!");
       }
     );

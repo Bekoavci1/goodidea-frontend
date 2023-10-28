@@ -21,7 +21,7 @@ const Login = ({ navigation }) => {
                 await storeToken(response, "User");
                 navigation.navigate("BottomTabNavigation");
             },(error)=>{
-                console.error("Giriş hatası:", error);
+
                 Alert.alert("The Username or Password is wrong!");
             })
     };

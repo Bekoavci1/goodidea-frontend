@@ -93,10 +93,10 @@ const BusinessEdit = ({ navigation }) => {
       (response) => {
         Alert.alert("Sucsess", "Sucsess Profile.");
         navigation.navigate("Profile");
-        console.log("Güncelleme başarılı", response);
+       
       },
       (error) => {
-        console.log(error)
+       
         Alert.alert("Error","özge kızarsa kötü olur.");
       }
     );

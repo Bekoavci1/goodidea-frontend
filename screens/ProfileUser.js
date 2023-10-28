@@ -50,7 +50,7 @@ const ProfileUser = () => {
       HTTP_REQUESTS.USER_SERVICE.USER_EDIT_PROFILE_GET(
         (response) => {
           if (response) {
-            console.log("beko", response);
+   
             setFormData({
               ...formData,
               id: response.id,
@@ -78,11 +78,11 @@ const ProfileUser = () => {
               updatedTime: new Date().toISOString(),
               deletedTime: new Date().toISOString(),
             });
-            console.log("aSA", response);
+           
           }
         },
         (error) => {
-          console.error("bilgileri çekemedik:", error);
+          
         }
       );
     };
@@ -100,27 +100,27 @@ const ProfileUser = () => {
   };
 
   const navigateToSecurity = () => {
-    console.log("Security function");
+   
   };
 
   const navigateToNotifications = () => {
-    console.log("Notifications function");
+
   };
 
   const navigateToPrivacy = () => {
-    console.log("Privacy function");
+   
   };
 
   const navigateToSubscription = () => {
-    console.log("Subscription function");
+
   };
 
   const navigateToSupport = () => {
-    console.log("Support function");
+
   };
 
   const navigateToTermsAndPolicies = () => {
-    console.log("Terms and Policies function");
+
   };
 
   // const navigateToFreeSpace = () => {
@@ -132,11 +132,11 @@ const ProfileUser = () => {
   // };
 
   const navigateToReportProblem = () => {
-    console.log("Report a problem");
+
   };
 
   const addAccount = () => {
-    console.log("Aadd account ");
+
   };
 
   const logOut = (response) => {

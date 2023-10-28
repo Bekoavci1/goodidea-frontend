@@ -180,19 +180,19 @@ const Feed = () => {
     try {
       const lats = await AsyncStorage.getItem("lats");
       const longs = await AsyncStorage.getItem("longs");
-      console.log("lats", lats, "longs", longs);
+    
       var posts = postData.flat();
       setPostlar(posts);
 
       var businessesData = businessResultData.flat();
       setItems((prevItems) => [...prevItems, ...businessesData]);
       var i = 0;
-      console.log("anayın amcuuğuu", businessesData.length);
+     
 
       if (businessesData) {
         for (const item of businessesData) {
           const addressParts = [];
-          // console.log("7");
+         
           if (item && item.address && item.address.streetName !== null) {
             addressParts.push(item.address.streetName);
           }
@@ -224,7 +224,7 @@ const Feed = () => {
           }
           const formattedAddress = addressParts.join(" ");
 
-          // await getDirections(formattedAddress, lats, longs);
+          await getDirections(formattedAddress, lats, longs);
 
           const response = await axios.get(
             `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
@@ -243,7 +243,7 @@ const Feed = () => {
       }
       // console.log("9")
       for (let index = 0; index < directions.length; index++) {
-        console.log("bakalım", directions[index]);
+        
       }
       setDirections([...direksiyon]);
       setLate([...latArray]);
@@ -252,7 +252,7 @@ const Feed = () => {
       setIsLoading(false);
       // console.log("11");
     } catch (error) {
-      console.error("Error fetching data:", error);
+  
     }
   };
   const getDirections = async (addressGet, lats, longs) => {
@@ -277,21 +277,21 @@ const Feed = () => {
 
         // API yanıtındaki rota bilgilerini alın
         const routes = responsee.data.routes;
-        console.log("routes:", routes[0].legs[0].distance.text);
+        
 
         // Rota bilgilerini durumda saklayın
         //  console.log(postlat.length)
 
         if (responsee.data.routes.length > 0) {
-          console.log("directions:", directions);
+      
           // directions.push(routes[0].legs[0].distance.text);
           direksiyon.push(routes[0].legs[0].distance.text);
         }
       } else {
-        console.log("Adres bulunamadı.");
+     
       }
     } catch (error) {
-      console.error("Rota alınamadı:", error);
+  
     }
   };
 
@@ -349,7 +349,7 @@ const Feed = () => {
         try {
           //console.log("dsadfsad:", lati, " ", longi);
         } catch (error) {
-          console.error("konumu alamadım aq: ", error);
+
         }
       };
       verileriAl();
@@ -683,9 +683,7 @@ const Feed = () => {
                         longitudeDelta: 0.01, // Yakınlaştırmayı artırmak veya azaltmak için bu değeri ayarlayın
                       }}
                     >
-                      {/*/console.log("index",index)} 
-                      {/* {//console.log("latierhan:",index, late[index]," longiemre ",longe[index])} */}
-                      {/* Gönderi konumu için işaretçi */}
+                   
                       <Marker
                         coordinate={{
                           latitude: late[index], // İstediğiniz enlem değeri ile değiştirin

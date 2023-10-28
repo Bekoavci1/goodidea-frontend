@@ -89,7 +89,7 @@ const EditProfile = ({ route, isOwner,navigation }) => {
         }
       },
       (error) => {
-        console.error("bilgileri çekemedik:", error);
+    
       }
     );
 
@@ -99,7 +99,7 @@ const EditProfile = ({ route, isOwner,navigation }) => {
           setphotoDataa(response.data);
         })
         .catch((error) => {
-          console.error("Resim bilgisi çekilemedi:", error);
+    
         });
     }
     // fetchData();
@@ -115,11 +115,11 @@ const EditProfile = ({ route, isOwner,navigation }) => {
       formData,
       (response) => {
         Alert.alert("Sucsess", "Sucsess Profile.");
-        console.log("Güncelleme başarılı", response);
+        
         navigation.goBack();
       },
       (error) => {
-        console.log(error)
+       
         Alert.alert("Error","NOT Sucsess Profile.");
       }
     );

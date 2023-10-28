@@ -45,7 +45,7 @@ export default function ImagePickerExample() {
       setSelectedImageUri(uri);
       const type = "image/jpeg";
       const name = "photo.jpg";
-      console.log("isim de sikinti var ",uri);
+      
       setFormData((prevState) => ({
         ...prevState,
         PhotoImageFile: { uri, type, name },
@@ -93,11 +93,11 @@ export default function ImagePickerExample() {
         },
       })
       .then((response) => {
-        console.log("Success:", response.data);
+       
         navigation.navigate("Profile");
       })
       .catch((error) => {
-        console.log("Error:", error);
+        
         Alert.alert("Error", "Something went wrong.");
       });
   };

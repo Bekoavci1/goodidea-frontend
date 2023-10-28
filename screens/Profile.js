@@ -19,7 +19,7 @@ const TaggedRoute = () => (
 )
 
 const Profile = ({ businessData,route,isOwner }) => {
-    console.log("route : ",route)
+
     const [userData, setUserData] = useState(null);
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
@@ -36,12 +36,11 @@ const Profile = ({ businessData,route,isOwner }) => {
         useEffect(() => {
             const fetchData = async () => {
                 try {
-                    console.log("businessId : ",businessId)
-                    console.log("isOwnerValue : ",isOwnerValue)
+               
                     var responsee = "asd";
                     responsee = await axios.get('https://goodidea.azurewebsites.net/api/Businesses/'+businessId); // {id} kısmını gerçek bir ID ile değiştirmeniz gerekiyor.
                     setUserData(responsee.data);
-                    console.log("ben değil alttaki piç error veriyo");
+     
                     setBusinessId(responsee.data.id);
                     const photoId = responsee.data.photoId;
                     const response = await axios.get('https://goodidea.azurewebsites.net/api/Photos/photos/'+ photoId); 

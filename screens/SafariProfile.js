@@ -19,7 +19,7 @@ const TaggedRoute = () => (
 )
 
 const SafariProfile = ({ businessData,route,isOwner }) => {
-    console.log("route : ",route)
+  
     const [userData, setUserData] = useState(null);
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
@@ -36,8 +36,6 @@ const SafariProfile = ({ businessData,route,isOwner }) => {
         useEffect(() => {
             const fetchData = async () => {
                 try {
-                    console.log("businessId : ",businessId)
-                    console.log("isOwnerValue : ",isOwnerValue)
                     var responsee = "asd";
                     responsee = await axios.get('https://goodidea.azurewebsites.net/api/Businesses/'+businessId); // {id} kısmını gerçek bir ID ile değiştirmeniz gerekiyor.
                     setUserData(responsee.data);
@@ -46,7 +44,7 @@ const SafariProfile = ({ businessData,route,isOwner }) => {
                     const response = await axios.get('https://goodidea.azurewebsites.net/api/Photos/photos/'+ photoId); 
                     setphotoDataa(response.data);
                 } catch (error) {
-                    console.error("Veri çekerken bir hata oluştu", error);
+            
                 }
             };
             fetchData();
@@ -235,7 +233,7 @@ const SafariProfile = ({ businessData,route,isOwner }) => {
                     }
                 } catch (error) {
                     // console.log("asd",route);
-                    console.error("Veri çekerken hata oluştu:", error);
+     
                 }
             };
 
