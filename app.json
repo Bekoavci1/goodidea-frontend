@@ -2,7 +2,7 @@
   "expo": {
     "name": "goodideademom2",
     "slug": "goodidea2",
-    "version": "1.1.0",
+    "version": "1.1.2",
     "privacy": "public",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,7 +18,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.infintyink.goodideademom2",
-      "buildNumber": "5"
+      "buildNumber": "7"
     },
     "android": {
       "adaptiveIcon": {
